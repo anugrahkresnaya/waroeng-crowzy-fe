@@ -1,0 +1,898 @@
+[
+  {
+    "id": "indomie-goreng",
+    "name": "Indomie goreng",
+    "category": "barang",
+    "file": "barang/indomie-goreng.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "indomie-kuah",
+    "name": "Indomie kuah",
+    "category": "barang",
+    "file": "barang/indomie-kuah.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "keripik",
+    "name": "Keripik",
+    "category": "barang",
+    "file": "barang/keripik.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "es-teh",
+    "name": "Es teh",
+    "category": "barang",
+    "file": "barang/es-teh.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "kopi-hitam",
+    "name": "Kopi hitam",
+    "category": "barang",
+    "file": "barang/kopi-hitam.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "kopi-sachet",
+    "name": "Kopi sachet",
+    "category": "barang",
+    "file": "barang/kopi-sachet.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "teh-botol",
+    "name": "Teh botol",
+    "category": "barang",
+    "file": "barang/teh-botol.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "air-mineral",
+    "name": "Air mineral",
+    "category": "barang",
+    "file": "barang/air-mineral.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "kerupuk",
+    "name": "Kerupuk",
+    "category": "barang",
+    "file": "barang/kerupuk.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "nasi-bungkus",
+    "name": "Nasi bungkus",
+    "category": "barang",
+    "file": "barang/nasi-bungkus.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "roti",
+    "name": "Roti",
+    "category": "barang",
+    "file": "barang/roti.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "permen",
+    "name": "Permen",
+    "category": "barang",
+    "file": "barang/permen.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "sampo-sachet",
+    "name": "Sampo sachet",
+    "category": "barang",
+    "file": "barang/sampo-sachet.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "gorengan",
+    "name": "Gorengan",
+    "category": "barang",
+    "file": "barang/gorengan.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "rokok",
+    "name": "Rokok",
+    "category": "barang",
+    "file": "barang/rokok.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "telur",
+    "name": "Telur",
+    "category": "barang",
+    "file": "barang/telur.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "kantong-plastik",
+    "name": "Kantong plastik",
+    "category": "barang",
+    "file": "barang/kantong-plastik.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "laci-uang",
+    "name": "Laci uang",
+    "category": "barang",
+    "file": "barang/laci-uang.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "buku-kasbon",
+    "name": "Buku kasbon",
+    "category": "barang",
+    "file": "barang/buku-kasbon.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "uang-100000",
+    "name": "Rp100.000",
+    "category": "uang",
+    "file": "uang/uang-100000.svg",
+    "viewBox": "0 0 112 60"
+  },
+  {
+    "id": "uang-50000",
+    "name": "Rp50.000",
+    "category": "uang",
+    "file": "uang/uang-50000.svg",
+    "viewBox": "0 0 112 60"
+  },
+  {
+    "id": "uang-20000",
+    "name": "Rp20.000",
+    "category": "uang",
+    "file": "uang/uang-20000.svg",
+    "viewBox": "0 0 112 60"
+  },
+  {
+    "id": "uang-10000",
+    "name": "Rp10.000",
+    "category": "uang",
+    "file": "uang/uang-10000.svg",
+    "viewBox": "0 0 112 60"
+  },
+  {
+    "id": "uang-5000",
+    "name": "Rp5.000",
+    "category": "uang",
+    "file": "uang/uang-5000.svg",
+    "viewBox": "0 0 112 60"
+  },
+  {
+    "id": "uang-2000",
+    "name": "Rp2.000",
+    "category": "uang",
+    "file": "uang/uang-2000.svg",
+    "viewBox": "0 0 112 60"
+  },
+  {
+    "id": "uang-1000",
+    "name": "Rp1.000",
+    "category": "uang",
+    "file": "uang/uang-1000.svg",
+    "viewBox": "0 0 112 60"
+  },
+  {
+    "id": "koin-1000",
+    "name": "Koin Rp1.000",
+    "category": "uang",
+    "file": "uang/koin-1000.svg",
+    "viewBox": "0 0 40 40"
+  },
+  {
+    "id": "koin-500",
+    "name": "Koin Rp500",
+    "category": "uang",
+    "file": "uang/koin-500.svg",
+    "viewBox": "0 0 40 40"
+  },
+  {
+    "id": "koin-200",
+    "name": "Koin Rp200",
+    "category": "uang",
+    "file": "uang/koin-200.svg",
+    "viewBox": "0 0 40 40"
+  },
+  {
+    "id": "koin-100",
+    "name": "Koin Rp100",
+    "category": "uang",
+    "file": "uang/koin-100.svg",
+    "viewBox": "0 0 40 40"
+  },
+  {
+    "id": "pelajar-happy",
+    "name": "Pelajar (happy)",
+    "category": "pelanggan",
+    "file": "pelanggan/pelajar-happy.svg",
+    "viewBox": "0 0 96 120"
+  },
+  {
+    "id": "ojol-happy",
+    "name": "Driver ojol (happy)",
+    "category": "pelanggan",
+    "file": "pelanggan/ojol-happy.svg",
+    "viewBox": "0 0 96 120"
+  },
+  {
+    "id": "langganan-happy",
+    "name": "Langganan (happy)",
+    "category": "pelanggan",
+    "file": "pelanggan/langganan-happy.svg",
+    "viewBox": "0 0 96 120"
+  },
+  {
+    "id": "uang-besar-happy",
+    "name": "Bayar uang besar (happy)",
+    "category": "pelanggan",
+    "file": "pelanggan/uang-besar-happy.svg",
+    "viewBox": "0 0 96 120"
+  },
+  {
+    "id": "keluarga-happy",
+    "name": "Keluarga (happy)",
+    "category": "pelanggan",
+    "file": "pelanggan/keluarga-happy.svg",
+    "viewBox": "0 0 120 120"
+  },
+  {
+    "id": "pelajar-neutral",
+    "name": "Pelajar (neutral)",
+    "category": "pelanggan",
+    "file": "pelanggan/pelajar-neutral.svg",
+    "viewBox": "0 0 96 120"
+  },
+  {
+    "id": "ojol-neutral",
+    "name": "Driver ojol (neutral)",
+    "category": "pelanggan",
+    "file": "pelanggan/ojol-neutral.svg",
+    "viewBox": "0 0 96 120"
+  },
+  {
+    "id": "langganan-neutral",
+    "name": "Langganan (neutral)",
+    "category": "pelanggan",
+    "file": "pelanggan/langganan-neutral.svg",
+    "viewBox": "0 0 96 120"
+  },
+  {
+    "id": "uang-besar-neutral",
+    "name": "Bayar uang besar (neutral)",
+    "category": "pelanggan",
+    "file": "pelanggan/uang-besar-neutral.svg",
+    "viewBox": "0 0 96 120"
+  },
+  {
+    "id": "keluarga-neutral",
+    "name": "Keluarga (neutral)",
+    "category": "pelanggan",
+    "file": "pelanggan/keluarga-neutral.svg",
+    "viewBox": "0 0 120 120"
+  },
+  {
+    "id": "pelajar-annoyed",
+    "name": "Pelajar (annoyed)",
+    "category": "pelanggan",
+    "file": "pelanggan/pelajar-annoyed.svg",
+    "viewBox": "0 0 96 120"
+  },
+  {
+    "id": "ojol-annoyed",
+    "name": "Driver ojol (annoyed)",
+    "category": "pelanggan",
+    "file": "pelanggan/ojol-annoyed.svg",
+    "viewBox": "0 0 96 120"
+  },
+  {
+    "id": "langganan-annoyed",
+    "name": "Langganan (annoyed)",
+    "category": "pelanggan",
+    "file": "pelanggan/langganan-annoyed.svg",
+    "viewBox": "0 0 96 120"
+  },
+  {
+    "id": "uang-besar-annoyed",
+    "name": "Bayar uang besar (annoyed)",
+    "category": "pelanggan",
+    "file": "pelanggan/uang-besar-annoyed.svg",
+    "viewBox": "0 0 96 120"
+  },
+  {
+    "id": "keluarga-annoyed",
+    "name": "Keluarga (annoyed)",
+    "category": "pelanggan",
+    "file": "pelanggan/keluarga-annoyed.svg",
+    "viewBox": "0 0 120 120"
+  },
+  {
+    "id": "qris-stand",
+    "name": "Stand QRIS",
+    "category": "ui",
+    "file": "ui/qris-stand.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "ponsel",
+    "name": "Ponsel",
+    "category": "ui",
+    "file": "ui/ponsel.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "kalkulator",
+    "name": "Kalkulator",
+    "category": "ui",
+    "file": "ui/kalkulator.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "tanda-buka",
+    "name": "Tanda buka",
+    "category": "ui",
+    "file": "ui/tanda-buka.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "tanda-tutup",
+    "name": "Tanda tutup",
+    "category": "ui",
+    "file": "ui/tanda-tutup.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "tanda-habis",
+    "name": "Tanda habis",
+    "category": "ui",
+    "file": "ui/tanda-habis.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "ikon-bintang",
+    "name": "Ikon reputasi",
+    "category": "ui",
+    "file": "ui/ikon-bintang.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "ikon-energi",
+    "name": "Ikon energi",
+    "category": "ui",
+    "file": "ui/ikon-energi.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "ikon-jam",
+    "name": "Ikon jam",
+    "category": "ui",
+    "file": "ui/ikon-jam.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "ikon-koin",
+    "name": "Ikon uang",
+    "category": "ui",
+    "file": "ui/ikon-koin.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "warung-depan",
+    "name": "Warung (latar)",
+    "category": "ui",
+    "file": "ui/warung-depan.svg",
+    "viewBox": "0 0 360 220"
+  },
+  {
+    "id": "ponsel-bingkai",
+    "name": "Bingkai ponsel",
+    "category": "ponsel",
+    "file": "ponsel/ponsel-bingkai.svg",
+    "viewBox": "0 0 204 400"
+  },
+  {
+    "id": "ponsel-layar-mati",
+    "name": "Ponsel mati",
+    "category": "ponsel",
+    "file": "ponsel/ponsel-layar-mati.svg",
+    "viewBox": "0 0 204 400"
+  },
+  {
+    "id": "sinyal-0",
+    "name": "Sinyal 0",
+    "category": "ponsel",
+    "file": "ponsel/sinyal-0.svg",
+    "viewBox": "0 0 32 32"
+  },
+  {
+    "id": "sinyal-1",
+    "name": "Sinyal 1",
+    "category": "ponsel",
+    "file": "ponsel/sinyal-1.svg",
+    "viewBox": "0 0 32 32"
+  },
+  {
+    "id": "sinyal-2",
+    "name": "Sinyal 2",
+    "category": "ponsel",
+    "file": "ponsel/sinyal-2.svg",
+    "viewBox": "0 0 32 32"
+  },
+  {
+    "id": "sinyal-3",
+    "name": "Sinyal 3",
+    "category": "ponsel",
+    "file": "ponsel/sinyal-3.svg",
+    "viewBox": "0 0 32 32"
+  },
+  {
+    "id": "sinyal-4",
+    "name": "Sinyal 4",
+    "category": "ponsel",
+    "file": "ponsel/sinyal-4.svg",
+    "viewBox": "0 0 32 32"
+  },
+  {
+    "id": "baterai-penuh",
+    "name": "Baterai penuh",
+    "category": "ponsel",
+    "file": "ponsel/baterai-penuh.svg",
+    "viewBox": "0 0 32 32"
+  },
+  {
+    "id": "baterai-sedang",
+    "name": "Baterai sedang",
+    "category": "ponsel",
+    "file": "ponsel/baterai-sedang.svg",
+    "viewBox": "0 0 32 32"
+  },
+  {
+    "id": "baterai-rendah",
+    "name": "Baterai rendah",
+    "category": "ponsel",
+    "file": "ponsel/baterai-rendah.svg",
+    "viewBox": "0 0 32 32"
+  },
+  {
+    "id": "baterai-kosong",
+    "name": "Baterai kosong",
+    "category": "ponsel",
+    "file": "ponsel/baterai-kosong.svg",
+    "viewBox": "0 0 32 32"
+  },
+  {
+    "id": "baterai-cas",
+    "name": "Baterai mengisi",
+    "category": "ponsel",
+    "file": "ponsel/baterai-cas.svg",
+    "viewBox": "0 0 32 32"
+  },
+  {
+    "id": "data-on",
+    "name": "Data aktif",
+    "category": "ponsel",
+    "file": "ponsel/data-on.svg",
+    "viewBox": "0 0 32 32"
+  },
+  {
+    "id": "data-off",
+    "name": "Data habis",
+    "category": "ponsel",
+    "file": "ponsel/data-off.svg",
+    "viewBox": "0 0 32 32"
+  },
+  {
+    "id": "ikon-app-chat",
+    "name": "Aplikasi chat",
+    "category": "ponsel",
+    "file": "ponsel/ikon-app-chat.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "ikon-app-bank",
+    "name": "Aplikasi bank",
+    "category": "ponsel",
+    "file": "ponsel/ikon-app-bank.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "ikon-app-ojol",
+    "name": "Aplikasi ojol",
+    "category": "ponsel",
+    "file": "ponsel/ikon-app-ojol.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "ikon-app-pasar",
+    "name": "Aplikasi pasar",
+    "category": "ponsel",
+    "file": "ponsel/ikon-app-pasar.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "ikon-app-jadwal",
+    "name": "Aplikasi jadwal",
+    "category": "ponsel",
+    "file": "ponsel/ikon-app-jadwal.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "ikon-app-buku-kas",
+    "name": "Aplikasi buku kas",
+    "category": "ponsel",
+    "file": "ponsel/ikon-app-buku-kas.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "ikon-app-layanan",
+    "name": "Aplikasi layanan digital",
+    "category": "ponsel",
+    "file": "ponsel/ikon-app-layanan.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "ikon-app-berita",
+    "name": "Aplikasi berita",
+    "category": "ponsel",
+    "file": "ponsel/ikon-app-berita.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "avatar-ibu",
+    "name": "Ibu",
+    "category": "ponsel",
+    "file": "ponsel/avatar-ibu.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "avatar-bapak",
+    "name": "Bapak",
+    "category": "ponsel",
+    "file": "ponsel/avatar-bapak.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "avatar-bu-kos",
+    "name": "Bu Kos",
+    "category": "ponsel",
+    "file": "ponsel/avatar-bu-kos.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "avatar-pak-haji-rohim",
+    "name": "Pak Haji Rohim",
+    "category": "ponsel",
+    "file": "ponsel/avatar-pak-haji-rohim.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "avatar-grup-keluarga",
+    "name": "Grup keluarga",
+    "category": "ponsel",
+    "file": "ponsel/avatar-grup-keluarga.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "ikon-centang",
+    "name": "Centang dibaca",
+    "category": "ponsel",
+    "file": "ponsel/ikon-centang.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "ikon-lonceng",
+    "name": "Lonceng notifikasi",
+    "category": "ponsel",
+    "file": "ponsel/ikon-lonceng.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "kartu-bank",
+    "name": "Kartu bank",
+    "category": "aplikasi",
+    "file": "aplikasi/kartu-bank.svg",
+    "viewBox": "0 0 120 76"
+  },
+  {
+    "id": "dompet",
+    "name": "Dompet",
+    "category": "aplikasi",
+    "file": "aplikasi/dompet.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "panah-masuk",
+    "name": "Uang masuk",
+    "category": "aplikasi",
+    "file": "aplikasi/panah-masuk.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "panah-keluar",
+    "name": "Uang keluar",
+    "category": "aplikasi",
+    "file": "aplikasi/panah-keluar.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "tagihan-listrik",
+    "name": "Tagihan listrik",
+    "category": "aplikasi",
+    "file": "aplikasi/tagihan-listrik.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "tagihan-data",
+    "name": "Tagihan data",
+    "category": "aplikasi",
+    "file": "aplikasi/tagihan-data.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "tagihan-motor",
+    "name": "Cicilan motor",
+    "category": "aplikasi",
+    "file": "aplikasi/tagihan-motor.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "tagihan-kos",
+    "name": "Uang kos",
+    "category": "aplikasi",
+    "file": "aplikasi/tagihan-kos.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "tagihan-pinjol",
+    "name": "Tagihan pinjol",
+    "category": "aplikasi",
+    "file": "aplikasi/tagihan-pinjol.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "motor-ojol",
+    "name": "Motor ojol",
+    "category": "aplikasi",
+    "file": "aplikasi/motor-ojol.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "ikon-bensin",
+    "name": "Ikon bensin",
+    "category": "aplikasi",
+    "file": "aplikasi/ikon-bensin.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "ikon-helm",
+    "name": "Ikon helm",
+    "category": "aplikasi",
+    "file": "aplikasi/ikon-helm.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "ikon-pin",
+    "name": "Titik pesanan",
+    "category": "aplikasi",
+    "file": "aplikasi/ikon-pin.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "ikon-keranjang",
+    "name": "Keranjang pasar",
+    "category": "aplikasi",
+    "file": "aplikasi/ikon-keranjang.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "ikon-truk",
+    "name": "Pengiriman",
+    "category": "aplikasi",
+    "file": "aplikasi/ikon-truk.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "ikon-grafik",
+    "name": "Grafik harga",
+    "category": "aplikasi",
+    "file": "aplikasi/ikon-grafik.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "harga-naik",
+    "name": "Harga naik",
+    "category": "aplikasi",
+    "file": "aplikasi/harga-naik.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "harga-turun",
+    "name": "Harga turun",
+    "category": "aplikasi",
+    "file": "aplikasi/harga-turun.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-beras",
+    "name": "Beras",
+    "category": "bahan",
+    "file": "bahan/bahan-beras.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-mi-instan",
+    "name": "Mi instan",
+    "category": "bahan",
+    "file": "bahan/bahan-mi-instan.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-tepung",
+    "name": "Tepung terigu",
+    "category": "bahan",
+    "file": "bahan/bahan-tepung.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-gula",
+    "name": "Gula pasir",
+    "category": "bahan",
+    "file": "bahan/bahan-gula.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-minyak",
+    "name": "Minyak goreng",
+    "category": "bahan",
+    "file": "bahan/bahan-minyak.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-telur",
+    "name": "Telur",
+    "category": "bahan",
+    "file": "bahan/bahan-telur.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-ayam",
+    "name": "Ayam",
+    "category": "bahan",
+    "file": "bahan/bahan-ayam.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-tahu",
+    "name": "Tahu",
+    "category": "bahan",
+    "file": "bahan/bahan-tahu.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-tempe",
+    "name": "Tempe",
+    "category": "bahan",
+    "file": "bahan/bahan-tempe.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-lele",
+    "name": "Ikan lele",
+    "category": "bahan",
+    "file": "bahan/bahan-lele.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-cabai",
+    "name": "Cabai",
+    "category": "bahan",
+    "file": "bahan/bahan-cabai.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-bawang-merah",
+    "name": "Bawang merah",
+    "category": "bahan",
+    "file": "bahan/bahan-bawang-merah.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-bawang-putih",
+    "name": "Bawang putih",
+    "category": "bahan",
+    "file": "bahan/bahan-bawang-putih.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-sawi",
+    "name": "Sawi",
+    "category": "bahan",
+    "file": "bahan/bahan-sawi.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-tomat",
+    "name": "Tomat",
+    "category": "bahan",
+    "file": "bahan/bahan-tomat.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-kopi",
+    "name": "Kopi bubuk",
+    "category": "bahan",
+    "file": "bahan/bahan-kopi.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-teh",
+    "name": "Teh",
+    "category": "bahan",
+    "file": "bahan/bahan-teh.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-susu",
+    "name": "Susu kental manis",
+    "category": "bahan",
+    "file": "bahan/bahan-susu.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-es-batu",
+    "name": "Es batu",
+    "category": "bahan",
+    "file": "bahan/bahan-es-batu.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-air-galon",
+    "name": "Air galon",
+    "category": "bahan",
+    "file": "bahan/bahan-air-galon.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-lpg",
+    "name": "Gas LPG 3 kg",
+    "category": "bahan",
+    "file": "bahan/bahan-lpg.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-kantong",
+    "name": "Kantong plastik",
+    "category": "bahan",
+    "file": "bahan/bahan-kantong.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-kertas-nasi",
+    "name": "Kertas nasi",
+    "category": "bahan",
+    "file": "bahan/bahan-kertas-nasi.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-tisu",
+    "name": "Tisu",
+    "category": "bahan",
+    "file": "bahan/bahan-tisu.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bahan-sabun-piring",
+    "name": "Sabun cuci piring",
+    "category": "bahan",
+    "file": "bahan/bahan-sabun-piring.svg",
+    "viewBox": "0 0 96 96"
+  }
+]
