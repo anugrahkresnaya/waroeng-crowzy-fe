@@ -1,17 +1,17 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Art } from "@/components/art";
 import { BarChart } from "@/components/bar-chart";
 import { Button, Card } from "@/components/ui";
-import { DENOMS, content } from "@/engine";
+import { DENOMS, content, type Phase } from "@/engine";
 import { rb, rp } from "@/lib/format";
 import { useGame } from "@/lib/game-store";
-import { HOME } from "@/lib/use-guard";
+import { HOME, useGuard } from "@/lib/use-guard";
 import { useLocalize } from "@/lib/use-localize";
 
+const ANY: Phase[] = ["idle", "open", "ended", "dayoff", "night", "bed"];
 const pieceArt = (d: number) => (d >= 1000 ? `uang-${d}` : `koin-${d}`);
 const SMALL = [5000, 2000, 1000, 500, 200, 100];
 
@@ -33,10 +33,9 @@ export default function RingkasanPage() {
   const state = useGame((s) => s.state);
   const send = useGame((s) => s.send);
 
-  useEffect(() => {
-    if (!state) router.replace("/");
-  }, [state, router]);
-  if (!game || !state) return null;
+  // Any phase may look at the summary page, but a reload must pick the save back up first.
+  const ready = useGuard(ANY);
+  if (!ready || !game || !state) return null;
 
   if (state.phase !== "ended") {
     const back = HOME[state.phase];

@@ -1,11 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { Fragment, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Art } from "@/components/art";
 import { PhoneFrame } from "@/components/phone-frame";
 import { Button, Card, Chip, Pill } from "@/components/ui";
 import { useGame } from "@/lib/game-store";
+import { peekSave, replaceSave, type SavePeek } from "@/lib/save-db";
+import { HOME } from "@/lib/use-guard";
 import { useSettings, type Theme } from "@/lib/settings-store";
 
 const CHAPTERS = [1, 2, 3, 4] as const;
@@ -19,6 +22,37 @@ export default function TitlePage() {
   const theme = useSettings((s) => s.theme);
   const setLang = useSettings((s) => s.setLang);
   const setTheme = useSettings((s) => s.setTheme);
+  const resume = useGame((s) => s.resume);
+
+  const [peek, setPeek] = useState<SavePeek | null>(null);
+  const [confirmNew, setConfirmNew] = useState(false);
+  const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    let live = true;
+    void peekSave().then((p) => live && setPeek(p));
+    return () => {
+      live = false;
+    };
+  }, []);
+
+  const hasSave = peek !== null && peek.status !== "none" && peek.status !== "unavailable";
+
+  async function begin() {
+    setBusy(true);
+    await replaceSave();
+    start();
+    router.push("/beranda");
+  }
+
+  async function carryOn() {
+    setBusy(true);
+    const result = await resume();
+    if (result === "ok") router.push(HOME[useGame.getState().state?.phase ?? "idle"]);
+    else {
+      setPeek(await peekSave());
+      setBusy(false);
+    }
+  }
 
   return (
     <PhoneFrame>
@@ -33,6 +67,27 @@ export default function TitlePage() {
             <p className="mt-2 text-sm text-muted">{t("title.tagline")}</p>
           </div>
 
+          {peek?.status === "ok" && (
+            <Card className="flex items-center gap-3 border-accent! p-3" data-testid="continue-card">
+              <div className="flex-1 leading-tight">
+                <b className="font-display text-lg">{t("save.continue")}</b>
+                <div className="text-xs text-muted" data-testid="continue-info">
+                  {t("save.info", { n: peek.day + 1, weekday: t(`weekday.${peek.day % 7}`), phase: t(`phase.${peek.phase}`) })}
+                </div>
+                <div className="text-[11px] text-muted">{t("save.savedAt", { when: new Date(peek.savedAt).toLocaleString(lang === "en" ? "en-GB" : "id-ID", { dateStyle: "medium", timeStyle: "short" }) })}</div>
+              </div>
+              <Button data-testid="continue" disabled={busy} onClick={() => void carryOn()}>
+                {t("save.continueButton")}
+              </Button>
+            </Card>
+          )}
+          {(peek?.status === "invalid" || peek?.status === "newer") && (
+            <Card className="border-warn/50! p-3 text-sm" data-testid="save-problem">
+              <b className="text-warn">{t("save.problem")}</b>
+              <p className="mt-1 text-xs text-muted">{peek.status === "newer" ? t("save.newer") : t("save.invalid")}</p>
+            </Card>
+          )}
+
           <section className="flex flex-col gap-2" aria-labelledby="story-h">
             <h2 id="story-h" className="font-display text-lg font-bold">
               {t("title.story")}
@@ -40,8 +95,8 @@ export default function TitlePage() {
             {CHAPTERS.map((n) => {
               const open = n === 1;
               return (
+                <Fragment key={n}>
                 <div
-                  key={n}
                   className={`flex items-center gap-3 rounded-xl border bg-panel p-3 ${open ? "border-accent" : "border-line opacity-60"}`}
                 >
                   <span
@@ -57,17 +112,29 @@ export default function TitlePage() {
                     <Button
                       className="px-3! py-2!"
                       data-testid="start-chapter-1"
-                      onClick={() => {
-                        start();
-                        router.push("/beranda");
-                      }}
+                      disabled={busy}
+                      onClick={() => (hasSave ? setConfirmNew(true) : void begin())}
                     >
-                      {t("title.start")}
+                      {hasSave ? t("save.newGame") : t("title.start")}
                     </Button>
                   ) : (
                     <Pill>{t("title.locked")}</Pill>
                   )}
                 </div>
+                {n === 1 && confirmNew && (
+              <Card className="flex flex-col gap-2 border-warn/50! p-3" role="alertdialog" aria-label={t("save.newGame")}>
+                <p className="text-sm">{t("save.confirm")}</p>
+                <div className="flex gap-2">
+                  <Button variant="ghost" className="flex-1" onClick={() => setConfirmNew(false)}>
+                    {t("save.cancel")}
+                  </Button>
+                  <Button variant="bad" className="flex-1" data-testid="confirm-new" disabled={busy} onClick={() => void begin()}>
+                    {t("save.confirmYes")}
+                  </Button>
+                </div>
+              </Card>
+            )}
+                </Fragment>
               );
             })}
             <div className="flex items-center gap-3 rounded-xl border border-dashed border-line p-3 opacity-60">

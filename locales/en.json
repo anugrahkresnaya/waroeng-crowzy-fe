@@ -316,5 +316,26 @@
     "blockHint": "Dashed = heavy activity (one per block). The rest are light (two per block).",
     "save": "Save plan",
     "back": "Back"
+  },
+  "save": {
+    "continue": "Continue your game",
+    "continueButton": "Continue",
+    "info": "Day {{n}} · {{weekday}} · {{phase}}",
+    "savedAt": "Saved {{when}}",
+    "newGame": "New game",
+    "confirm": "A new game replaces this save. The old save is kept as a backup.",
+    "confirmYes": "Yes, start over",
+    "cancel": "Cancel",
+    "problem": "The save cannot be opened",
+    "invalid": "Its data is damaged or not recognised. Starting a new game keeps it as a backup.",
+    "newer": "This save was made by a newer version of the game. Starting a new game keeps it as a backup."
+  },
+  "phase": {
+    "idle": "Before opening",
+    "open": "Shop open",
+    "ended": "Summary",
+    "night": "Night",
+    "bed": "Before bed",
+    "dayoff": "Day off"
   }
 }

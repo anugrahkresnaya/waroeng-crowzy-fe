@@ -17,18 +17,30 @@ export class Game {
   state: GameState;
   /** Accepted commands, in order. Replaying this log from the same seed rebuilds `state`. */
   readonly log: LoggedCommand[] = [];
+  /** The day number the run started on, needed to replay it. */
+  readonly startDay: number;
 
   private readonly rng: Rng;
 
-  constructor(content: Content, init: { seed: number; day?: number } | { state: GameState }) {
+  constructor(
+    content: Content,
+    init: { seed: number; day?: number } | { state: GameState; log?: readonly LoggedCommand[]; startDay?: number },
+  ) {
     this.content = content;
-    this.state = 'state' in init ? init.state : createInitialState(content, init.seed, init.day);
+    if ('state' in init) {
+      this.state = init.state;
+      this.startDay = init.startDay ?? 0;
+      if (init.log) this.log.push(...init.log);
+    } else {
+      this.startDay = init.day ?? 0;
+      this.state = createInitialState(content, init.seed, init.day);
+    }
     this.rng = new Rng(this.state);
   }
 
   /** Rebuilds a game from a saved snapshot (a JSON round trip of `state` is fine). */
-  static fromSnapshot(content: Content, snapshot: GameState): Game {
-    return new Game(content, { state: structuredClone(snapshot) });
+  static fromSnapshot(content: Content, snapshot: GameState, log: readonly LoggedCommand[] = [], startDay = 0): Game {
+    return new Game(content, { state: structuredClone(snapshot), log: structuredClone(log), startDay });
   }
 
   snapshot(): GameState {

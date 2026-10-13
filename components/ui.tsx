@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from "react";
 
 type Variant = "primary" | "ghost" | "soft" | "bad";
 
@@ -38,8 +38,8 @@ export function Chip({
   );
 }
 
-export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <div className={`rounded-xl border border-line bg-panel ${className}`}>{children}</div>;
+export function Card({ className = "", ...props }: HTMLAttributes<HTMLDivElement>) {
+  return <div {...props} className={`rounded-xl border border-line bg-panel ${className}`} />;
 }
 
 type Tone = "good" | "bad" | "warn" | "mute";

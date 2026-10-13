@@ -2,12 +2,14 @@ import { create } from "zustand";
 import {
   Game,
   content,
+  restoreGame,
   type Command,
   type CommandResult,
   type GameEvent,
   type GameState,
 } from "@/engine";
 import { rp } from "@/lib/format";
+import { readSave } from "@/lib/save-db";
 
 export type ToastTone = "good" | "bad" | "info";
 
@@ -28,6 +30,8 @@ interface GameStore {
   /** True while quiet hours are being fast-forwarded. */
   fast: boolean;
   start: (seed?: number) => void;
+  /** Loads the saved game, paused so a mid-shift resume does not run away. */
+  resume: () => Promise<"ok" | "none" | "invalid" | "newer" | "unavailable">;
   send: (command: Command) => CommandResult;
   /** Advances the open warung by one real second (normal speed, or fast in quiet hours). */
   step: () => void;
@@ -86,6 +90,19 @@ export const useGame = create<GameStore>((set, get) => ({
   start: (seed = Math.floor(Math.random() * 2 ** 31)) => {
     const game = new Game(content, { seed });
     set({ game, state: game.snapshot(), toast: null, paused: false, fast: false });
+  },
+
+  resume: async () => {
+    try {
+      const saved = await readSave();
+      if (!saved) return "none";
+      if (!saved.ok) return saved.reason;
+      const game = restoreGame(content, saved.save);
+      set({ game, state: game.snapshot(), toast: null, paused: true, fast: false });
+      return "ok";
+    } catch {
+      return "unavailable";
+    }
   },
 
   send: (command) => {

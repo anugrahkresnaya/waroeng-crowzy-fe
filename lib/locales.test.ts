@@ -52,6 +52,7 @@ describe("translations", () => {
       ...[0, 1, 2, 3, 4, 5, 6].map((n) => `weekdayShort.${n}`),
       ...["pagi", "siang", "sore", "malam"].flatMap((b) => [`block.${b}`, `toast.blockDone.${b}`]),
       ...["too_many_days_off", "invalid_block", "invalid_activities"].map((e) => `toast.error.${e}`),
+      ...["idle", "open", "ended", "night", "bed", "dayoff"].map((ph) => `phase.${ph}`),
       ...["auto", "light", "dark"].map((th) => `title.theme_${th}`),
       ...[1, 2, 3, 4].flatMap((n) => [`chapters.${n}.name`, `chapters.${n}.desc`]),
       ...["siapkan", "tukar", "ojol", "tidur"].flatMap((o) => [`home.options.${o}.name`, `home.options.${o}.desc`]),

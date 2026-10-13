@@ -8,10 +8,11 @@ Next.js 16.4 + React 19.3 + Tailwind 4 app for Warung Hidup (npm). It is the fut
 
 ## Commands
 
-- `npm run dev`, `npm run build` (static export to `out/`), `npm run lint` (eslint), `npm run typecheck`
+- `npm run dev`, `npm run build` (static export to `out/`, then `serwist build` writes `out/sw.js` with the precache list), `npm run preview` (serves `out/` on :3200 with clean URLs), `npm run lint`, `npm run typecheck` (app and `sw/`)
 - `npm test` (Vitest: `engine/**` and `lib/**` tests), `npm run test:watch`
 - Single test: `npx vitest run engine/counter.test.ts` or `npx vitest run -t "name"`
 - `npx playwright test` runs the UI smoke tests in `e2e/` against `next dev -p 3100` using the installed Chrome (no browser download). Drive state in browser tests through the dev-only `window.__warung` hook (`{ store, content }`), never in production.
+- `npm run test:pwa` builds, serves `out/`, and tests the production build: manifest, icons, and playing with the network off (`e2e-pwa/`). `npm run icons` redraws the app icons from the game art.
 - Vitest output hides `console.log`; write probe output to a file if you need numbers from a run.
 
 ## App (`app/`, `components/`, `lib/`)
@@ -20,7 +21,9 @@ Static, client-only Next.js (`output: "export"`, `images.unoptimized`; `cacheCom
 
 - **State:** `lib/game-store.ts` (Zustand) owns one engine `Game` and an immutable `state` snapshot refreshed after every `send(command)` or `step()`. UI never mutates engine state; it only dispatches commands and renders the snapshot. `lib/counter-ui-store.ts` holds non-game counter state (the change being counted, the shelf tab).
 - **Clock:** the kasir page calls `step()` once a second: 2 game minutes normally, 12 when `game.canFastForward()` (quiet hours, empty line). Pause is UI state in the store.
-- **Routing guard:** `lib/use-guard.ts` sends a route to the screen that matches the game phase (`idle` is `/beranda`, `open` is `/kasir`, `ended` is `/ringkasan`); no game goes back to `/`. State is in memory only, so a reload returns to the title until saves exist.
+- **Routing guard:** `lib/use-guard.ts` sends a route to the screen that matches the game phase (`HOME[phase]`). With no game in memory it first tries to resume the save (paused), and only goes back to `/` if there is none. Every game screen must use `useGuard`, never its own redirect, or a reload races the save load.
+- **Saves:** `engine/save.ts` defines the save envelope (`format`, seed, start day, command log, state), validates it with Zod, migrates old formats (`MIGRATIONS`, bump `SAVE_FORMAT` when the shape changes), and `reconcile()` repairs a save against changed content (removed items, customer types, invalid day-off plans). `lib/save-db.ts` stores it in IndexedDB through Dexie: slot `main` is the current game, `backup` is what a new game replaced; unreadable or newer saves are kept, never deleted. `lib/autosave.ts` writes on a new game or a phase change at once and batches other changes every 4 s, plus on tab hide. Settings (language, theme) are in localStorage, not the save.
+- **Offline / PWA:** `app/manifest.ts`, generated icons, and `sw/sw.ts` (Serwist) precache the whole export; the worker is registered in production only (`components/providers.tsx`) and a new version waits until all tabs close so a shift is never swapped mid-play. Pages are visited as `/kasir` but exported as `kasir.html`, hence `cleanURLs`.
 - **Routes:** `/` title and settings; `(game)/beranda` pre-open (prepare, exchange cash, open); `kasir` live counter; `ringkasan` day summary; `malam` free time; `besok` the "open tomorrow?" question; `libur` the day-off hub; `jadwal` the weekly planner (asked on Sunday night); `ponsel` placeholder. `HOME[phase]` in `lib/use-guard.ts` maps each phase to its route. The `(game)` layout adds the tab bar and toasts.
 - **Styling:** Tailwind 4. Semantic color tokens (`bg-bg`, `text-muted`, `border-line`, `bg-accent`, `text-good`...) are CSS variables in `app/globals.css` with light and dark sets, mapped via `@theme inline`. Game art colors are fixed in both themes. Use `!` as a suffix for important (`h-full!`).
 - **Text:** react-i18next with `locales/id.json` and `locales/en.json` (`lib/i18n.ts`). Item and customer names come from engine content (`useLocalize`). `lib/locales.test.ts` checks both files match and that every key the code asks for exists, so add runtime-built keys to its list.

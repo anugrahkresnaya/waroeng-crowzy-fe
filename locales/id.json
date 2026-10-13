@@ -316,5 +316,26 @@
     "blockHint": "Garis putus = kegiatan berat (satu per blok). Lainnya ringan (dua per blok).",
     "save": "Simpan rencana",
     "back": "Kembali"
+  },
+  "save": {
+    "continue": "Lanjutkan permainan",
+    "continueButton": "Lanjutkan",
+    "info": "Hari {{n}} · {{weekday}} · {{phase}}",
+    "savedAt": "Disimpan {{when}}",
+    "newGame": "Mulai baru",
+    "confirm": "Mulai baru akan mengganti save ini. Save lama disimpan sebagai cadangan.",
+    "confirmYes": "Ya, mulai baru",
+    "cancel": "Batal",
+    "problem": "Save tidak bisa dibuka",
+    "invalid": "Datanya rusak atau tidak dikenal. Mulai baru akan menyimpannya sebagai cadangan.",
+    "newer": "Save ini dibuat oleh versi game yang lebih baru. Mulai baru akan menyimpannya sebagai cadangan."
+  },
+  "phase": {
+    "idle": "Pra-buka",
+    "open": "Warung buka",
+    "ended": "Ringkasan",
+    "night": "Malam",
+    "bed": "Sebelum tidur",
+    "dayoff": "Libur"
   }
 }

@@ -1,6 +1,8 @@
 export { content, parseContent } from './content';
 export { Game } from './game';
 export { replay } from './replay';
+export { SAVE_FORMAT, createSave, parseSave, reconcile, restoreGame, saveSchema } from './save';
+export type { SaveData, SaveParse } from './save';
 export { moodOf, changeFor } from './counter';
 export { createInitialState } from './state';
 export { formatClock, dayPart, weekday } from './clock';

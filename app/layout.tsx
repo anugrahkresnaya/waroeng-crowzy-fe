@@ -10,9 +10,11 @@ const mono = DM_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--
 export const metadata: Metadata = {
   title: "Warung Hidup",
   description: "Jalankan warung kecil: kasir, harga, dan hidup yang tidak berhenti saat warung tutup.",
+  appleWebApp: { capable: true, title: "Warung Hidup", statusBarStyle: "black-translucent" },
 };
 
 export const viewport: Viewport = {
+  themeColor: "#1f6f6c",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
