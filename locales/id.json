@@ -1,0 +1,182 @@
+{
+  "pause": "Jeda",
+  "resume": "Lanjut",
+  "reputation": "Reputasi",
+  "drawer": "Laci",
+  "bank": "Bank",
+  "day": "Hari {{n}}",
+  "age": "{{n}} th",
+  "noCustomer": "Belum ada pelanggan.",
+  "weekday": { "0": "Senin", "1": "Selasa", "2": "Rabu", "3": "Kamis", "4": "Jumat", "5": "Sabtu", "6": "Minggu" },
+  "tab": { "label": "Menu utama", "kasir": "Kasir", "ringkasan": "Ringkasan", "ponsel": "Ponsel" },
+  "hours": {
+    "label": "Jam buka 07.00 sampai 22.00",
+    "legend": "warung buka",
+    "busy": "ramai",
+    "quiet": "sepi",
+    "fast": "dipercepat",
+    "normal": "normal",
+    "close": "Tutup warung"
+  },
+  "category": { "makanan": "Makanan", "minuman": "Minuman", "lainnya": "Lainnya" },
+  "counter": {
+    "request": "Pesanan pelanggan",
+    "decline": "Tolak",
+    "trayHint": "Tap atau seret barang ke sini",
+    "remove": "Keluarkan {{item}}",
+    "bill": "Tagihan",
+    "checkKtp": "Cek KTP",
+    "confirm": "Konfirmasi",
+    "shelvesNotReady": "Rak belum siap. Isi rak dulu sebelum melayani.",
+    "shelvesTitle": "Rak belum diisi.",
+    "shelvesHint": "Pelanggan menunggu selama kamu mengisi rak.",
+    "shelvesBusy": "Sedang mengisi rak…",
+    "restock": "Isi rak (10 mnt)",
+    "waiting": "Menunggu pelanggan berikutnya…"
+  },
+  "change": {
+    "exact": "Pas",
+    "short": "Kurang {{amount}}",
+    "over": "Lebih {{amount}}",
+    "received": "Uang diterima {{amount}}",
+    "billLine": "Tagihan {{amount}}",
+    "title": "Kembalian",
+    "hand": "Tangan pelanggan",
+    "handHint": "Tap atau seret uang dari laci ke sini",
+    "takeBack": "Ambil lagi {{amount}}",
+    "drawer": "Laci",
+    "lowHint": "angka merah = receh menipis",
+    "giveAria": "Beri {{amount}}",
+    "clear": "Kosongkan",
+    "give": "Kasih kembalian"
+  },
+  "qris": {
+    "scan": "Pelanggan scan QRIS",
+    "note": "Masuk ke bank {{net}} · biaya {{fee}}. Tidak masuk laci.",
+    "confirm": "Konfirmasi QRIS"
+  },
+  "kasbon": {
+    "ask": "{{who}} minta kasbon",
+    "note": "Kasbon belum dibayar saat ini {{owed}}. Yang lupa dibayar bisa hilang.",
+    "refuse": "Tolak",
+    "grant": "Catat kasbon"
+  },
+  "toast": {
+    "sale": {
+      "happy": "Terima kasih! {{amount}}",
+      "neutral": "Ok, makasih. {{amount}}",
+      "annoyed": "Hmph. {{amount}}"
+    },
+    "walkaway": {
+      "patience": "Pelanggan pergi karena menunggu",
+      "empty_order": "Pelanggan pergi",
+      "kasbon_refused": "Kasbon ditolak, pelanggan pergi"
+    },
+    "orderMismatch": "Pesanan belum pas",
+    "shortChangeCaught": "Ketahuan kurang kembalian!",
+    "underageSale": "Jual rokok ke anak di bawah umur: reputasi turun",
+    "turnedAway": "Antrean penuh, pelanggan pulang",
+    "exchanged": "Tukar {{amount}} jadi receh, biaya {{fee}}",
+    "shelvesReady": "Rak sudah terisi",
+    "newDay": "Hari {{day}} dimulai",
+    "error": {
+      "wrong_phase": "Belum bisa sekarang",
+      "busy": "Sedang mengisi rak",
+      "shelves_not_ready": "Isi rak dulu",
+      "shelves_ready": "Rak sudah terisi",
+      "no_customer": "Belum ada pelanggan",
+      "wrong_stage": "Belum waktunya",
+      "wrong_method": "Bukan cara bayar ini",
+      "unknown_item": "Barang tidak dikenal",
+      "out_of_stock": "Stok habis",
+      "not_in_tray": "Barang tidak ada di nampan",
+      "not_in_order": "Tidak dipesan pelanggan",
+      "already_checked": "KTP sudah dicek",
+      "invalid_pieces": "Uang tidak valid",
+      "not_in_drawer": "Uang itu tidak ada di laci",
+      "no_time": "Waktu pra-buka tidak cukup",
+      "invalid_amount": "Jumlah tidak valid"
+    }
+  },
+  "title": {
+    "eyebrow": "OFFLINE · 1 PEMAIN",
+    "tagline": "Margin tipis, biaya yang naik sendiri, dan hidup yang tidak berhenti saat warung tutup.",
+    "story": "Mode cerita",
+    "start": "Mulai",
+    "locked": "Terkunci",
+    "freePlay": "Main bebas",
+    "freePlayNote": "Terbuka setelah bab 1",
+    "settings": "Pengaturan",
+    "language": "Bahasa",
+    "theme": "Tema",
+    "theme_auto": "Otomatis",
+    "theme_light": "Terang",
+    "theme_dark": "Gelap",
+    "input": "Input kasir",
+    "inputNote": "Tap dan seret selalu aktif"
+  },
+  "chapters": {
+    "1": { "name": "Buka Warung", "desc": "Minggu pertama toko. Kasir dan jenis pelanggan." },
+    "2": { "name": "Harga Naik", "desc": "Harga bahan naik. Mati lampu pertama." },
+    "3": { "name": "Dapur Sibuk", "desc": "Pesanan besar dari RT. Masak dan stok." },
+    "4": { "name": "Bulan Puasa", "desc": "Takjil, pegawai dan saingan." }
+  },
+  "home": {
+    "eyebrow": "{{weekday}} · Hari {{n}}",
+    "title": "Pra-buka",
+    "hours": "Warung buka 07.00 sampai 22.00",
+    "dayShape": "Bentuk satu hari: pra-buka, warung buka, waktu bebas",
+    "shapePre": "pra-buka",
+    "shapeOpen": "buka · live, bisa dijeda",
+    "shapeFree": "bebas",
+    "preOpen": "Blok pra-buka",
+    "timeLeft": "sisa {{left}} dari {{total}} mnt",
+    "recommended": "Disarankan",
+    "soon": "Segera",
+    "open": "Buka warung",
+    "hint": "Kalau rak belum diisi saat buka, kamu tetap bisa mengisinya sambil melayani. Pelanggan akan menunggu selama itu.",
+    "options": {
+      "siapkan": { "name": "Siapkan warung", "desc": "Rak penuh, kulkas terisi, harga dicek. 90 menit." },
+      "tukar": { "name": "Tukar uang", "desc": "Tukar uang besar jadi receh di toko. 30 menit, biaya 2%." },
+      "ojol": { "name": "Narik ojol", "desc": "Tambahan kecil, bensin keluar." },
+      "tidur": { "name": "Tidur lagi", "desc": "Tidur lebih lama. Rak diisi sambil melayani." }
+    }
+  },
+  "exchange": {
+    "title": "Tukar uang",
+    "help": "Tukar uang besar di laci jadi uang kecil di toko dekat. Memakai {{minutes}} menit dari blok pra-buka dan dipotong {{fee}}%.",
+    "mix": "Uang kecil yang kamu terima",
+    "fee": "Biaya {{pct}}%",
+    "received": "Diterima",
+    "cancel": "Batal",
+    "confirm": "Tukar sekarang"
+  },
+  "summary": {
+    "eyebrow": "RINGKASAN · {{weekday}} · HARI {{n}}",
+    "title": "Warung tutup. Begini hasilnya.",
+    "notYet": "Belum ada ringkasan. Ringkasan muncul setelah warung tutup.",
+    "back": "Kembali",
+    "gross": "Penjualan kotor",
+    "grossSub": "Tunai {{cash}} · QRIS {{qris}} · Kasbon {{kasbon}}",
+    "served": "Dilayani",
+    "servedSub": "{{walk}} pergi menunggu · {{turned}} ditolak antrean",
+    "changeErrors": "Kelebihan kembalian",
+    "changeErrorsSub": "{{caught}} ketahuan kurang, {{kept}} lolos",
+    "reputation": "Reputasi",
+    "underage": "Rokok ke anak: {{n}} kali",
+    "perHour": "Penjualan per jam",
+    "peak": "Puncak jam {{hour}}.",
+    "drawer": "Uang laci",
+    "lowChange": "Receh menipis.",
+    "lowChangeHint": "Besok tukar uang dulu sebelum buka.",
+    "lowStock": "Stok menipis",
+    "left": "{{n}} sisa",
+    "nextDay": "Hari berikutnya"
+  },
+  "phone": {
+    "eyebrow": "PONSEL",
+    "title": "Ponsel",
+    "soon": "Aplikasi ponsel menyusul di fase berikutnya: chat, bank, ojol, pasar, jadwal, buku kas.",
+    "apps": { "chat": "Chat", "bank": "Bank", "ojol": "Ojol", "pasar": "Pasar", "jadwal": "Jadwal", "buku-kas": "Buku kas", "layanan": "Layanan", "berita": "Berita" }
+  }
+}

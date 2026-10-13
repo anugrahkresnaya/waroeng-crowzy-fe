@@ -1,0 +1,182 @@
+{
+  "pause": "Pause",
+  "resume": "Resume",
+  "reputation": "Reputation",
+  "drawer": "Drawer",
+  "bank": "Bank",
+  "day": "Day {{n}}",
+  "age": "{{n}} y/o",
+  "noCustomer": "No customers yet.",
+  "weekday": { "0": "Monday", "1": "Tuesday", "2": "Wednesday", "3": "Thursday", "4": "Friday", "5": "Saturday", "6": "Sunday" },
+  "tab": { "label": "Main menu", "kasir": "Counter", "ringkasan": "Summary", "ponsel": "Phone" },
+  "hours": {
+    "label": "Open 07.00 to 22.00",
+    "legend": "shop open",
+    "busy": "busy",
+    "quiet": "quiet",
+    "fast": "fast-forward",
+    "normal": "normal",
+    "close": "Close shop"
+  },
+  "category": { "makanan": "Food", "minuman": "Drinks", "lainnya": "Other" },
+  "counter": {
+    "request": "Customer's order",
+    "decline": "Refuse",
+    "trayHint": "Tap or drag items here",
+    "remove": "Remove {{item}}",
+    "bill": "Bill",
+    "checkKtp": "Check ID",
+    "confirm": "Confirm",
+    "shelvesNotReady": "The shelves are not ready. Restock before serving.",
+    "shelvesTitle": "Shelves not stocked.",
+    "shelvesHint": "Customers wait while you restock.",
+    "shelvesBusy": "Restocking…",
+    "restock": "Restock (10 min)",
+    "waiting": "Waiting for the next customer…"
+  },
+  "change": {
+    "exact": "Exact",
+    "short": "Short {{amount}}",
+    "over": "Over {{amount}}",
+    "received": "Cash received {{amount}}",
+    "billLine": "Bill {{amount}}",
+    "title": "Change",
+    "hand": "Customer's hand",
+    "handHint": "Tap or drag cash from the drawer here",
+    "takeBack": "Take back {{amount}}",
+    "drawer": "Drawer",
+    "lowHint": "red number = running low on small change",
+    "giveAria": "Give {{amount}}",
+    "clear": "Clear",
+    "give": "Give change"
+  },
+  "qris": {
+    "scan": "Customer scans QRIS",
+    "note": "{{net}} goes to the bank after a {{fee}} fee. Not in the drawer.",
+    "confirm": "Confirm QRIS"
+  },
+  "kasbon": {
+    "ask": "{{who}} asks for credit",
+    "note": "Unpaid kasbon right now: {{owed}}. Forgotten debts can be lost.",
+    "refuse": "Refuse",
+    "grant": "Write it in the book"
+  },
+  "toast": {
+    "sale": {
+      "happy": "Thank you! {{amount}}",
+      "neutral": "Ok, thanks. {{amount}}",
+      "annoyed": "Hmph. {{amount}}"
+    },
+    "walkaway": {
+      "patience": "A customer left after waiting too long",
+      "empty_order": "The customer left",
+      "kasbon_refused": "Credit refused, the customer left"
+    },
+    "orderMismatch": "That is not the order",
+    "shortChangeCaught": "Caught short-changing!",
+    "underageSale": "Sold cigarettes to a minor: reputation dropped",
+    "turnedAway": "The line is full, a customer went home",
+    "exchanged": "Exchanged {{amount}} for small change, fee {{fee}}",
+    "shelvesReady": "The shelves are stocked",
+    "newDay": "Day {{day}} begins",
+    "error": {
+      "wrong_phase": "Not possible right now",
+      "busy": "Restocking the shelves",
+      "shelves_not_ready": "Restock first",
+      "shelves_ready": "The shelves are already stocked",
+      "no_customer": "No customer yet",
+      "wrong_stage": "Not at this step yet",
+      "wrong_method": "That is not how they are paying",
+      "unknown_item": "Unknown item",
+      "out_of_stock": "Out of stock",
+      "not_in_tray": "That item is not on the tray",
+      "not_in_order": "The customer did not ask for that",
+      "already_checked": "ID already checked",
+      "invalid_pieces": "Invalid cash",
+      "not_in_drawer": "That cash is not in the drawer",
+      "no_time": "Not enough pre-open time",
+      "invalid_amount": "Invalid amount"
+    }
+  },
+  "title": {
+    "eyebrow": "OFFLINE · 1 PLAYER",
+    "tagline": "Thin margins, costs that move on their own, and a life that does not stop when the shop closes.",
+    "story": "Story mode",
+    "start": "Start",
+    "locked": "Locked",
+    "freePlay": "Free play",
+    "freePlayNote": "Unlocks after chapter 1",
+    "settings": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "theme_auto": "Auto",
+    "theme_light": "Light",
+    "theme_dark": "Dark",
+    "input": "Counter input",
+    "inputNote": "Tap and drag always on"
+  },
+  "chapters": {
+    "1": { "name": "Opening the Warung", "desc": "The first week of the shop. The counter and customer types." },
+    "2": { "name": "Prices Rise", "desc": "Ingredient prices climb. The first power outage." },
+    "3": { "name": "Busy Kitchen", "desc": "A big order from the neighborhood. Cooking and stock." },
+    "4": { "name": "Fasting Month", "desc": "Takjil, staff and a rival." }
+  },
+  "home": {
+    "eyebrow": "{{weekday}} · Day {{n}}",
+    "title": "Before opening",
+    "hours": "The shop is open 07.00 to 22.00",
+    "dayShape": "Shape of a day: before opening, shop open, free time",
+    "shapePre": "before",
+    "shapeOpen": "open · live, pausable",
+    "shapeFree": "free",
+    "preOpen": "Pre-open block",
+    "timeLeft": "{{left}} of {{total}} min left",
+    "recommended": "Recommended",
+    "soon": "Soon",
+    "open": "Open the shop",
+    "hint": "If the shelves are not stocked when you open, you can still stock them while serving. Customers wait meanwhile.",
+    "options": {
+      "siapkan": { "name": "Prepare the shop", "desc": "Full shelves, stocked fridge, prices checked. 90 minutes." },
+      "tukar": { "name": "Exchange cash", "desc": "Swap big notes for small change at a shop. 30 minutes, 2% fee." },
+      "ojol": { "name": "Drive ojol", "desc": "A little extra, fuel costs money." },
+      "tidur": { "name": "Sleep in", "desc": "Rest longer. Stock the shelves while serving." }
+    }
+  },
+  "exchange": {
+    "title": "Exchange cash",
+    "help": "Swap big notes from the drawer for small ones at a nearby shop. It takes {{minutes}} minutes of the pre-open block and costs {{fee}}%.",
+    "mix": "Small cash you receive",
+    "fee": "Fee {{pct}}%",
+    "received": "Received",
+    "cancel": "Cancel",
+    "confirm": "Exchange now"
+  },
+  "summary": {
+    "eyebrow": "SUMMARY · {{weekday}} · DAY {{n}}",
+    "title": "The shop is closed. Here is how it went.",
+    "notYet": "No summary yet. It appears once the shop closes.",
+    "back": "Back",
+    "gross": "Gross sales",
+    "grossSub": "Cash {{cash}} · QRIS {{qris}} · Kasbon {{kasbon}}",
+    "served": "Served",
+    "servedSub": "{{walk}} left waiting · {{turned}} turned away",
+    "changeErrors": "Change given over",
+    "changeErrorsSub": "{{caught}} caught short, {{kept}} got away",
+    "reputation": "Reputation",
+    "underage": "Cigarettes to minors: {{n}}",
+    "perHour": "Sales per hour",
+    "peak": "Peak at {{hour}}.",
+    "drawer": "Drawer cash",
+    "lowChange": "Low on small change.",
+    "lowChangeHint": "Exchange cash before opening tomorrow.",
+    "lowStock": "Low stock",
+    "left": "{{n}} left",
+    "nextDay": "Next day"
+  },
+  "phone": {
+    "eyebrow": "PHONE",
+    "title": "Phone",
+    "soon": "Phone apps arrive in later phases: chat, bank, ojol, market, planner, ledger.",
+    "apps": { "chat": "Chat", "bank": "Bank", "ojol": "Ojol", "pasar": "Market", "jadwal": "Planner", "buku-kas": "Ledger", "layanan": "Services", "berita": "News" }
+  }
+}

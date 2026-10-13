@@ -1,69 +1,113 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
+import { Art } from "@/components/art";
+import { PhoneFrame } from "@/components/phone-frame";
+import { Button, Card, Chip, Pill } from "@/components/ui";
+import { useGame } from "@/lib/game-store";
+import { useSettings, type Theme } from "@/lib/settings-store";
+
+const CHAPTERS = [1, 2, 3, 4] as const;
+const THEMES: Theme[] = ["auto", "light", "dark"];
+
+export default function TitlePage() {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const start = useGame((s) => s.start);
+  const lang = useSettings((s) => s.lang);
+  const theme = useSettings((s) => s.theme);
+  const setLang = useSettings((s) => s.setLang);
+  const setTheme = useSettings((s) => s.setTheme);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <PhoneFrame>
+      <div className="scroll-thin flex min-h-0 flex-1 flex-col overflow-y-auto">
+        <div className="relative h-44 shrink-0 overflow-hidden border-b-[3px] border-ink bg-stage">
+          <Art id="warung-depan" className="h-full! object-cover" />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="flex flex-col gap-4 p-4">
+          <div>
+            <div className="font-mono text-xs text-muted">{t("title.eyebrow")}</div>
+            <h1 className="font-display text-4xl font-bold leading-none">Warung Hidup</h1>
+            <p className="mt-2 text-sm text-muted">{t("title.tagline")}</p>
+          </div>
+
+          <section className="flex flex-col gap-2" aria-labelledby="story-h">
+            <h2 id="story-h" className="font-display text-lg font-bold">
+              {t("title.story")}
+            </h2>
+            {CHAPTERS.map((n) => {
+              const open = n === 1;
+              return (
+                <div
+                  key={n}
+                  className={`flex items-center gap-3 rounded-xl border bg-panel p-3 ${open ? "border-accent" : "border-line opacity-60"}`}
+                >
+                  <span
+                    className={`grid h-9 w-9 shrink-0 place-items-center rounded-full font-display font-bold ${open ? "bg-accent text-accent-fg" : "bg-bg text-muted"}`}
+                  >
+                    {n}
+                  </span>
+                  <div className="min-w-0 flex-1 leading-tight">
+                    <b className="block text-sm">{t(`chapters.${n}.name`)}</b>
+                    <span className="text-xs text-muted">{t(`chapters.${n}.desc`)}</span>
+                  </div>
+                  {open ? (
+                    <Button
+                      className="px-3! py-2!"
+                      data-testid="start-chapter-1"
+                      onClick={() => {
+                        start();
+                        router.push("/beranda");
+                      }}
+                    >
+                      {t("title.start")}
+                    </Button>
+                  ) : (
+                    <Pill>{t("title.locked")}</Pill>
+                  )}
+                </div>
+              );
+            })}
+            <div className="flex items-center gap-3 rounded-xl border border-dashed border-line p-3 opacity-60">
+              <span className="w-9 shrink-0">
+                <Art id="laci-uang" />
+              </span>
+              <div className="flex-1 leading-tight">
+                <b className="block text-sm">{t("title.freePlay")}</b>
+                <span className="text-xs text-muted">{t("title.freePlayNote")}</span>
+              </div>
+              <Pill>{t("title.locked")}</Pill>
+            </div>
+          </section>
+
+          <Card className="flex flex-col gap-3 p-3">
+            <h2 className="font-display text-lg font-bold">{t("title.settings")}</h2>
+            <div className="flex items-center justify-between gap-2 text-sm">
+              <span>{t("title.language")}</span>
+              <span className="flex gap-1.5">
+                <Chip on={lang === "id"} onClick={() => setLang("id")}>Indonesia</Chip>
+                <Chip on={lang === "en"} onClick={() => setLang("en")}>English</Chip>
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2 text-sm">
+              <span>{t("title.theme")}</span>
+              <span className="flex gap-1.5">
+                {THEMES.map((k) => (
+                  <Chip key={k} on={theme === k} onClick={() => setTheme(k)}>
+                    {t(`title.theme_${k}`)}
+                  </Chip>
+                ))}
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2 text-sm">
+              <span>{t("title.input")}</span>
+              <Pill tone="good">{t("title.inputNote")}</Pill>
+            </div>
+          </Card>
         </div>
-      </main>
-    </div>
+      </div>
+    </PhoneFrame>
   );
 }
