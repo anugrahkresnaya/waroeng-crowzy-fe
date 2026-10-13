@@ -5,7 +5,9 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Art } from "@/components/art";
 import { MoodMeters } from "@/components/mood-meters";
+import { MorningReport } from "@/components/morning-report";
 import { TopBar } from "@/components/top-bar";
+import { WarungNav } from "@/components/warung-nav";
 import { Button, Card, Chip } from "@/components/ui";
 import { DENOMS, content, exchangeBreakdown } from "@/engine";
 import { rp } from "@/lib/format";
@@ -49,7 +51,9 @@ export default function BerandaPage() {
   return (
     <>
       <TopBar />
+      <WarungNav />
       <div className="scroll-thin flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-3 [&>*]:shrink-0">
+        <MorningReport />
         <Card>
           <div className="flex items-center gap-3 p-3">
             <div className="flex-1 leading-tight">

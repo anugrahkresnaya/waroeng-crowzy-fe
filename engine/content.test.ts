@@ -1,16 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import activities from './content/activities.json';
-import balance from './content/balance.json';
-import customers from './content/customers.json';
-import items from './content/items.json';
 import { content, parseContent } from './content';
-
-const raw = () => structuredClone({ items, customers, balance, activities }) as unknown as {
-  items: typeof items;
-  customers: typeof customers;
-  balance: Omit<typeof balance, 'defaultOffPlan' | 'defaultWorkDays'> & { defaultOffPlan: Record<string, string[]>; defaultWorkDays: boolean[]; closeMinute: number };
-  activities: { dayOff: Array<Record<string, unknown>>; freeTime: Array<Record<string, unknown>> };
-};
+import { rawContent as raw } from './testing/raw-content';
 
 describe('content', () => {
   it('loads the shipped content', () => {
@@ -21,7 +11,7 @@ describe('content', () => {
 
   it('rejects a customer that orders an unknown item', () => {
     const bad = raw();
-    (bad.customers[0].items as unknown as Record<string, number>)['does-not-exist'] = 1;
+    bad.customers[0].items['does-not-exist'] = 1;
     expect(() => parseContent(bad)).toThrow(/unknown item/);
   });
 
@@ -39,7 +29,7 @@ describe('content', () => {
 
   it('rejects a start drawer with a fake denomination', () => {
     const bad = raw();
-    (bad.balance.startDrawer as unknown as Record<string, number>)['3000'] = 4;
+    bad.balance.startDrawer['3000'] = 4;
     expect(() => parseContent(bad)).toThrow(/denomination/);
   });
 
@@ -84,5 +74,74 @@ describe('content', () => {
     for (const type of content.customers) {
       for (const mood of ['happy', 'neutral', 'annoyed']) expect(pelanggan.has(`${type.art}-${mood}`), `${type.id}-${mood}`).toBe(true);
     }
+  });
+});
+
+describe('market content', () => {
+  it('loads 25 ingredients with the PRD base prices and 3 suppliers', () => {
+    expect(content.ingredients).toHaveLength(25);
+    expect(content.ingredientById['telur'].price).toBe(30000);
+    expect(content.ingredientById['cabai'].price).toBe(78000);
+    expect(content.ingredientById['lpg'].price).toBe(22000);
+    expect(content.suppliers.map((s) => s.id)).toEqual(['pak-slamet', 'toko-maju', 'grosir-induk']);
+  });
+
+  it('makes a market product of every ingredient and every resale good', () => {
+    const goods = content.items.filter((i) => i.kind === 'good');
+    expect(content.products).toHaveLength(25 + goods.length);
+    expect(content.productByKey['g-rokok'].base).toBe(18000 * 10);
+    expect(content.productByKey['beras'].kind).toBe('ingredient');
+  });
+
+  it('every dish uses ingredients that exist, and every ingredient has art', async () => {
+    const { readFileSync } = await import('node:fs');
+    const manifest: Array<{ id: string }> = JSON.parse(readFileSync(new URL('../public/assets/manifest.json', import.meta.url), 'utf8'));
+    const ids = new Set(manifest.map((m) => m.id));
+    for (const ing of content.ingredients) expect(ids.has(ing.art), ing.id).toBe(true);
+    for (const item of content.items.filter((i) => i.kind === 'dish')) {
+      for (const id of Object.keys(item.recipe!)) expect(content.ingredientById[id], `${item.id} needs ${id}`).toBeDefined();
+    }
+  });
+
+  it('rejects a recipe that uses an unknown ingredient', () => {
+    const bad = raw();
+    bad.items.find((i) => i.id === 'es-teh')!.recipe['teh-celup'] = 1;
+    expect(() => parseContent(bad)).toThrow(/unknown ingredient/);
+  });
+
+  it('rejects a dish without a recipe and a good without a buy price', () => {
+    const noRecipe = raw();
+    delete noRecipe.items.find((i) => i.id === 'es-teh')!.recipe;
+    expect(() => parseContent(noRecipe)).toThrow(/recipe/);
+    const noBuy = raw();
+    delete noBuy.items.find((i) => i.id === 'permen')!.buyPrice;
+    expect(() => parseContent(noBuy)).toThrow(/buyPrice/);
+  });
+
+  it('rejects a start pantry or start goods that point at the wrong thing', () => {
+    const pantry = raw();
+    pantry.balance.start.pantry['tidak-ada'] = 1;
+    expect(() => parseContent(pantry)).toThrow(/unknown ingredient/);
+    const goods = raw();
+    goods.balance.start.goods['es-teh'] = 5; // a dish, not a resale good
+    expect(() => parseContent(goods)).toThrow(/not a resale good/);
+  });
+
+  it('rejects a season or event that targets something that does not exist', () => {
+    const season = raw();
+    season.market.seasons[0].effects[0].match = ['durian'];
+    expect(() => parseContent(season)).toThrow(/unknown match/);
+    const event = raw();
+    event.market.events[0].effects[0].match = ['durian'];
+    expect(() => parseContent(event)).toThrow(/unknown match/);
+  });
+
+  it('rejects duplicate suppliers and ingredients', () => {
+    const sup = raw();
+    sup.suppliers.push({ ...sup.suppliers[0] });
+    expect(() => parseContent(sup)).toThrow(/duplicate supplier/);
+    const ing = raw();
+    ing.ingredients.push({ ...ing.ingredients[0] });
+    expect(() => parseContent(ing)).toThrow(/duplicate ingredient/);
   });
 });

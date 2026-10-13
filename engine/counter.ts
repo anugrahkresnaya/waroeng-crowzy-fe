@@ -1,5 +1,8 @@
 // The cashier counter: customer arrivals, patience, and every command the player can issue.
 import { dayPart, weekday } from './clock';
+import {
+  advanceMarketDay, assignStorage, deliverDue, pasarTrip, placeOrder, portionOf, portionsLeft, sellPrice, spoilOvernight, sellOut,
+} from './market';
 import { freshStats } from './state';
 import {
   addPieces, bigNotes, exactPieces, exchangeBreakdown, hasPieces, isValidPieces, makeChange, payOutBestEffort,
@@ -54,7 +57,7 @@ function changeReputation(ctx: Ctx, delta: number): void {
 // ---------- customers ----------
 
 function billOf(ctx: Ctx, order: OrderLine[]): number {
-  return order.reduce((sum, line) => sum + ctx.content.itemById[line.itemId].price * line.qty, 0);
+  return order.reduce((sum, line) => sum + sellPrice(ctx.state, ctx.content.itemById[line.itemId]) * line.qty, 0);
 }
 
 function planTender(ctx: Ctx, type: CustomerType, bill: number): ReturnType<typeof exactPieces> {
@@ -154,7 +157,10 @@ function completeSale(ctx: Ctx, c: Customer, moodOverride?: Mood): void {
   const mood = moodOverride ?? moodOf(c);
   let restricted = false;
   for (const line of c.order) {
-    state.stock[line.itemId] -= line.qty;
+    const item = content.itemById[line.itemId];
+    state.stats.cogs += sellOut(state, content, item, line.qty);
+    // Small portions let the regulars down a little, large ones win them over.
+    if (item.kind === 'dish') changeReputation(ctx, content.market.portion[portionOf(state, item)].rep);
     state.stats.itemsSold[line.itemId] = (state.stats.itemsSold[line.itemId] ?? 0) + line.qty;
     if (content.itemById[line.itemId].ageRestricted) restricted = true;
   }
@@ -284,6 +290,7 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
       }
       state.hunger = clamp100(state.hunger + (b.hungerPerHour * (block.end - block.start)) / 60);
       state.minute = block.end;
+      deliverDue(ctx);
       state.blockIndex++;
       ctx.emit({ type: 'block_done', block: block.id, cash });
       if (state.blockIndex >= b.offBlocks.length) {
@@ -330,13 +337,54 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
       state.preOpenUsed = 0;
       state.line = [];
       state.stats = freshStats(content);
-      if (b.autoRestock) for (const item of content.items) state.stock[item.id] = item.startStock;
+      // The overnight tick: prices move, due orders arrive, and what is too old is thrown out.
+      advanceMarketDay(ctx);
+      deliverDue(ctx);
+      assignStorage(state, content);
+      spoilOvernight(ctx);
+      assignStorage(state, content);
       ctx.emit({ type: 'new_day', day: state.day });
       return OK;
     }
     case 'closeWarung': {
       if (state.phase !== 'open') return fail('wrong_phase');
       closeDay(ctx);
+      return OK;
+    }
+    case 'placeOrder': {
+      const error = placeOrder(ctx, cmd);
+      return error ? fail(error) : OK;
+    }
+    case 'pasarTrip': {
+      const error = pasarTrip(ctx, cmd);
+      return error ? fail(error) : OK;
+    }
+    case 'setDishPrice': {
+      const item = content.itemById[cmd.item];
+      if (!item || item.kind !== 'dish') return fail('not_a_dish');
+      if (!Number.isInteger(cmd.price) || cmd.price < 500 || cmd.price > 200000 || cmd.price % 100 !== 0) return fail('invalid_price');
+      state.menu[item.id].price = cmd.price;
+      return OK;
+    }
+    case 'setPortion': {
+      const item = content.itemById[cmd.item];
+      if (!item || item.kind !== 'dish') return fail('not_a_dish');
+      if (!(cmd.portion in content.market.portion)) return fail('invalid_amount');
+      state.menu[item.id].portion = cmd.portion;
+      return OK;
+    }
+    case 'depositCash': {
+      if (!isValidPieces(cmd.pieces) || total(cmd.pieces) <= 0) return fail('invalid_pieces');
+      if (!hasPieces(state.drawer, cmd.pieces)) return fail('not_in_drawer');
+      removePieces(state.drawer, cmd.pieces);
+      state.bank += total(cmd.pieces);
+      return OK;
+    }
+    case 'withdrawCash': {
+      if (!Number.isInteger(cmd.amount) || cmd.amount < 50000 || cmd.amount % 50000 !== 0) return fail('invalid_amount');
+      if (state.bank < cmd.amount) return fail('insufficient_funds');
+      state.bank -= cmd.amount;
+      addPieces(state.drawer, exactPieces(cmd.amount) ?? {}); // the cash machine pays in big notes
       return OK;
     }
   }
@@ -351,7 +399,7 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
       if (c.stage !== 'ordering') return fail('wrong_stage');
       const item = content.itemById[cmd.itemId];
       if (!item) return fail('unknown_item');
-      if ((state.stock[item.id] ?? 0) - (c.tray[item.id] ?? 0) <= 0) return fail('out_of_stock');
+      if (portionsLeft(state, content, item.id, c.tray) <= 0) return fail('out_of_stock');
       c.tray[item.id] = (c.tray[item.id] ?? 0) + 1;
       return OK;
     }
@@ -366,7 +414,7 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
       if (c.stage !== 'ordering') return fail('wrong_stage');
       const line = c.order.find((l) => l.itemId === cmd.itemId);
       if (!line) return fail('not_in_order');
-      if ((state.stock[line.itemId] ?? 0) < line.qty) state.stats.stockoutDeclines++;
+      if (portionsLeft(state, content, line.itemId) < line.qty) state.stats.stockoutDeclines++;
       c.order = c.order.filter((l) => l !== line);
       delete c.tray[cmd.itemId];
       c.patience -= b.penalties.decline;
@@ -472,6 +520,7 @@ export function advance(ctx: Ctx): void {
   if (state.phase !== 'open') return;
   state.tick++;
   state.minute++;
+  deliverDue(ctx);
   if (state.busyUntil > 0 && state.tick >= state.busyUntil) {
     state.busyUntil = 0;
     state.shelfReady = true;

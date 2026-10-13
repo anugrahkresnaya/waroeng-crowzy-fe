@@ -80,6 +80,8 @@ export class Game {
       turnedAway: s.turnedAway,
       leftAtClose: s.leftAtClose,
       grossSales: s.cashRevenue + s.qrisRevenue + s.qrisFees + s.kasbonCredit,
+      cogs: Math.round(s.cogs),
+      netProfit: Math.round(s.cashRevenue + s.qrisRevenue + s.kasbonCredit - s.cogs),
       cashRevenue: s.cashRevenue,
       qrisRevenue: s.qrisRevenue,
       qrisFees: s.qrisFees,

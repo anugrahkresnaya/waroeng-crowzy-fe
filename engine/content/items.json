@@ -1,18 +1,244 @@
 [
-  {"id": "indomie-goreng", "art": "indomie-goreng", "name": {"id": "Indomie goreng", "en": "Fried instant noodles"}, "category": "makanan", "price": 4500, "startStock": 40},
-  {"id": "indomie-kuah", "art": "indomie-kuah", "name": {"id": "Indomie kuah", "en": "Instant noodle soup"}, "category": "makanan", "price": 4000, "startStock": 30},
-  {"id": "keripik", "art": "keripik", "name": {"id": "Keripik", "en": "Chips"}, "category": "makanan", "price": 2000, "startStock": 30},
-  {"id": "es-teh", "art": "es-teh", "name": {"id": "Es teh", "en": "Iced tea"}, "category": "minuman", "price": 3000, "startStock": 50},
-  {"id": "kopi-hitam", "art": "kopi-hitam", "name": {"id": "Kopi hitam", "en": "Black coffee"}, "category": "minuman", "price": 3000, "startStock": 40},
-  {"id": "kopi-sachet", "art": "kopi-sachet", "name": {"id": "Kopi sachet", "en": "Coffee sachet"}, "category": "minuman", "price": 1500, "startStock": 40},
-  {"id": "teh-botol", "art": "teh-botol", "name": {"id": "Teh botol", "en": "Bottled tea"}, "category": "minuman", "price": 5000, "startStock": 30},
-  {"id": "air-mineral", "art": "air-mineral", "name": {"id": "Air mineral", "en": "Bottled water"}, "category": "minuman", "price": 3500, "startStock": 40},
-  {"id": "kerupuk", "art": "kerupuk", "name": {"id": "Kerupuk", "en": "Crackers"}, "category": "makanan", "price": 1000, "startStock": 60},
-  {"id": "nasi-bungkus", "art": "nasi-bungkus", "name": {"id": "Nasi bungkus", "en": "Wrapped rice"}, "category": "makanan", "price": 7000, "startStock": 25},
-  {"id": "roti", "art": "roti", "name": {"id": "Roti", "en": "Bread"}, "category": "makanan", "price": 3000, "startStock": 20},
-  {"id": "permen", "art": "permen", "name": {"id": "Permen", "en": "Candy"}, "category": "lainnya", "price": 500, "startStock": 100},
-  {"id": "sampo-sachet", "art": "sampo-sachet", "name": {"id": "Sampo sachet", "en": "Shampoo sachet"}, "category": "lainnya", "price": 1000, "startStock": 40},
-  {"id": "gorengan", "art": "gorengan", "name": {"id": "Gorengan", "en": "Fried snacks"}, "category": "makanan", "price": 1000, "startStock": 60},
-  {"id": "rokok", "art": "rokok", "name": {"id": "Rokok", "en": "Cigarettes"}, "category": "lainnya", "price": 28000, "startStock": 12, "ageRestricted": true},
-  {"id": "telur", "art": "telur", "name": {"id": "Telur", "en": "Egg"}, "category": "makanan", "price": 2500, "startStock": 50}
+ {
+  "id": "indomie-goreng",
+  "art": "indomie-goreng",
+  "name": {
+   "id": "Indomie goreng",
+   "en": "Fried instant noodles"
+  },
+  "category": "makanan",
+  "kind": "dish",
+  "price": 4500,
+  "reference": 5000,
+  "recipe": {
+   "mi-instan": 1,
+   "minyak": 5,
+   "bawang-merah": 4,
+   "lpg": 8
+  }
+ },
+ {
+  "id": "indomie-kuah",
+  "art": "indomie-kuah",
+  "name": {
+   "id": "Indomie kuah",
+   "en": "Instant noodle soup"
+  },
+  "category": "makanan",
+  "kind": "dish",
+  "price": 4500,
+  "reference": 5000,
+  "recipe": {
+   "mi-instan": 1,
+   "sawi": 15,
+   "lpg": 8
+  }
+ },
+ {
+  "id": "keripik",
+  "art": "keripik",
+  "name": {
+   "id": "Keripik",
+   "en": "Chips"
+  },
+  "category": "makanan",
+  "kind": "good",
+  "price": 2000,
+  "buyPrice": 1400,
+  "pack": 20
+ },
+ {
+  "id": "es-teh",
+  "art": "es-teh",
+  "name": {
+   "id": "Es teh",
+   "en": "Iced tea"
+  },
+  "category": "minuman",
+  "kind": "dish",
+  "price": 3000,
+  "reference": 3500,
+  "recipe": {
+   "teh": 3,
+   "gula": 15,
+   "es-batu": 150
+  }
+ },
+ {
+  "id": "kopi-hitam",
+  "art": "kopi-hitam",
+  "name": {
+   "id": "Kopi hitam",
+   "en": "Black coffee"
+  },
+  "category": "minuman",
+  "kind": "dish",
+  "price": 3000,
+  "reference": 3500,
+  "recipe": {
+   "kopi": 8,
+   "gula": 10,
+   "lpg": 4
+  }
+ },
+ {
+  "id": "kopi-sachet",
+  "art": "kopi-sachet",
+  "name": {
+   "id": "Kopi sachet",
+   "en": "Coffee sachet"
+  },
+  "category": "minuman",
+  "kind": "good",
+  "price": 1500,
+  "buyPrice": 1100,
+  "pack": 30
+ },
+ {
+  "id": "teh-botol",
+  "art": "teh-botol",
+  "name": {
+   "id": "Teh botol",
+   "en": "Bottled tea"
+  },
+  "category": "minuman",
+  "kind": "good",
+  "price": 6000,
+  "buyPrice": 4500,
+  "pack": 12
+ },
+ {
+  "id": "air-mineral",
+  "art": "air-mineral",
+  "name": {
+   "id": "Air mineral",
+   "en": "Bottled water"
+  },
+  "category": "minuman",
+  "kind": "good",
+  "price": 3500,
+  "buyPrice": 2200,
+  "pack": 24
+ },
+ {
+  "id": "kerupuk",
+  "art": "kerupuk",
+  "name": {
+   "id": "Kerupuk",
+   "en": "Crackers"
+  },
+  "category": "makanan",
+  "kind": "good",
+  "price": 1500,
+  "buyPrice": 1000,
+  "pack": 50
+ },
+ {
+  "id": "nasi-bungkus",
+  "art": "nasi-bungkus",
+  "name": {
+   "id": "Nasi bungkus",
+   "en": "Wrapped rice"
+  },
+  "category": "makanan",
+  "kind": "dish",
+  "price": 7000,
+  "reference": 8000,
+  "recipe": {
+   "beras": 100,
+   "ayam": 50,
+   "sawi": 20,
+   "minyak": 10,
+   "kertas-nasi": 1,
+   "lpg": 6,
+   "bawang-merah": 6,
+   "cabai": 4
+  }
+ },
+ {
+  "id": "roti",
+  "art": "roti",
+  "name": {
+   "id": "Roti",
+   "en": "Bread"
+  },
+  "category": "makanan",
+  "kind": "good",
+  "price": 3000,
+  "buyPrice": 2200,
+  "pack": 10
+ },
+ {
+  "id": "permen",
+  "art": "permen",
+  "name": {
+   "id": "Permen",
+   "en": "Candy"
+  },
+  "category": "lainnya",
+  "kind": "good",
+  "price": 300,
+  "buyPrice": 150,
+  "pack": 100
+ },
+ {
+  "id": "sampo-sachet",
+  "art": "sampo-sachet",
+  "name": {
+   "id": "Sampo sachet",
+   "en": "Shampoo sachet"
+  },
+  "category": "lainnya",
+  "kind": "good",
+  "price": 1000,
+  "buyPrice": 600,
+  "pack": 24
+ },
+ {
+  "id": "gorengan",
+  "art": "gorengan",
+  "name": {
+   "id": "Gorengan",
+   "en": "Fried snacks"
+  },
+  "category": "makanan",
+  "kind": "dish",
+  "price": 1000,
+  "reference": 1000,
+  "recipe": {
+   "tepung": 20,
+   "sawi": 10,
+   "minyak": 15,
+   "lpg": 3
+  }
+ },
+ {
+  "id": "rokok",
+  "art": "rokok",
+  "name": {
+   "id": "Rokok",
+   "en": "Cigarettes"
+  },
+  "category": "lainnya",
+  "kind": "good",
+  "price": 20000,
+  "buyPrice": 18000,
+  "pack": 10,
+  "ageRestricted": true
+ },
+ {
+  "id": "telur",
+  "art": "telur",
+  "name": {
+   "id": "Telur",
+   "en": "Egg"
+  },
+  "category": "makanan",
+  "kind": "dish",
+  "price": 2500,
+  "reference": 2500,
+  "recipe": {
+   "telur": 1
+  }
+ }
 ]

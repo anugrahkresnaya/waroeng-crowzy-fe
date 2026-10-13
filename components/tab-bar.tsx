@@ -13,9 +13,9 @@ export function TabBar() {
   const phase = useGame((s) => s.state?.phase ?? "idle");
   const evening = phase === "ended" || phase === "night" || phase === "bed";
   const tabs = [
-    { href: HOME[phase], match: ["/beranda", "/kasir", "/libur"], label: t("tab.kasir"), icon: "laci-uang" },
+    { href: HOME[phase], match: ["/beranda", "/kasir", "/libur", "/menu", "/gudang"], label: t("tab.kasir"), icon: "laci-uang" },
     { href: evening ? HOME[phase] : "/ringkasan", match: ["/ringkasan", "/malam", "/besok"], label: t("tab.ringkasan"), icon: "ikon-app-buku-kas" },
-    { href: "/ponsel", match: ["/ponsel", "/jadwal"], label: t("tab.ponsel"), icon: "ponsel" },
+    { href: "/ponsel", match: ["/ponsel", "/jadwal", "/pasar", "/bank", "/berita"], label: t("tab.ponsel"), icon: "ponsel" },
   ];
   return (
     <nav className="grid shrink-0 grid-cols-3 border-t-2 border-ink bg-panel" aria-label={t("tab.label")}>

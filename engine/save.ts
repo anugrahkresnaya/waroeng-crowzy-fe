@@ -7,7 +7,7 @@ import { Game } from './game';
 import { isValidBlockPlan, type Content } from './schema';
 import type { GameState } from './types';
 
-export const SAVE_FORMAT = 1;
+export const SAVE_FORMAT = 2;
 
 const num = z.number();
 const pieces = z.record(z.string(), z.number().int().min(0));
@@ -33,9 +33,45 @@ const stats = z.object({
   itemsSold: z.record(z.string(), num),
   cashRevenue: num, qrisRevenue: num, qrisFees: num, kasbonCredit: num, kasbonRefused: num,
   wrongTrays: num, stockoutDeclines: num, underageSales: num, overChange: num,
-  shortChangeCaught: num, shortChangeUnnoticed: num, shortChangeGained: num, exchangeFees: num,
+  shortChangeCaught: num, shortChangeUnnoticed: num, shortChangeGained: num, cogs: num, exchangeFees: num,
   salesByHour: z.array(num),
   moods: z.object({ happy: num, neutral: num, annoyed: num }),
+});
+
+const marketEvent = z.object({ id: z.string(), start: num, end: num.nullable() });
+
+const market = z.object({
+  prices: z.record(z.string(), num),
+  noise: z.record(z.string(), num),
+  history: z.record(z.string(), z.array(num)),
+  active: z.array(marketEvent),
+  pending: z.array(marketEvent),
+  news: z.array(z.object({ day: num, event: z.string(), startsOn: num })),
+});
+
+const lot = z.object({
+  ingredient: z.string(),
+  qty: z.number().min(0),
+  bought: num,
+  unitCost: num,
+  stored: z.enum(['room', 'fridge']),
+});
+
+const order = z.object({
+  id: num,
+  supplier: z.string(),
+  lines: z.array(z.object({ key: z.string(), qty: z.number().int().positive(), unitPrice: num })),
+  subtotal: num,
+  fee: num,
+  total: num,
+  express: z.boolean(),
+  placedDay: num,
+  arriveDay: num,
+  arriveMinute: num,
+  late: z.boolean(),
+  lateRolled: z.boolean(),
+  status: z.enum(['transit', 'delivered']),
+  deliveredDay: num.nullable(),
 });
 
 const state = z.object({
@@ -59,7 +95,14 @@ const state = z.object({
   drawer: pieces,
   bank: num,
   kasbon: z.array(z.object({ customerId: num, type: z.string(), amount: num, day: num })),
+  market,
+  pantry: z.array(lot),
   stock: z.record(z.string(), z.number().int().min(0)),
+  goodsCost: z.record(z.string(), num),
+  menu: z.record(z.string(), z.object({ price: z.number().int().positive(), portion: z.enum(['small', 'normal', 'large']) })),
+  orders: z.array(order),
+  nextOrderId: num,
+  lastSpoiled: z.array(z.object({ ingredient: z.string(), qty: num, value: num })),
   reputation: num,
   line: z.array(customer),
   nextCustomerId: num,
@@ -79,12 +122,18 @@ export const saveSchema = z.object({
 
 export type SaveData = z.infer<typeof saveSchema>;
 
-/** Upgrades an older envelope by one format step. Add an entry when SAVE_FORMAT is bumped. */
-const MIGRATIONS: Record<number, (raw: Record<string, unknown>) => Record<string, unknown>> = {};
+/**
+ * Upgrades an older envelope by one format step. Add an entry when SAVE_FORMAT is bumped.
+ * A step that returns null cannot carry the save forward (the new version needs data the old one never had).
+ */
+const MIGRATIONS: Record<number, (raw: Record<string, unknown>) => Record<string, unknown> | null> = {
+  // Format 1 was before the market: no prices, pantry, menu or orders, so there is nothing to build them from.
+  1: () => null,
+};
 
 export type SaveParse =
   | { ok: true; save: SaveData }
-  | { ok: false; reason: 'invalid' | 'newer' };
+  | { ok: false; reason: 'invalid' | 'newer' | 'outdated' };
 
 /** Reads whatever came out of storage. Never throws; says why when it cannot use the data. */
 export function parseSave(raw: unknown): SaveParse {
@@ -96,7 +145,9 @@ export function parseSave(raw: unknown): SaveParse {
   for (let f = format; f < SAVE_FORMAT; f++) {
     const step = MIGRATIONS[f];
     if (!step) return { ok: false, reason: 'invalid' };
-    data = { ...step(data), format: f + 1 };
+    const next = step(data);
+    if (!next) return { ok: false, reason: 'outdated' };
+    data = { ...next, format: f + 1 };
   }
   const parsed = saveSchema.safeParse(data);
   return parsed.success ? { ok: true, save: parsed.data } : { ok: false, reason: 'invalid' };
@@ -121,9 +172,52 @@ export function reconcile(saved: GameState, content: Content): GameState {
   const s = structuredClone(saved);
   const b = content.balance;
 
+  const goods = content.items.filter((i) => i.kind === 'good');
   const stock: Record<string, number> = {};
-  for (const item of content.items) stock[item.id] = Number.isFinite(s.stock[item.id]) ? s.stock[item.id] : item.startStock;
+  const goodsCost: Record<string, number> = {};
+  for (const item of goods) {
+    stock[item.id] = Number.isFinite(s.stock[item.id]) ? s.stock[item.id] : (b.start.goods[item.id] ?? 0);
+    goodsCost[item.id] = Number.isFinite(s.goodsCost[item.id]) ? s.goodsCost[item.id] : (item.buyPrice ?? 0);
+  }
   s.stock = stock;
+  s.goodsCost = goodsCost;
+
+  const menu: GameState['menu'] = {};
+  for (const item of content.items.filter((i) => i.kind === 'dish')) {
+    const saved = s.menu[item.id];
+    menu[item.id] = saved && saved.portion in content.market.portion ? saved : { price: item.price, portion: 'normal' };
+  }
+  s.menu = menu;
+
+  s.pantry = s.pantry.filter((l) => l.ingredient in content.ingredientById && l.qty > 0);
+  s.orders = s.orders
+    .filter((o) => o.supplier in content.supplierById)
+    .map((o) => ({ ...o, lines: o.lines.filter((l) => l.key in content.productByKey) }))
+    .filter((o) => o.lines.length > 0);
+  s.lastSpoiled = s.lastSpoiled.filter((x) => x.ingredient in content.ingredientById);
+
+  // Prices: keep what is known, start new products at their base price, drop products that are gone.
+  const m = s.market;
+  for (const p of content.products) {
+    if (!Number.isFinite(m.prices[p.key])) {
+      m.prices[p.key] = p.base;
+      m.noise[p.key] = 0;
+      m.history[p.key] = [p.base];
+    }
+    m.noise[p.key] ??= 0;
+    m.history[p.key] ??= [m.prices[p.key]];
+    m.history[p.key] = m.history[p.key].slice(-content.market.historyDays);
+  }
+  for (const key of Object.keys(m.prices)) {
+    if (key in content.productByKey) continue;
+    delete m.prices[key];
+    delete m.noise[key];
+    delete m.history[key];
+  }
+  const known = new Set(content.market.events.map((e) => e.id));
+  m.active = m.active.filter((e) => known.has(e.id));
+  m.pending = m.pending.filter((e) => known.has(e.id));
+  m.news = m.news.filter((n) => known.has(n.event));
 
   // Only remove what is not rupiah; zero counts are valid and kept so a load matches the save exactly.
   for (const key of Object.keys(s.drawer)) if (!(DENOMS as readonly number[]).includes(Number(key))) delete s.drawer[Number(key)];

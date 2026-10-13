@@ -1,0 +1,225 @@
+{
+ "calendarStart": {
+  "year": 2026,
+  "month": 10,
+  "day": 12
+ },
+ "historyDays": 30,
+ "reversion": 0.1,
+ "swings": {
+  "low": {
+   "daily": 0.005,
+   "cap": 0.15
+  },
+  "medium": {
+   "daily": 0.015,
+   "cap": 0.25
+  },
+  "high": {
+   "daily": 0.03,
+   "cap": 0.45
+  }
+ },
+ "eventsFromDay": 3,
+ "seasons": [
+  {
+   "id": "rainy",
+   "from": {
+    "month": 11,
+    "day": 1
+   },
+   "to": {
+    "month": 3,
+    "day": 31
+   },
+   "effects": [
+    {
+     "match": [
+      "cabai"
+     ],
+     "mul": 1.15
+    },
+    {
+     "match": [
+      "bawang-merah",
+      "bawang-putih"
+     ],
+     "mul": 1.08
+    }
+   ]
+  },
+  {
+   "id": "pre-ramadan",
+   "from": {
+    "month": 1,
+    "day": 18
+   },
+   "to": {
+    "month": 2,
+    "day": 7
+   },
+   "effects": [
+    {
+     "match": [
+      "pokok",
+      "protein",
+      "sayur"
+     ],
+     "mul": 1.12
+    }
+   ]
+  },
+  {
+   "id": "ramadan",
+   "from": {
+    "month": 2,
+    "day": 8
+   },
+   "to": {
+    "month": 3,
+    "day": 9
+   },
+   "effects": [
+    {
+     "match": [
+      "telur",
+      "ayam"
+     ],
+     "mul": 1.15
+    },
+    {
+     "match": [
+      "pokok",
+      "sayur"
+     ],
+     "mul": 1.08
+    }
+   ]
+  }
+ ],
+ "events": [
+  {
+   "id": "harvest-failure",
+   "chancePerDay": 0.02,
+   "leadDays": 1,
+   "duration": 10,
+   "decay": "linear",
+   "lateBoost": 0,
+   "effects": [
+    {
+     "match": [
+      "cabai"
+     ],
+     "delta": 0.4
+    }
+   ]
+  },
+  {
+   "id": "fuel-hike",
+   "chancePerDay": 0.006,
+   "leadDays": 1,
+   "duration": null,
+   "decay": "none",
+   "lateBoost": 0,
+   "effects": [
+    {
+     "match": [
+      "all"
+     ],
+     "delta": 0.05
+    }
+   ]
+  },
+  {
+   "id": "flood",
+   "chancePerDay": 0.01,
+   "leadDays": 0,
+   "duration": 7,
+   "decay": "linear",
+   "lateBoost": 0.25,
+   "months": [
+    11,
+    12,
+    1,
+    2,
+    3
+   ],
+   "effects": [
+    {
+     "match": [
+      "sayur"
+     ],
+     "delta": 0.3
+    }
+   ]
+  },
+  {
+   "id": "lpg-shortage",
+   "chancePerDay": 0.01,
+   "leadDays": 1,
+   "duration": 6,
+   "decay": "linear",
+   "lateBoost": 0,
+   "effects": [
+    {
+     "match": [
+      "lpg"
+     ],
+     "delta": 0.25
+    }
+   ]
+  },
+  {
+   "id": "market-operation",
+   "chancePerDay": 0.01,
+   "leadDays": 1,
+   "duration": 7,
+   "decay": "none",
+   "lateBoost": 0,
+   "effects": [
+    {
+     "match": [
+      "beras",
+      "minyak"
+     ],
+     "delta": -0.08
+    }
+   ]
+  }
+ ],
+ "ordering": {
+  "cutoffMinute": 1200,
+  "expressFee": 25000,
+  "expressMinutes": 180,
+  "windowStart": 360,
+  "windowEnd": 540
+ },
+ "pasar": {
+  "haggle": 0.03,
+  "grosir": [
+   {
+    "min": 200000,
+    "off": 0.05
+   },
+   {
+    "min": 500000,
+    "off": 0.1
+   }
+  ]
+ },
+ "fridgeCapacity": 12,
+ "portion": {
+  "small": {
+   "mul": 0.8,
+   "rep": -0.05
+  },
+  "normal": {
+   "mul": 1,
+   "rep": 0
+  },
+  "large": {
+   "mul": 1.25,
+   "rep": 0.05
+  }
+ }
+}

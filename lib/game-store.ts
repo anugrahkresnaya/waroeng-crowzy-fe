@@ -31,7 +31,7 @@ interface GameStore {
   fast: boolean;
   start: (seed?: number) => void;
   /** Loads the saved game, paused so a mid-shift resume does not run away. */
-  resume: () => Promise<"ok" | "none" | "invalid" | "newer" | "unavailable">;
+  resume: () => Promise<"ok" | "none" | "invalid" | "newer" | "outdated" | "unavailable">;
   send: (command: Command) => CommandResult;
   /** Advances the open warung by one real second (normal speed, or fast in quiet hours). */
   step: () => void;
@@ -56,6 +56,18 @@ function toastFor(event: GameEvent): Omit<Toast, "id"> | null {
       return { key: "turnedAway", tone: "bad" };
     case "exchanged":
       return { key: "exchanged", vars: { amount: rp(event.amount), fee: rp(event.fee) }, tone: "good" };
+    case "order_placed":
+      return { key: "orderPlaced", vars: { total: rp(event.total) }, tone: "good" };
+    case "order_delivered":
+      return { key: "orderDelivered", tone: "good" };
+    case "order_late":
+      return { key: "orderLate", tone: "bad" };
+    case "pasar_bought":
+      return { key: "pasarBought", vars: { total: rp(event.total) }, tone: "good" };
+    case "spoiled":
+      return { key: "spoiled", vars: { value: rp(event.value) }, tone: "bad" };
+    case "news":
+      return { key: `news.${event.event}`, tone: "info" };
     case "shelves_ready":
       return { key: "shelvesReady", tone: "info" };
     case "block_done": {

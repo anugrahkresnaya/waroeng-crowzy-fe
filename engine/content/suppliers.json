@@ -1,0 +1,38 @@
+[
+ {
+  "id": "pak-slamet",
+  "name": {
+   "id": "Pak Slamet",
+   "en": "Pak Slamet"
+  },
+  "priceMul": 1.05,
+  "deliveryFee": 8000,
+  "freeAbove": 150000,
+  "minOrder": 0,
+  "lateChance": 0.05
+ },
+ {
+  "id": "toko-maju",
+  "name": {
+   "id": "Toko Maju",
+   "en": "Toko Maju"
+  },
+  "priceMul": 1.0,
+  "deliveryFee": 10000,
+  "freeAbove": null,
+  "minOrder": 50000,
+  "lateChance": 0.2
+ },
+ {
+  "id": "grosir-induk",
+  "name": {
+   "id": "Grosir Induk",
+   "en": "Grosir Induk"
+  },
+  "priceMul": 0.95,
+  "deliveryFee": 15000,
+  "freeAbove": null,
+  "minOrder": 300000,
+  "lateChance": 0.08
+ }
+]

@@ -1,5 +1,6 @@
+import { assignStorage, addLot, emptyMarket, initMarket } from './market';
 import { clonePieces } from './money';
-import { seedToState } from './rng';
+import { Rng, seedToState } from './rng';
 import type { Content } from './schema';
 import type { GameState, Stats } from './types';
 
@@ -23,6 +24,7 @@ export function freshStats(content: Content): Stats {
     shortChangeCaught: 0,
     shortChangeUnnoticed: 0,
     shortChangeGained: 0,
+    cogs: 0,
     exchangeFees: 0,
     salesByHour: new Array(Math.ceil((closeMinute - openMinute) / 60)).fill(0),
     moods: { happy: 0, neutral: 0, annoyed: 0 },
@@ -33,7 +35,7 @@ export function createInitialState(content: Content, seed: number, day = 0): Gam
   const startsOff = !content.balance.defaultWorkDays[((day % 7) + 7) % 7];
   const startDrawer: Record<number, number> = {};
   for (const [denom, count] of Object.entries(content.balance.startDrawer)) startDrawer[Number(denom)] = count;
-  return {
+  const state: GameState = {
     version: 1,
     seed,
     rng: seedToState(seed),
@@ -52,12 +54,32 @@ export function createInitialState(content: Content, seed: number, day = 0): Gam
     preOpenUsed: 0,
     busyUntil: 0,
     drawer: clonePieces(startDrawer),
-    bank: 0,
+    bank: content.balance.start.bank,
     kasbon: [],
-    stock: Object.fromEntries(content.items.map((i) => [i.id, i.startStock])),
+    market: emptyMarket(),
+    pantry: [],
+    stock: {},
+    goodsCost: {},
+    menu: Object.fromEntries(content.items.filter((i) => i.kind === 'dish').map((i) => [i.id, { price: i.price, portion: 'normal' as const }])),
+    orders: [],
+    nextOrderId: 1,
+    lastSpoiled: [],
     reputation: content.balance.startReputation,
     line: [],
     nextCustomerId: 1,
     stats: freshStats(content),
   };
+  // A month of price history exists before day one, and the shelves start stocked.
+  initMarket(state, content, new Rng(state));
+  for (const [id, units] of Object.entries(content.balance.start.pantry)) {
+    const ing = content.ingredientById[id];
+    addLot(state, id, units * ing.unitSize, state.market.prices[id] / ing.unitSize);
+  }
+  for (const item of content.items) {
+    if (item.kind !== 'good') continue;
+    state.stock[item.id] = content.balance.start.goods[item.id] ?? 0;
+    state.goodsCost[item.id] = item.buyPrice ?? 0;
+  }
+  assignStorage(state, content);
+  return state;
 }

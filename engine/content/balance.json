@@ -30,7 +30,6 @@
   "prepareMinutes": 90,
   "exchangeMinutes": 30,
   "exchangeFeeBp": 200,
-  "autoRestock": true,
   "penalties": {
     "wrongTray": 4,
     "ktpCheck": 2,
@@ -112,7 +111,36 @@
   },
   "start": {
     "mood": 64,
-    "hunger": 40
+    "hunger": 40,
+    "bank": 1000000,
+    "pantry": {
+      "beras": 2,
+      "mi-instan": 40,
+      "tepung": 1,
+      "gula": 1,
+      "minyak": 2,
+      "telur": 2,
+      "ayam": 1,
+      "cabai": 1,
+      "bawang-merah": 1,
+      "sawi": 2,
+      "kopi": 1,
+      "teh": 1,
+      "es-batu": 3,
+      "lpg": 1,
+      "kertas-nasi": 1
+    },
+    "goods": {
+      "keripik": 30,
+      "kerupuk": 60,
+      "permen": 100,
+      "sampo-sachet": 30,
+      "rokok": 12,
+      "teh-botol": 24,
+      "air-mineral": 24,
+      "kopi-sachet": 30,
+      "roti": 10
+    }
   },
   "hungerPerHour": 2.5,
   "sleepHunger": 15,

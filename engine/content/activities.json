@@ -1,7 +1,7 @@
 {
   "dayOff": [
     { "id": "narik-ojol", "kind": "heavy", "name": { "id": "Narik ojol", "en": "Drive ojol" }, "effects": { "mood": -2, "hunger": 10, "cash": [22000, 60000], "cost": [5000, 12000] } },
-    { "id": "ke-pasar", "kind": "heavy", "available": false, "name": { "id": "Ke pasar", "en": "Go to the market" }, "effects": { "mood": 0, "hunger": 6 } },
+    { "id": "ke-pasar", "kind": "heavy", "name": { "id": "Ke pasar", "en": "Go to the market" }, "effects": { "mood": 0, "hunger": 6 } },
     { "id": "bantu-keluarga", "kind": "heavy", "name": { "id": "Bantu keluarga", "en": "Help family" }, "effects": { "mood": 8, "hunger": 6 } },
     { "id": "istirahat-panjang", "kind": "heavy", "name": { "id": "Istirahat panjang", "en": "Rest properly" }, "effects": { "mood": 14, "hunger": 8 } },
     { "id": "cek-chat", "kind": "light", "name": { "id": "Cek chat", "en": "Check chat" }, "effects": { "mood": 3 } },

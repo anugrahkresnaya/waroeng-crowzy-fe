@@ -22,20 +22,16 @@ export function Button({
   );
 }
 
+/** The look of a chip, for things that are not buttons (links). */
+export const chipClass = (on?: boolean) =>
+  `shrink-0 rounded-full border px-3 py-1 text-xs font-bold ${on ? "border-accent bg-accent text-accent-fg" : "border-line bg-panel"}`;
+
 export function Chip({
   on,
   className = "",
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & { on?: boolean }) {
-  return (
-    <button
-      {...props}
-      aria-pressed={on}
-      className={`shrink-0 rounded-full border px-3 py-1 text-xs font-bold ${
-        on ? "border-accent bg-accent text-accent-fg" : "border-line bg-panel"
-      } ${className}`}
-    />
-  );
+  return <button {...props} aria-pressed={on} className={`${chipClass(on)} ${className}`} />;
 }
 
 export function Card({ className = "", ...props }: HTMLAttributes<HTMLDivElement>) {

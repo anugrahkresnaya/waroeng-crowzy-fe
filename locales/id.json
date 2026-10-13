@@ -115,7 +115,16 @@
       "invalid_amount": "Jumlah tidak valid",
       "too_many_days_off": "Maksimal 2 hari libur seminggu",
       "invalid_block": "Blok tidak dikenal",
-      "invalid_activities": "Blok penuh atau kegiatan tidak tersedia"
+      "invalid_activities": "Blok penuh atau kegiatan tidak tersedia",
+      "insufficient_funds": "Saldo bank tidak cukup",
+      "below_minimum": "Kurang dari minimal pemasok",
+      "empty_order": "Keranjang kosong",
+      "unknown_supplier": "Pemasok tidak dikenal",
+      "unknown_product": "Barang tidak dikenal",
+      "invalid_quantity": "Jumlah tidak valid",
+      "no_pasar_trip": "Hari ini kamu tidak ke pasar",
+      "not_a_dish": "Itu bukan menu masakan",
+      "invalid_price": "Harga tidak valid"
     },
     "blockDone": {
       "pagi": "Blok pagi selesai{{extra}}",
@@ -123,7 +132,19 @@
       "sore": "Blok sore selesai{{extra}}",
       "malam": "Blok malam selesai{{extra}}"
     },
-    "unplannedClosure": "Tutup tanpa rencana: langganan kecewa, reputasi turun sedikit"
+    "unplannedClosure": "Tutup tanpa rencana: langganan kecewa, reputasi turun sedikit",
+    "orderPlaced": "Pesanan dibuat: {{total}}",
+    "orderDelivered": "Pesanan tiba",
+    "orderLate": "Pesanan terlambat, tiba besok",
+    "pasarBought": "Belanja di pasar: {{total}}",
+    "spoiled": "Ada bahan basi dibuang: {{value}}",
+    "news": {
+      "harvest-failure": "Kabar: panen cabai gagal",
+      "fuel-hike": "Kabar: BBM akan naik",
+      "flood": "Kabar: banjir di daerah pemasok",
+      "lpg-shortage": "Kabar: gas LPG langka",
+      "market-operation": "Kabar: ada operasi pasar"
+    }
   },
   "title": {
     "eyebrow": "OFFLINE · 1 PEMAIN",
@@ -223,7 +244,9 @@
     "lowStock": "Stok menipis",
     "left": "{{n}} sisa",
     "nextDay": "Hari berikutnya",
-    "toNight": "Lanjut ke malam"
+    "toNight": "Lanjut ke malam",
+    "profit": "Laba bersih",
+    "profitSub": "Setelah modal bahan {{cost}} dan biaya QRIS {{fees}}"
   },
   "phone": {
     "eyebrow": "PONSEL",
@@ -269,7 +292,8 @@
     "noPlan": "Belum ada rencana",
     "changePlan": "Ubah rencana",
     "run": "Jalankan {{block}}",
-    "hint": "Waktu hanya berjalan saat kamu menjalankan sebuah blok. Setelah blok Malam, lanjut ke waktu bebas 22.00–24.00."
+    "hint": "Waktu hanya berjalan saat kamu menjalankan sebuah blok. Setelah blok Malam, lanjut ke waktu bebas 22.00–24.00.",
+    "shopPasar": "Belanja di pasar sekarang"
   },
   "night": {
     "eyebrow": "22.00–24.00 · WAKTU BEBAS",
@@ -328,7 +352,8 @@
     "cancel": "Batal",
     "problem": "Save tidak bisa dibuka",
     "invalid": "Datanya rusak atau tidak dikenal. Mulai baru akan menyimpannya sebagai cadangan.",
-    "newer": "Save ini dibuat oleh versi game yang lebih baru. Mulai baru akan menyimpannya sebagai cadangan."
+    "newer": "Save ini dibuat oleh versi game yang lebih baru. Mulai baru akan menyimpannya sebagai cadangan.",
+    "outdated": "Save ini dibuat sebelum pasar ada, dan datanya tidak cukup untuk dilanjutkan. Mulai baru akan menyimpannya sebagai cadangan."
   },
   "phase": {
     "idle": "Pra-buka",
@@ -337,5 +362,179 @@
     "night": "Malam",
     "bed": "Sebelum tidur",
     "dayoff": "Libur"
+  },
+  "back": "Kembali",
+  "nav": {
+    "label": "Layar warung",
+    "today": "Hari ini",
+    "counter": "Kasir",
+    "menu": "Menu",
+    "storage": "Gudang"
+  },
+  "menu": {
+    "title": "Menu & harga",
+    "help": "Biaya per porsi dihitung dari harga bahan hari ini, jadi berubah mengikuti pasar.",
+    "spike": "Biaya naik untuk:",
+    "seePrices": "Lihat harga",
+    "reference": "Harga biasa di sekitar: {{price}}",
+    "cost": "Biaya",
+    "profit": "Untung",
+    "price": "Harga jual",
+    "portion": "Porsi",
+    "portions": {
+      "small": "Kecil",
+      "normal": "Biasa",
+      "large": "Besar"
+    },
+    "recipe": "Resep dan biaya bahan",
+    "loss": "Rugi",
+    "thin": "Tipis",
+    "fair": "Cukup",
+    "healthy": "Sehat",
+    "lower": "Turunkan harga {{name}}",
+    "raise": "Naikkan harga {{name}}"
+  },
+  "storage": {
+    "title": "Gudang",
+    "fridge": "Kulkas kecil {{used}}/{{cap}}",
+    "fridgeHelp": "Barang yang cepat basi disimpan di kulkas selama muat. Yang paling lama disimpan dapat tempat dulu.",
+    "spoiled": "Dibuang semalam:",
+    "cannotMake": "Tidak bisa dibuat sekarang:",
+    "order": "Pesan bahan",
+    "tabs": {
+      "bahan": "Bahan",
+      "barang": "Barang",
+      "pesanan": "Dalam perjalanan"
+    },
+    "empty": "Belum ada bahan di gudang.",
+    "inFridge": "di kulkas",
+    "keeps": "Awet",
+    "today": "Hari ini",
+    "days": "{{n}} hari lagi",
+    "goodsCost": "modal rata-rata {{price}} per buah"
+  },
+  "pasar": {
+    "title": "Pasar",
+    "categories": "Kategori bahan",
+    "category": {
+      "all": "Semua",
+      "pokok": "Pokok",
+      "protein": "Protein",
+      "sayur": "Sayur & bumbu",
+      "minuman": "Minuman",
+      "perlengkapan": "Perlengkapan"
+    },
+    "per": "per {{unit}}",
+    "pack": "1 pak = {{n}} buah",
+    "packWord": "pak",
+    "sellsFor": "dijual {{price}}",
+    "margin": "untung {{pct}}%",
+    "allProducts": "Semua barang",
+    "last30": "30 hari terakhir · per {{unit}}",
+    "chartLabel": "Grafik harga {{name}} 30 hari",
+    "showChart": "Lihat grafik",
+    "showTable": "Lihat tabel",
+    "alreadyUnderway": "sudah berlaku",
+    "soon": "mulai besok atau lusa",
+    "suppliers": "Harga di tiap pemasok",
+    "qty": "Jumlah",
+    "less": "Kurangi",
+    "more": "Tambah",
+    "toCart": "Ke keranjang",
+    "tabs": {
+      "harga": "Harga",
+      "barang": "Barang",
+      "keranjang": "Keranjang",
+      "pesanan": "Pesanan"
+    },
+    "tripBanner": "Kamu di pasar hari ini.",
+    "tripBannerHelp": "Harga pasar dengan tawar-menawar, diskon grosir untuk belanja besar, dan barangnya langsung dibawa pulang.",
+    "tripTitle": "Belanja di pasar",
+    "tripHelp": "Harga bisa naik atau turun sampai {{pct}}% karena tawar-menawar. Belanja besar dapat diskon grosir.",
+    "tripBuy": "Beli di pasar · {{total}}",
+    "subtotalMarket": "Harga pasar",
+    "bulkOff": "Diskon grosir {{pct}}%",
+    "bulkNone": "Diskon grosir mulai {{min}}",
+    "totalApprox": "Kira-kira total",
+    "noFunds": "Saldo bank tidak cukup. Tarik atau setor dulu di aplikasi Bank.",
+    "cheaper": "{{pct}}% di bawah pasar",
+    "dearer": "{{pct}}% di atas pasar",
+    "marketPrice": "harga pasar",
+    "minOrder": "minimal {{min}}",
+    "noMin": "tanpa minimal",
+    "oftenLate": "sering telat",
+    "reliable": "andal",
+    "sometimesLate": "kadang telat",
+    "subtotal": "Subtotal",
+    "expressFee": "Ongkos ekspres",
+    "feeFree": "Ongkir gratis (mulai {{min}})",
+    "fee": "Ongkos kirim",
+    "total": "Total",
+    "express": "Kirim ekspres",
+    "expressHelp": "Diantar ojol dalam beberapa jam. Ongkos {{fee}}. Untuk keadaan darurat.",
+    "arrives": "Tiba:",
+    "arrive": {
+      "hours": "dalam sekitar {{hours}} jam",
+      "tomorrowMorning": "besok pagi",
+      "tomorrow": "besok, 06.00 sampai 09.00",
+      "dayAfter": "{{weekday}}, 06.00 sampai 09.00"
+    },
+    "cutoffHint": "Pesan sebelum {{time}} agar tiba besok. Lewat jam itu, tiba lusa.",
+    "belowMin": "Pesanan kurang dari minimal pemasok ini ({{min}}).",
+    "pay": "Bayar dari bank · {{total}}",
+    "cartEmpty": "Keranjang kosong. Pilih barang di tab Harga atau Barang.",
+    "noOrders": "Belum ada pesanan.",
+    "orderNo": "Pesanan #{{n}} · {{supplier}}",
+    "expressTag": "ekspres",
+    "status": {
+      "delivered": "Sudah tiba {{weekday}}",
+      "late": "Terlambat. Tiba {{weekday}}",
+      "hours": "Tiba dalam beberapa jam",
+      "tomorrow": "Tiba besok, 06.00 sampai 09.00",
+      "later": "Tiba {{weekday}}"
+    },
+    "lateTag": "Terlambat",
+    "doneTag": "Selesai",
+    "onTheWay": "Di jalan",
+    "event": {
+      "harvest-failure": "Gagal panen",
+      "fuel-hike": "BBM naik",
+      "flood": "Banjir",
+      "lpg-shortage": "Gas langka",
+      "market-operation": "Operasi pasar"
+    },
+    "news": {
+      "harvest-failure": "Panen cabai gagal di sentra. Harga cabai naik tajam, {{starts}}.",
+      "fuel-hike": "BBM naik. Harga barang dan ongkos antar ikut naik, {{starts}}.",
+      "flood": "Banjir di daerah pemasok. Sayur naik dan pengiriman bisa telat, {{starts}}.",
+      "lpg-shortage": "Gas LPG 3 kg langka di pengecer. Harganya naik, {{starts}}.",
+      "market-operation": "Operasi pasar pemerintah. Harga beras dan minyak goreng turun, {{starts}}."
+    }
+  },
+  "news": {
+    "title": "Berita",
+    "none": "Belum ada kabar. Radio akan memberi tahu kalau harga bakal bergerak.",
+    "underway": "Sudah berlaku",
+    "coming": "Akan terasa"
+  },
+  "morning": {
+    "title": "Pagi ini",
+    "delivered": "Pesanan #{{n}} dari {{supplier}} sudah tiba.",
+    "late": "Pesanan #{{n}} dari {{supplier}} terlambat. Tiba {{weekday}}.",
+    "spoiled": "Dibuang karena basi: {{names}} ({{value}}).",
+    "cannotMake": "Belum bisa dibuat: {{names}}.",
+    "openMarket": "Buka aplikasi Pasar"
+  },
+  "bankApp": {
+    "title": "Bank",
+    "balance": "Saldo",
+    "help": "Uang QRIS masuk ke sini, bukan ke laci. Belanja dari ponsel dan pasar dibayar dari saldo ini.",
+    "deposit": "Setor uang laci",
+    "depositAmount": "Setor {{amount}}",
+    "inDrawer": "di laci: {{n}}",
+    "less": "Kurangi {{amount}}",
+    "more": "Tambah {{amount}}",
+    "withdraw": "Tarik tunai",
+    "withdrawHelp": "Mesin hanya mengeluarkan uang pecahan besar, jadi ini tidak menambah receh. Untuk receh, tukar uang sebelum buka."
   }
 }

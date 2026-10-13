@@ -115,7 +115,16 @@
       "invalid_amount": "Invalid amount",
       "too_many_days_off": "At most 2 days off a week",
       "invalid_block": "Unknown block",
-      "invalid_activities": "The block is full or the activity is unavailable"
+      "invalid_activities": "The block is full or the activity is unavailable",
+      "insufficient_funds": "Not enough in the bank",
+      "below_minimum": "Below the supplier's minimum",
+      "empty_order": "The basket is empty",
+      "unknown_supplier": "Unknown supplier",
+      "unknown_product": "Unknown product",
+      "invalid_quantity": "Invalid quantity",
+      "no_pasar_trip": "You are not at the pasar today",
+      "not_a_dish": "That is not a cooked dish",
+      "invalid_price": "Invalid price"
     },
     "blockDone": {
       "pagi": "Morning block done{{extra}}",
@@ -123,7 +132,19 @@
       "sore": "Afternoon block done{{extra}}",
       "malam": "Evening block done{{extra}}"
     },
-    "unplannedClosure": "Closed without planning: regulars are disappointed, reputation dropped a little"
+    "unplannedClosure": "Closed without planning: regulars are disappointed, reputation dropped a little",
+    "orderPlaced": "Order placed: {{total}}",
+    "orderDelivered": "An order arrived",
+    "orderLate": "An order is late, arriving tomorrow",
+    "pasarBought": "Bought at the pasar: {{total}}",
+    "spoiled": "Spoiled stock thrown out: {{value}}",
+    "news": {
+      "harvest-failure": "News: chili harvest failed",
+      "fuel-hike": "News: fuel prices will rise",
+      "flood": "News: flooding at the suppliers",
+      "lpg-shortage": "News: LPG is scarce",
+      "market-operation": "News: a market operation"
+    }
   },
   "title": {
     "eyebrow": "OFFLINE · 1 PLAYER",
@@ -223,7 +244,9 @@
     "lowStock": "Low stock",
     "left": "{{n}} left",
     "nextDay": "Next day",
-    "toNight": "On to the night"
+    "toNight": "On to the night",
+    "profit": "Net profit",
+    "profitSub": "After {{cost}} of ingredients and {{fees}} of QRIS fees"
   },
   "phone": {
     "eyebrow": "PHONE",
@@ -269,7 +292,8 @@
     "noPlan": "Nothing planned",
     "changePlan": "Change plan",
     "run": "Run {{block}}",
-    "hint": "Time only moves when you run a block. After the evening block comes free time, 22.00–24.00."
+    "hint": "Time only moves when you run a block. After the evening block comes free time, 22.00–24.00.",
+    "shopPasar": "Shop at the pasar now"
   },
   "night": {
     "eyebrow": "22.00–24.00 · FREE TIME",
@@ -328,7 +352,8 @@
     "cancel": "Cancel",
     "problem": "The save cannot be opened",
     "invalid": "Its data is damaged or not recognised. Starting a new game keeps it as a backup.",
-    "newer": "This save was made by a newer version of the game. Starting a new game keeps it as a backup."
+    "newer": "This save was made by a newer version of the game. Starting a new game keeps it as a backup.",
+    "outdated": "This save was made before the market existed and does not hold enough to continue. Starting a new game keeps it as a backup."
   },
   "phase": {
     "idle": "Before opening",
@@ -337,5 +362,179 @@
     "night": "Night",
     "bed": "Before bed",
     "dayoff": "Day off"
+  },
+  "back": "Back",
+  "nav": {
+    "label": "Shop screens",
+    "today": "Today",
+    "counter": "Counter",
+    "menu": "Menu",
+    "storage": "Storage"
+  },
+  "menu": {
+    "title": "Menu & prices",
+    "help": "The cost per portion is worked out from today's ingredient prices, so it moves with the market.",
+    "spike": "Costs are up for:",
+    "seePrices": "See prices",
+    "reference": "Usual price nearby: {{price}}",
+    "cost": "Cost",
+    "profit": "Profit",
+    "price": "Your price",
+    "portion": "Portion",
+    "portions": {
+      "small": "Small",
+      "normal": "Normal",
+      "large": "Large"
+    },
+    "recipe": "Recipe and ingredient costs",
+    "loss": "Loss",
+    "thin": "Thin",
+    "fair": "Fair",
+    "healthy": "Healthy",
+    "lower": "Lower the price of {{name}}",
+    "raise": "Raise the price of {{name}}"
+  },
+  "storage": {
+    "title": "Storage",
+    "fridge": "Small fridge {{used}}/{{cap}}",
+    "fridgeHelp": "Things that spoil fast go in the fridge while there is room. The oldest stock gets the space first.",
+    "spoiled": "Thrown out overnight:",
+    "cannotMake": "Cannot be made right now:",
+    "order": "Order ingredients",
+    "tabs": {
+      "bahan": "Ingredients",
+      "barang": "Goods",
+      "pesanan": "On the way"
+    },
+    "empty": "No ingredients in storage.",
+    "inFridge": "in the fridge",
+    "keeps": "Keeps",
+    "today": "Today",
+    "days": "{{n}} days left",
+    "goodsCost": "average cost {{price}} each"
+  },
+  "pasar": {
+    "title": "Market",
+    "categories": "Ingredient categories",
+    "category": {
+      "all": "All",
+      "pokok": "Staples",
+      "protein": "Protein",
+      "sayur": "Veg & spices",
+      "minuman": "Drinks",
+      "perlengkapan": "Supplies"
+    },
+    "per": "per {{unit}}",
+    "pack": "1 pack = {{n}} pieces",
+    "packWord": "pack",
+    "sellsFor": "sells for {{price}}",
+    "margin": "{{pct}}% margin",
+    "allProducts": "All products",
+    "last30": "Last 30 days · per {{unit}}",
+    "chartLabel": "30-day price chart for {{name}}",
+    "showChart": "Show chart",
+    "showTable": "Show table",
+    "alreadyUnderway": "already in effect",
+    "soon": "from tomorrow or the day after",
+    "suppliers": "Price at each supplier",
+    "qty": "Quantity",
+    "less": "Less",
+    "more": "More",
+    "toCart": "To basket",
+    "tabs": {
+      "harga": "Prices",
+      "barang": "Goods",
+      "keranjang": "Basket",
+      "pesanan": "Orders"
+    },
+    "tripBanner": "You are at the pasar today.",
+    "tripBannerHelp": "Market prices with haggling, a bulk discount on big buys, and you carry it home right away.",
+    "tripTitle": "Shopping at the pasar",
+    "tripHelp": "Haggling can move the price up or down by as much as {{pct}}%. Big buys get a bulk discount.",
+    "tripBuy": "Buy at the pasar · {{total}}",
+    "subtotalMarket": "Market price",
+    "bulkOff": "Bulk discount {{pct}}%",
+    "bulkNone": "Bulk discount from {{min}}",
+    "totalApprox": "About",
+    "noFunds": "Not enough in the bank. Withdraw or deposit in the Bank app first.",
+    "cheaper": "{{pct}}% under market",
+    "dearer": "{{pct}}% over market",
+    "marketPrice": "market price",
+    "minOrder": "minimum {{min}}",
+    "noMin": "no minimum",
+    "oftenLate": "often late",
+    "reliable": "reliable",
+    "sometimesLate": "sometimes late",
+    "subtotal": "Subtotal",
+    "expressFee": "Express fee",
+    "feeFree": "Free delivery (from {{min}})",
+    "fee": "Delivery fee",
+    "total": "Total",
+    "express": "Express delivery",
+    "expressHelp": "A rider brings it within hours. Costs {{fee}}. For emergencies.",
+    "arrives": "Arrives:",
+    "arrive": {
+      "hours": "in about {{hours}} hours",
+      "tomorrowMorning": "tomorrow morning",
+      "tomorrow": "tomorrow, 06.00 to 09.00",
+      "dayAfter": "{{weekday}}, 06.00 to 09.00"
+    },
+    "cutoffHint": "Order before {{time}} to get it tomorrow. After that it arrives the day after.",
+    "belowMin": "The order is below this supplier's minimum ({{min}}).",
+    "pay": "Pay from bank · {{total}}",
+    "cartEmpty": "The basket is empty. Pick goods in the Prices or Goods tab.",
+    "noOrders": "No orders yet.",
+    "orderNo": "Order #{{n}} · {{supplier}}",
+    "expressTag": "express",
+    "status": {
+      "delivered": "Arrived on {{weekday}}",
+      "late": "Late. Arrives {{weekday}}",
+      "hours": "Arrives within hours",
+      "tomorrow": "Arrives tomorrow, 06.00 to 09.00",
+      "later": "Arrives {{weekday}}"
+    },
+    "lateTag": "Late",
+    "doneTag": "Done",
+    "onTheWay": "On the way",
+    "event": {
+      "harvest-failure": "Harvest failure",
+      "fuel-hike": "Fuel price hike",
+      "flood": "Flood",
+      "lpg-shortage": "LPG shortage",
+      "market-operation": "Market operation"
+    },
+    "news": {
+      "harvest-failure": "Chili harvest failed at the source. Chili prices jump, {{starts}}.",
+      "fuel-hike": "Fuel prices rise. Goods and delivery costs follow, {{starts}}.",
+      "flood": "Flooding where the suppliers are. Greens go up and deliveries may run late, {{starts}}.",
+      "lpg-shortage": "3 kg LPG is scarce at the retailers. The price rises, {{starts}}.",
+      "market-operation": "A government market operation. Rice and cooking oil get cheaper, {{starts}}."
+    }
+  },
+  "news": {
+    "title": "News",
+    "none": "No news yet. The radio will warn you when prices are about to move.",
+    "underway": "In effect",
+    "coming": "Coming"
+  },
+  "morning": {
+    "title": "This morning",
+    "delivered": "Order #{{n}} from {{supplier}} has arrived.",
+    "late": "Order #{{n}} from {{supplier}} is late. It arrives {{weekday}}.",
+    "spoiled": "Thrown out as spoiled: {{names}} ({{value}}).",
+    "cannotMake": "Cannot be made yet: {{names}}.",
+    "openMarket": "Open the Market app"
+  },
+  "bankApp": {
+    "title": "Bank",
+    "balance": "Balance",
+    "help": "QRIS money lands here, not in the drawer. Orders from the phone and trips to the pasar are paid from this balance.",
+    "deposit": "Deposit drawer cash",
+    "depositAmount": "Deposit {{amount}}",
+    "inDrawer": "in drawer: {{n}}",
+    "less": "Less {{amount}}",
+    "more": "More {{amount}}",
+    "withdraw": "Withdraw cash",
+    "withdrawHelp": "The machine only pays out big notes, so this does not add small change. For small change, exchange cash before opening."
   }
 }

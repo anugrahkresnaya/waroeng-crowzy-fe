@@ -38,7 +38,7 @@ export function useDatabase(name: string): void {
 export type SavePeek =
   | { status: "none" }
   | { status: "ok"; day: number; phase: Phase; savedAt: number }
-  | { status: "invalid" | "newer"; savedAt: number }
+  | { status: "invalid" | "newer" | "outdated"; savedAt: number }
   | { status: "unavailable" };
 
 /** The saved game, parsed. Null when there is no save at all. */

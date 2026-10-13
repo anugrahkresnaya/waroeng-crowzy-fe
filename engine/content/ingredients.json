@@ -1,0 +1,602 @@
+[
+ {
+  "id": "beras",
+  "art": "bahan-beras",
+  "category": "pokok",
+  "name": {
+   "id": "Beras medium",
+   "en": "Medium rice"
+  },
+  "unit": {
+   "id": "kg",
+   "en": "kg"
+  },
+  "baseUnit": {
+   "id": "g",
+   "en": "g"
+  },
+  "unitSize": 1000,
+  "price": 16500,
+  "swing": "low",
+  "life": {
+   "room": null,
+   "fridge": null
+  }
+ },
+ {
+  "id": "mi-instan",
+  "art": "bahan-mi-instan",
+  "category": "pokok",
+  "name": {
+   "id": "Mi instan",
+   "en": "Instant noodles"
+  },
+  "unit": {
+   "id": "bungkus",
+   "en": "pack"
+  },
+  "baseUnit": {
+   "id": "bungkus",
+   "en": "pack"
+  },
+  "unitSize": 1,
+  "price": 3200,
+  "swing": "low",
+  "life": {
+   "room": null,
+   "fridge": null
+  }
+ },
+ {
+  "id": "tepung",
+  "art": "bahan-tepung",
+  "category": "pokok",
+  "name": {
+   "id": "Tepung terigu",
+   "en": "Wheat flour"
+  },
+  "unit": {
+   "id": "kg",
+   "en": "kg"
+  },
+  "baseUnit": {
+   "id": "g",
+   "en": "g"
+  },
+  "unitSize": 1000,
+  "price": 12000,
+  "swing": "low",
+  "life": {
+   "room": null,
+   "fridge": null
+  }
+ },
+ {
+  "id": "gula",
+  "art": "bahan-gula",
+  "category": "pokok",
+  "name": {
+   "id": "Gula pasir",
+   "en": "Sugar"
+  },
+  "unit": {
+   "id": "kg",
+   "en": "kg"
+  },
+  "baseUnit": {
+   "id": "g",
+   "en": "g"
+  },
+  "unitSize": 1000,
+  "price": 19500,
+  "swing": "low",
+  "life": {
+   "room": null,
+   "fridge": null
+  }
+ },
+ {
+  "id": "minyak",
+  "art": "bahan-minyak",
+  "category": "pokok",
+  "name": {
+   "id": "Minyak goreng curah",
+   "en": "Cooking oil"
+  },
+  "unit": {
+   "id": "liter",
+   "en": "liter"
+  },
+  "baseUnit": {
+   "id": "ml",
+   "en": "ml"
+  },
+  "unitSize": 1000,
+  "price": 21000,
+  "swing": "medium",
+  "life": {
+   "room": null,
+   "fridge": null
+  }
+ },
+ {
+  "id": "telur",
+  "art": "bahan-telur",
+  "category": "protein",
+  "name": {
+   "id": "Telur",
+   "en": "Eggs"
+  },
+  "unit": {
+   "id": "kg",
+   "en": "kg"
+  },
+  "baseUnit": {
+   "id": "butir",
+   "en": "egg"
+  },
+  "unitSize": 16,
+  "price": 30000,
+  "swing": "medium",
+  "life": {
+   "room": 10,
+   "fridge": 30
+  }
+ },
+ {
+  "id": "ayam",
+  "art": "bahan-ayam",
+  "category": "protein",
+  "name": {
+   "id": "Ayam",
+   "en": "Chicken"
+  },
+  "unit": {
+   "id": "kg",
+   "en": "kg"
+  },
+  "baseUnit": {
+   "id": "g",
+   "en": "g"
+  },
+  "unitSize": 1000,
+  "price": 40000,
+  "swing": "medium",
+  "life": {
+   "room": 0,
+   "fridge": 2
+  }
+ },
+ {
+  "id": "tahu",
+  "art": "bahan-tahu",
+  "category": "protein",
+  "name": {
+   "id": "Tahu",
+   "en": "Tofu"
+  },
+  "unit": {
+   "id": "potong",
+   "en": "piece"
+  },
+  "baseUnit": {
+   "id": "potong",
+   "en": "piece"
+  },
+  "unitSize": 1,
+  "price": 1000,
+  "swing": "medium",
+  "life": {
+   "room": 1,
+   "fridge": 4
+  }
+ },
+ {
+  "id": "tempe",
+  "art": "bahan-tempe",
+  "category": "protein",
+  "name": {
+   "id": "Tempe",
+   "en": "Tempeh"
+  },
+  "unit": {
+   "id": "papan",
+   "en": "slab"
+  },
+  "baseUnit": {
+   "id": "iris",
+   "en": "slice"
+  },
+  "unitSize": 10,
+  "price": 8000,
+  "swing": "medium",
+  "life": {
+   "room": 1,
+   "fridge": 4
+  }
+ },
+ {
+  "id": "lele",
+  "art": "bahan-lele",
+  "category": "protein",
+  "name": {
+   "id": "Ikan lele",
+   "en": "Catfish"
+  },
+  "unit": {
+   "id": "kg",
+   "en": "kg"
+  },
+  "baseUnit": {
+   "id": "g",
+   "en": "g"
+  },
+  "unitSize": 1000,
+  "price": 30000,
+  "swing": "medium",
+  "life": {
+   "room": 0,
+   "fridge": 2
+  }
+ },
+ {
+  "id": "cabai",
+  "art": "bahan-cabai",
+  "category": "sayur",
+  "name": {
+   "id": "Cabai",
+   "en": "Chili"
+  },
+  "unit": {
+   "id": "kg",
+   "en": "kg"
+  },
+  "baseUnit": {
+   "id": "g",
+   "en": "g"
+  },
+  "unitSize": 1000,
+  "price": 78000,
+  "swing": "high",
+  "life": {
+   "room": 4,
+   "fridge": 12
+  }
+ },
+ {
+  "id": "bawang-merah",
+  "art": "bahan-bawang-merah",
+  "category": "sayur",
+  "name": {
+   "id": "Bawang merah",
+   "en": "Shallots"
+  },
+  "unit": {
+   "id": "kg",
+   "en": "kg"
+  },
+  "baseUnit": {
+   "id": "g",
+   "en": "g"
+  },
+  "unitSize": 1000,
+  "price": 40000,
+  "swing": "high",
+  "life": {
+   "room": 21,
+   "fridge": null
+  }
+ },
+ {
+  "id": "bawang-putih",
+  "art": "bahan-bawang-putih",
+  "category": "sayur",
+  "name": {
+   "id": "Bawang putih",
+   "en": "Garlic"
+  },
+  "unit": {
+   "id": "kg",
+   "en": "kg"
+  },
+  "baseUnit": {
+   "id": "g",
+   "en": "g"
+  },
+  "unitSize": 1000,
+  "price": 40000,
+  "swing": "medium",
+  "life": {
+   "room": 21,
+   "fridge": null
+  }
+ },
+ {
+  "id": "sawi",
+  "art": "bahan-sawi",
+  "category": "sayur",
+  "name": {
+   "id": "Sawi",
+   "en": "Mustard greens"
+  },
+  "unit": {
+   "id": "kg",
+   "en": "kg"
+  },
+  "baseUnit": {
+   "id": "g",
+   "en": "g"
+  },
+  "unitSize": 1000,
+  "price": 12000,
+  "swing": "high",
+  "life": {
+   "room": 2,
+   "fridge": 7
+  }
+ },
+ {
+  "id": "tomat",
+  "art": "bahan-tomat",
+  "category": "sayur",
+  "name": {
+   "id": "Tomat",
+   "en": "Tomatoes"
+  },
+  "unit": {
+   "id": "kg",
+   "en": "kg"
+  },
+  "baseUnit": {
+   "id": "g",
+   "en": "g"
+  },
+  "unitSize": 1000,
+  "price": 12000,
+  "swing": "high",
+  "life": {
+   "room": 3,
+   "fridge": 7
+  }
+ },
+ {
+  "id": "kopi",
+  "art": "bahan-kopi",
+  "category": "minuman",
+  "name": {
+   "id": "Kopi bubuk",
+   "en": "Ground coffee"
+  },
+  "unit": {
+   "id": "kg",
+   "en": "kg"
+  },
+  "baseUnit": {
+   "id": "g",
+   "en": "g"
+  },
+  "unitSize": 1000,
+  "price": 80000,
+  "swing": "low",
+  "life": {
+   "room": null,
+   "fridge": null
+  }
+ },
+ {
+  "id": "teh",
+  "art": "bahan-teh",
+  "category": "minuman",
+  "name": {
+   "id": "Teh",
+   "en": "Tea"
+  },
+  "unit": {
+   "id": "kg",
+   "en": "kg"
+  },
+  "baseUnit": {
+   "id": "g",
+   "en": "g"
+  },
+  "unitSize": 1000,
+  "price": 40000,
+  "swing": "low",
+  "life": {
+   "room": null,
+   "fridge": null
+  }
+ },
+ {
+  "id": "susu",
+  "art": "bahan-susu",
+  "category": "minuman",
+  "name": {
+   "id": "Susu kental manis",
+   "en": "Condensed milk"
+  },
+  "unit": {
+   "id": "kaleng",
+   "en": "can"
+  },
+  "baseUnit": {
+   "id": "kaleng",
+   "en": "can"
+  },
+  "unitSize": 1,
+  "price": 13000,
+  "swing": "low",
+  "life": {
+   "room": null,
+   "fridge": null
+  }
+ },
+ {
+  "id": "es-batu",
+  "art": "bahan-es-batu",
+  "category": "minuman",
+  "name": {
+   "id": "Es batu",
+   "en": "Ice"
+  },
+  "unit": {
+   "id": "kg",
+   "en": "kg"
+  },
+  "baseUnit": {
+   "id": "g",
+   "en": "g"
+  },
+  "unitSize": 1000,
+  "price": 1500,
+  "swing": "low",
+  "life": {
+   "room": 0,
+   "fridge": 0
+  }
+ },
+ {
+  "id": "air-galon",
+  "art": "bahan-air-galon",
+  "category": "minuman",
+  "name": {
+   "id": "Air galon isi ulang",
+   "en": "Refill water"
+  },
+  "unit": {
+   "id": "galon",
+   "en": "gallon"
+  },
+  "baseUnit": {
+   "id": "galon",
+   "en": "gallon"
+  },
+  "unitSize": 1,
+  "price": 6500,
+  "swing": "low",
+  "life": {
+   "room": null,
+   "fridge": null
+  }
+ },
+ {
+  "id": "lpg",
+  "art": "bahan-lpg",
+  "category": "perlengkapan",
+  "name": {
+   "id": "Gas LPG 3 kg",
+   "en": "LPG 3 kg"
+  },
+  "unit": {
+   "id": "tabung",
+   "en": "tank"
+  },
+  "baseUnit": {
+   "id": "api",
+   "en": "flame"
+  },
+  "unitSize": 1000,
+  "price": 22000,
+  "swing": "low",
+  "life": {
+   "room": null,
+   "fridge": null
+  }
+ },
+ {
+  "id": "kantong",
+  "art": "bahan-kantong",
+  "category": "perlengkapan",
+  "name": {
+   "id": "Kantong plastik",
+   "en": "Plastic bags"
+  },
+  "unit": {
+   "id": "pak",
+   "en": "pack"
+  },
+  "baseUnit": {
+   "id": "lembar",
+   "en": "bag"
+  },
+  "unitSize": 100,
+  "price": 12000,
+  "swing": "low",
+  "life": {
+   "room": null,
+   "fridge": null
+  }
+ },
+ {
+  "id": "kertas-nasi",
+  "art": "bahan-kertas-nasi",
+  "category": "perlengkapan",
+  "name": {
+   "id": "Kertas nasi",
+   "en": "Rice paper"
+  },
+  "unit": {
+   "id": "pak",
+   "en": "pack"
+  },
+  "baseUnit": {
+   "id": "lembar",
+   "en": "sheet"
+  },
+  "unitSize": 100,
+  "price": 14000,
+  "swing": "low",
+  "life": {
+   "room": null,
+   "fridge": null
+  }
+ },
+ {
+  "id": "tisu",
+  "art": "bahan-tisu",
+  "category": "perlengkapan",
+  "name": {
+   "id": "Tisu",
+   "en": "Tissues"
+  },
+  "unit": {
+   "id": "pak",
+   "en": "pack"
+  },
+  "baseUnit": {
+   "id": "pak",
+   "en": "pack"
+  },
+  "unitSize": 1,
+  "price": 8000,
+  "swing": "low",
+  "life": {
+   "room": null,
+   "fridge": null
+  }
+ },
+ {
+  "id": "sabun-piring",
+  "art": "bahan-sabun-piring",
+  "category": "perlengkapan",
+  "name": {
+   "id": "Sabun cuci piring",
+   "en": "Dish soap"
+  },
+  "unit": {
+   "id": "botol",
+   "en": "bottle"
+  },
+  "baseUnit": {
+   "id": "botol",
+   "en": "bottle"
+  },
+  "unitSize": 1,
+  "price": 10000,
+  "swing": "low",
+  "life": {
+   "room": null,
+   "fridge": null
+  }
+ }
+]

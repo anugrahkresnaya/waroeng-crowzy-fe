@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { moodOf } from './counter';
 import { Game } from './game';
 import { total } from './money';
-import { addCustomer, openGame, pickAll, quietContent } from './testing/fixtures';
+import { addCustomer, openGame, pantryQty, pickAll, quietContent, runOut } from './testing/fixtures';
 
 const indomie = (qty = 1) => [{ itemId: 'indomie-goreng', qty }];
 
@@ -10,6 +10,7 @@ describe('counter: cash', () => {
   it('serves a customer with exact change', () => {
     const game = openGame();
     const drawerBefore = total(game.state.drawer);
+    const noodlesBefore = pantryQty(game, 'mi-instan');
     addCustomer(game, { order: indomie(), tender: { 5000: 1 } });
     pickAll(game);
     expect(game.state.line[0].stage).toBe('change');
@@ -19,7 +20,8 @@ describe('counter: cash', () => {
     expect(game.state.stats.served).toBe(1);
     expect(game.state.stats.cashRevenue).toBe(4500);
     expect(total(game.state.drawer)).toBe(drawerBefore + 4500);
-    expect(game.state.stock['indomie-goreng']).toBe(39);
+    expect(pantryQty(game, 'mi-instan')).toBe(noodlesBefore - 1); // a dish uses up its ingredients
+    expect(game.state.stats.cogs).toBeGreaterThan(3000);
     expect(game.state.stats.overChange + game.state.stats.shortChangeUnnoticed).toBe(0);
   });
 
@@ -84,12 +86,13 @@ describe('counter: qris and kasbon', () => {
   it('QRIS goes to the bank minus the fee, not the drawer', () => {
     const game = openGame();
     const drawerBefore = total(game.state.drawer);
+    const bankBefore = game.state.bank;
     addCustomer(game, { order: indomie(), method: 'qris' });
     pickAll(game);
     expect(game.state.line[0].stage).toBe('paying');
     game.dispatch({ type: 'confirmQris' });
     expect(game.state.stats.qrisFees).toBe(Math.ceil((4500 * 70) / 10000));
-    expect(game.state.bank).toBe(4500 - game.state.stats.qrisFees);
+    expect(game.state.bank).toBe(bankBefore + 4500 - game.state.stats.qrisFees);
     expect(total(game.state.drawer)).toBe(drawerBefore);
   });
 
@@ -106,13 +109,14 @@ describe('counter: qris and kasbon', () => {
   it('refusing kasbon loses the sale and a little reputation', () => {
     const game = openGame();
     const rep = game.state.reputation;
+    const noodlesBefore = pantryQty(game, 'mi-instan');
     addCustomer(game, { order: indomie(), method: 'kasbon' });
     pickAll(game);
     game.dispatch({ type: 'refuseKasbon' });
     expect(game.state.stats.served).toBe(0);
     expect(game.state.stats.kasbonRefused).toBe(1);
     expect(game.state.reputation).toBeLessThan(rep);
-    expect(game.state.stock['indomie-goreng']).toBe(40);
+    expect(pantryQty(game, 'mi-instan')).toBe(noodlesBefore); // nothing was used
   });
 
   it('rejects the wrong payment command for the method', () => {
@@ -149,7 +153,7 @@ describe('counter: picking and orders', () => {
 
   it('refuses to pick an item that is out of stock, and declining finishes the order without it', () => {
     const game = openGame();
-    game.state.stock['es-teh'] = 0;
+    runOut(game, 'teh');
     const c = addCustomer(game, {
       order: [{ itemId: 'es-teh', qty: 1 }, ...indomie()],
       method: 'qris',
@@ -166,7 +170,7 @@ describe('counter: picking and orders', () => {
 
   it('declining the whole order sends the customer away', () => {
     const game = openGame();
-    game.state.stock['es-teh'] = 0;
+    runOut(game, 'teh');
     addCustomer(game, { order: [{ itemId: 'es-teh', qty: 1 }] });
     const res = game.dispatch({ type: 'declineItem', itemId: 'es-teh' });
     expect(res.ok).toBe(true);
@@ -342,12 +346,12 @@ describe('days', () => {
     const rep = g.state.reputation;
     g.dispatch({ type: 'closeWarung' });
     expect(g.dispatch({ type: 'open', prepared: true })).toEqual({ ok: false, error: 'wrong_phase' });
-    g.state.stock['indomie-goreng'] = 3;
+    g.state.stock['rokok'] = 3;
     expect(g.dispatch({ type: 'nextDay' })).toEqual({ ok: false, error: 'wrong_phase' });
     g.dispatch({ type: 'goToNight' });
     g.dispatch({ type: 'spendFreeTime', activities: ['makan'] });
     const res = g.dispatch({ type: 'nextDay' });
-    expect(res.ok && res.events).toEqual([{ type: 'new_day', day: 1 }]);
+    expect(res.ok && res.events.map((e) => e.type)).toContain('new_day');
     expect(g.state.phase).toBe('idle');
     expect(g.state.day).toBe(1);
     expect(g.state.minute).toBe(g.content.balance.openMinute);
@@ -355,7 +359,7 @@ describe('days', () => {
     expect(g.state.preOpenUsed).toBe(0);
     expect(g.state.kasbon).toHaveLength(1);
     expect(g.state.reputation).toBe(rep);
-    expect(g.state.stock['indomie-goreng']).toBe(40);
+    expect(g.state.stock['rokok']).toBe(3); // nothing refills the shelf by itself any more
     expect(g.dispatch({ type: 'nextDay' })).toEqual({ ok: false, error: 'wrong_phase' });
   });
 

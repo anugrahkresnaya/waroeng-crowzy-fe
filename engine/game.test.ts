@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { content } from './content';
 import { Game } from './game';
+import { ingredientQty } from './market';
 import { total } from './money';
 import { replay } from './replay';
 import { playDay } from './testing/bot';
@@ -37,17 +38,32 @@ describe('a full day', () => {
     expect(json(rebuilt)).toBe(json(original));
   });
 
-  it('keeps cash, bank and stock consistent with the sales it recorded', () => {
+  it('keeps cash, bank, goods and ingredients consistent with the sales it recorded', () => {
     // With noticing switched off no payouts happen, so the drawer must balance to the rupiah.
     const blind = { ...content, balance: { ...content.balance, noticeShortChange: 0 } };
-    const game = playDay(new Game(blind, { seed: 3 }));
+    const game = new Game(blind, { seed: 3 });
+    const before = {
+      pantry: Object.fromEntries(content.ingredients.map((i) => [i.id, ingredientQty(game.state, i.id)])),
+      stock: { ...game.state.stock },
+      bank: game.state.bank,
+    };
+    playDay(game);
     const s = game.state.stats;
     const startDrawer = Object.entries(content.balance.startDrawer).reduce((sum, [d, n]) => sum + Number(d) * n, 0);
     expect(total(game.state.drawer)).toBe(startDrawer + s.cashRevenue + s.shortChangeGained - s.overChange);
-    expect(game.state.bank).toBe(s.qrisRevenue);
-    const soldUnits = Object.values(s.itemsSold).reduce((a, b) => a + b, 0);
-    const stockUsed = content.items.reduce((sum, i) => sum + (i.startStock - game.state.stock[i.id]), 0);
-    expect(stockUsed).toBe(soldUnits);
+    expect(game.state.bank).toBe(before.bank + s.qrisRevenue);
+
+    // Goods on the shelf went down by exactly what was sold.
+    for (const item of content.items.filter((i) => i.kind === 'good')) {
+      expect(game.state.stock[item.id], item.id).toBe(before.stock[item.id] - (s.itemsSold[item.id] ?? 0));
+    }
+    // Ingredients used equal what the dishes sold needed (every portion was a normal one).
+    for (const ing of content.ingredients) {
+      let used = 0;
+      for (const item of content.items.filter((i) => i.kind === 'dish')) used += (item.recipe?.[ing.id] ?? 0) * (s.itemsSold[item.id] ?? 0);
+      expect(before.pantry[ing.id] - ingredientQty(game.state, ing.id), ing.id).toBeCloseTo(used, 5);
+    }
+    expect(s.cogs).toBeGreaterThan(0);
   });
 
   it('a slower player serves fewer customers and loses more to patience', () => {

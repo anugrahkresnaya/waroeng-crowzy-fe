@@ -1,6 +1,7 @@
 // A headless player used by tests and, later, balance checks. It never rolls dice itself,
 // so a run is fully decided by the seed and these rules.
 import { changeFor } from '../counter';
+import { portionsLeft, quoteOrder } from '../market';
 import { Game } from '../game';
 import { payOutBestEffort, addPieces } from '../money';
 import type { Command } from '../types';
@@ -25,8 +26,7 @@ export function botAct(game: Game): boolean {
     if (restricted && c.age < 18) return send({ type: 'declineItem', itemId: restricted.itemId });
     for (const line of c.order) {
       if ((c.tray[line.itemId] ?? 0) >= line.qty) continue;
-      const have = (state.stock[line.itemId] ?? 0) - (c.tray[line.itemId] ?? 0);
-      if (have <= 0) return send({ type: 'declineItem', itemId: line.itemId });
+      if (portionsLeft(state, content, line.itemId, c.tray) <= 0) return send({ type: 'declineItem', itemId: line.itemId });
       return send({ type: 'pick', itemId: line.itemId });
     }
     return send({ type: 'confirmOrder' });
@@ -65,9 +65,51 @@ export function sleepThrough(game: Game, options: { freeTime?: string[]; open?: 
 
 /** Plays whatever the current day is: a shop day with the bot, or every day-off block. */
 export function playAnyDay(game: Game, options: BotOptions = { actionsPerTick: 4 }): void {
+  bankTheBigNotes(game);
+  restock(game);
   if (game.state.phase === 'dayoff') {
     while (game.state.phase === 'dayoff') game.dispatch({ type: 'runBlock' });
     return;
   }
   playDay(game, options);
+}
+
+/** Banks the big notes the till does not need, keeping a float of 20.000 notes for change. */
+export function bankTheBigNotes(game: Game): void {
+  const { drawer } = game.state;
+  const pieces: Record<number, number> = {};
+  if ((drawer[100000] ?? 0) > 0) pieces[100000] = drawer[100000];
+  if ((drawer[50000] ?? 0) > 0) pieces[50000] = drawer[50000];
+  if (Object.keys(pieces).length > 0) game.dispatch({ type: 'depositCash', pieces });
+}
+
+/**
+ * Orders enough from the main supplier to bring every ingredient and good back up to its starting level,
+ * counting what is already on the way. Skips what the bank cannot cover.
+ */
+export function restock(game: Game, supplier = 'pak-slamet'): void {
+  const { state, content } = game;
+  const incoming: Record<string, number> = {};
+  for (const o of state.orders) if (o.status === 'transit') for (const l of o.lines) incoming[l.key] = (incoming[l.key] ?? 0) + l.qty;
+  const lines: Array<{ key: string; qty: number }> = [];
+  for (const [id, target] of Object.entries(content.balance.start.pantry)) {
+    const ing = content.ingredientById[id];
+    const have = state.pantry.filter((l) => l.ingredient === id).reduce((s, l) => s + l.qty, 0) / ing.unitSize + (incoming[id] ?? 0);
+    const need = Math.ceil(target - have - 1e-9);
+    if (need > 0) lines.push({ key: id, qty: need });
+  }
+  for (const [id, target] of Object.entries(content.balance.start.goods)) {
+    const item = content.itemById[id];
+    const have = (state.stock[id] ?? 0) + (incoming[`g-${id}`] ?? 0) * (item.pack ?? 1);
+    const need = Math.ceil((target - have) / (item.pack ?? 1));
+    if (need > 0) lines.push({ key: `g-${id}`, qty: need });
+  }
+  while (lines.length > 0) {
+    const q = quoteOrder(state, content, supplier, lines, false);
+    if (state.bank >= q.total && q.subtotal >= content.supplierById[supplier].minOrder) {
+      game.dispatch({ type: 'placeOrder', supplier, lines, express: false });
+      return;
+    }
+    lines.pop(); // drop the last line and try again
+  }
 }

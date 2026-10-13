@@ -1,13 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import activities from './content/activities.json';
-import balance from './content/balance.json';
-import customers from './content/customers.json';
-import items from './content/items.json';
 import { content, parseContent } from './content';
 import { Game } from './game';
 import { replay } from './replay';
 import { SAVE_FORMAT, createSave, parseSave, reconcile, restoreGame } from './save';
 import { playAnyDay, sleepThrough } from './testing/bot';
+import { rawContent } from './testing/raw-content';
 
 const json = (g: Game) => JSON.stringify(g.state);
 const viaStorage = (value: unknown) => JSON.parse(JSON.stringify(value)) as unknown;
@@ -100,30 +97,47 @@ describe('reading what storage returns', () => {
 });
 
 describe('content that changed since the save', () => {
-  type Raw = {
-    items: Array<Record<string, unknown> & { id: string }>;
-    customers: Array<Record<string, unknown> & { items: Record<string, number> }>;
-    balance: unknown;
-    activities: unknown;
-  };
-  const raw = () => structuredClone({ items, customers, balance, activities }) as unknown as Raw;
+  type Raw = ReturnType<typeof rawContent>;
+  const raw = rawContent;
   const without = (r: Raw, id: string) => {
     r.items = r.items.filter((i) => i.id !== id);
     r.customers = r.customers.map((c) => ({ ...c, items: Object.fromEntries(Object.entries(c.items).filter(([k]) => k !== id)) }));
   };
 
-  it('drops items that no longer exist and starts new ones fully stocked', () => {
+  it('drops goods and dishes that no longer exist, and starts new goods at their starting stock', () => {
     const g = new Game(content, { seed: 1 });
     g.dispatch({ type: 'open', prepared: true });
-    g.state.stats.itemsSold.telur = 4;
+    g.state.stats.itemsSold.permen = 4;
     const r = raw();
-    without(r, 'telur');
-    r.items.push({ ...r.items[0], id: 'baru', art: 'roti', name: { id: 'Baru', en: 'New' }, startStock: 7 });
-    const changed = parseContent(r);
-    const fixed = reconcile(g.snapshot(), changed);
-    expect('telur' in fixed.stock).toBe(false);
+    without(r, 'permen');
+    without(r, 'gorengan');
+    delete r.balance.start.goods.permen;
+    r.items.push({ ...r.items.find((i) => i.id === 'keripik')!, id: 'baru', art: 'roti', name: { id: 'Baru', en: 'New' }, buyPrice: 500, pack: 10 });
+    r.balance.start.goods.baru = 7;
+    const fixed = reconcile(g.snapshot(), parseContent(r));
+    expect('permen' in fixed.stock).toBe(false);
+    expect('permen' in fixed.goodsCost).toBe(false);
+    expect('permen' in fixed.stats.itemsSold).toBe(false);
     expect(fixed.stock.baru).toBe(7);
-    expect('telur' in fixed.stats.itemsSold).toBe(false);
+    expect('gorengan' in fixed.menu).toBe(false);
+    expect(fixed.menu['es-teh']).toEqual(g.state.menu['es-teh']);
+  });
+
+  it('drops pantry lots and orders for things that are gone, and keeps the player\'s menu choices', () => {
+    const g = new Game(content, { seed: 1 });
+    g.dispatch({ type: 'setDishPrice', item: 'es-teh', price: 3500 });
+    g.dispatch({ type: 'setPortion', item: 'es-teh', portion: 'large' });
+    g.dispatch({ type: 'placeOrder', supplier: 'pak-slamet', lines: [{ key: 'beras', qty: 2 }, { key: 'sawi', qty: 1 }], express: false });
+    const r = raw();
+    r.ingredients = r.ingredients.filter((i) => i.id !== 'sawi');
+    delete r.balance.start.pantry.sawi;
+    for (const item of r.items) if (item.recipe) delete item.recipe.sawi;
+    r.market.seasons.forEach((s) => s.effects.forEach((e: { match: string[] }) => (e.match = e.match.filter((m) => m !== 'sawi'))));
+    const fixed = reconcile(g.snapshot(), parseContent(r));
+    expect(fixed.pantry.some((l) => l.ingredient === 'sawi')).toBe(false);
+    expect(fixed.orders[0].lines.map((l) => l.key)).toEqual(['beras']);
+    expect(fixed.menu['es-teh']).toEqual({ price: 3500, portion: 'large' });
+    expect('sawi' in fixed.market.prices).toBe(false);
   });
 
   it('drops queued customers that order something that is gone, or are of a removed type', () => {
@@ -133,9 +147,10 @@ describe('content that changed since the save', () => {
       id: g.state.nextCustomerId++, type, age: 30, order: [{ itemId, qty: 1 }], tray: {}, patience: 10, maxPatience: 10,
       arrivedAt: 0, stage: 'ordering' as const, method: 'qris' as const, bill: 1000, tender: {}, ktpChecked: false,
     });
-    g.state.line = [mk('langganan', 'es-teh'), mk('langganan', 'telur'), mk('hantu', 'es-teh')];
+    g.state.line = [mk('langganan', 'es-teh'), mk('langganan', 'permen'), mk('hantu', 'es-teh')];
     const r = raw();
-    without(r, 'telur');
+    without(r, 'permen');
+    delete r.balance.start.goods.permen;
     const fixed = reconcile(g.snapshot(), parseContent(r));
     expect(fixed.line.map((c) => c.order[0].itemId)).toEqual(['es-teh']);
   });

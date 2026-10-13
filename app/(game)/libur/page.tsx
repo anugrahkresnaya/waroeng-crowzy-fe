@@ -5,8 +5,10 @@ import { useTranslation } from "react-i18next";
 import { MoodMeters } from "@/components/mood-meters";
 import { Art } from "@/components/art";
 import { TopBar } from "@/components/top-bar";
+import { MorningReport } from "@/components/morning-report";
+import { WarungNav } from "@/components/warung-nav";
 import { Button, Card, Pill } from "@/components/ui";
-import { content, formatClock } from "@/engine";
+import { content, formatClock, onPasarTrip } from "@/engine";
 import { useGame } from "@/lib/game-store";
 import { useGuard } from "@/lib/use-guard";
 import { useLocalize } from "@/lib/use-localize";
@@ -26,7 +28,9 @@ export default function LiburPage() {
   return (
     <>
       <TopBar />
+      <WarungNav />
       <div className="scroll-thin flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-3 [&>*]:shrink-0">
+        <MorningReport />
         <Card>
           <div className="flex items-center gap-3 p-3">
             <div className="flex-1 leading-tight">
@@ -74,6 +78,11 @@ export default function LiburPage() {
                     ))
                   )}
                 </div>
+                {current && onPasarTrip(state, content) && (
+                  <Link href="/pasar" data-testid="go-pasar" className="mt-2 block rounded-xl border border-accent bg-panel px-4 py-2 text-center text-sm font-bold text-accent">
+                    {t("off.shopPasar")}
+                  </Link>
+                )}
                 {current && (
                   <div className="mt-2 flex gap-2">
                     <Link href="/jadwal" className="flex-1 rounded-xl border border-line bg-panel px-4 py-2 text-center text-sm font-bold">

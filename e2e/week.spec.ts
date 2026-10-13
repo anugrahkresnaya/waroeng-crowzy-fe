@@ -115,7 +115,8 @@ test("day-off blocks follow the one-heavy-or-two-light rule", async ({ page }) =
   expect((await gameState(page)).offPlan.sore).toEqual(["cek-chat", "istirahat"]);
   await page.getByTestId("act-sore-narik-ojol").click(); // a heavy one replaces them
   expect((await gameState(page)).offPlan.sore).toEqual(["narik-ojol"]);
-  await expect(page.getByTestId("act-sore-ke-pasar")).toBeDisabled();
+  await page.getByTestId("act-sore-ke-pasar").click(); // the market is open now, so a pasar trip can be planned
+  expect((await gameState(page)).offPlan.sore).toEqual(["ke-pasar"]);
 });
 
 test("Sunday night asks for next week's plan before the tomorrow question", async ({ page }) => {

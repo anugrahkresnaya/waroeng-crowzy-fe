@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Art } from "@/components/art";
 import { Button, Chip } from "@/components/ui";
-import { content, type Customer } from "@/engine";
+import { content, portionsLeft, sellPrice, type Customer } from "@/engine";
 import { useCounterUi } from "@/lib/counter-ui-store";
 import { rb, rp } from "@/lib/format";
 import { useGame } from "@/lib/game-store";
@@ -17,7 +17,7 @@ export function Ordering({ customer }: { customer: Customer }) {
   const { t } = useTranslation();
   const loc = useLocalize();
   const send = useGame((s) => s.send);
-  const stock = useGame((s) => s.state?.stock ?? {});
+  const state = useGame((s) => s.state);
   const wrongTrays = useGame((s) => s.state?.stats.wrongTrays ?? 0);
   const category = useCounterUi((s) => s.category);
   const setCategory = useCounterUi((s) => s.setCategory);
@@ -100,20 +100,21 @@ export function Ordering({ customer }: { customer: Customer }) {
         {content.items
           .filter((i) => i.category === category)
           .map((item) => {
-            const left = (stock[item.id] ?? 0) - (customer.tray[item.id] ?? 0);
+            const left = state ? portionsLeft(state, content, item.id, customer.tray) : 0;
+            const price = state ? sellPrice(state, item) : item.price;
             return (
               <button
                 key={item.id}
                 data-drag={`item:${item.id}`}
                 data-testid={`item-${item.id}`}
-                aria-label={`${loc(item.name)}, ${rp(item.price)}`}
+                aria-label={`${loc(item.name)}, ${rp(price)}`}
                 className={`tile relative flex flex-col items-center gap-0.5 rounded-xl border border-line bg-panel p-1.5 ${left <= 0 ? "opacity-40" : ""}`}
               >
                 <span className="w-11">
                   <Art id={item.art} />
                 </span>
                 <span className="w-full truncate text-center text-[11px] font-bold leading-tight">{loc(item.name)}</span>
-                <span className="font-mono text-[10px] tabular-nums text-muted">{rb(item.price)}</span>
+                <span className="font-mono text-[10px] tabular-nums text-muted">{rb(price)}</span>
                 <span className={`absolute right-1 top-1 rounded-full bg-bg px-1 font-mono text-[9px] tabular-nums ${left < 6 ? "text-bad" : "text-muted"}`}>
                   {left}
                 </span>

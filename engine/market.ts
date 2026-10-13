@@ -1,0 +1,403 @@
+// The market: simulated prices, supplier orders and delivery, the pantry (with spoilage and a small
+// fridge), pasar trips, and what each dish costs to make. Time and chance come only from the game.
+import { addDays, inRange } from './calendar';
+import type { Rng } from './rng';
+import { goodKey, type Content, type Item, type Portion, type Product } from './schema';
+import type { CommandError, GameEvent, GameState, Lot, MarketState, Order, PurchaseLine, Spoiled } from './types';
+
+export interface MarketCtx {
+  state: GameState;
+  content: Content;
+  rng: Rng;
+  emit: (event: GameEvent) => void;
+}
+
+type Err = CommandError | null;
+
+// ---------------------------------------------------------------- prices
+
+/** Prices round to Rp500 for big items, Rp100 for mid ones and Rp50 for small ones. */
+export function roundPrice(price: number): number {
+  const step = price >= 20000 ? 500 : price >= 5000 ? 100 : 50;
+  return Math.max(step, Math.round(price / step) * step);
+}
+
+const matches = (p: Product, tokens: string[]) => tokens.some((t) => t === 'all' || t === p.category || t === p.id);
+
+export function emptyMarket(): MarketState {
+  return { prices: {}, noise: {}, history: {}, active: [], pending: [], news: [] };
+}
+
+/** The seasons and events pushing a product's price on a given day, as one multiplier. */
+export function priceMultiplier(content: Content, market: MarketState, product: Product, day: number): number {
+  let mult = 1;
+  const date = addDays(content.market.calendarStart, day);
+  for (const season of content.market.seasons) {
+    if (!inRange(date, season.from, season.to)) continue;
+    for (const e of season.effects) if (matches(product, e.match)) mult *= e.mul;
+  }
+  for (const ev of market.active) {
+    if (ev.start > day || (ev.end !== null && day > ev.end)) continue;
+    const def = content.market.events.find((d) => d.id === ev.id);
+    if (!def) continue;
+    const length = ev.end === null ? 1 : ev.end - ev.start + 1;
+    const factor = def.decay === 'linear' && ev.end !== null ? Math.max(0, 1 - (day - ev.start) / length) : 1;
+    for (const e of def.effects) if (matches(product, e.match)) mult *= 1 + e.delta * factor;
+  }
+  return mult;
+}
+
+/** One day of the market: events start and end, the wobble pulls back, prices are set and recorded. */
+function stepMarket(state: GameState, content: Content, rng: Rng, day: number, withEvents: boolean, emit?: (e: GameEvent) => void): void {
+  const m = state.market;
+  const cfg = content.market;
+  if (withEvents) {
+    const waiting: MarketState['pending'] = [];
+    for (const p of m.pending) (p.start <= day ? m.active : waiting).push(p);
+    m.pending = waiting;
+    m.active = m.active.filter((e) => e.end === null || e.end >= day);
+    if (day >= cfg.eventsFromDay) {
+      const month = addDays(cfg.calendarStart, day).month;
+      for (const def of cfg.events) {
+        if (m.active.some((e) => e.id === def.id) || m.pending.some((e) => e.id === def.id)) continue;
+        if (def.months && !def.months.includes(month)) continue;
+        if (!rng.chance(def.chancePerDay)) continue;
+        const start = day + def.leadDays;
+        const ev = { id: def.id, start, end: def.duration === null ? null : start + def.duration - 1 };
+        (start <= day ? m.active : m.pending).push(ev);
+        m.news.push({ day, event: def.id, startsOn: start });
+        emit?.({ type: 'news', event: def.id });
+      }
+    }
+    m.news = m.news.slice(-20);
+  }
+  for (const p of content.products) {
+    const swing = cfg.swings[p.swing];
+    const g = 2 * (rng.float() + rng.float() + rng.float() - 1.5);
+    const noise = Math.max(-swing.cap, Math.min(swing.cap, (m.noise[p.key] ?? 0) * (1 - cfg.reversion) + swing.daily * g));
+    m.noise[p.key] = noise;
+    const price = roundPrice(p.base * priceMultiplier(content, m, p, day) * (1 + noise));
+    m.prices[p.key] = price;
+    const history = (m.history[p.key] ??= []);
+    history.push(price);
+    while (history.length > cfg.historyDays) history.shift();
+  }
+}
+
+/** Builds the market with a month of price history already behind it, so charts exist from day one. */
+export function initMarket(state: GameState, content: Content, rng: Rng): void {
+  state.market = emptyMarket();
+  for (let k = content.market.historyDays; k >= 1; k--) stepMarket(state, content, rng, state.day - k, false);
+  stepMarket(state, content, rng, state.day, true);
+}
+
+export function advanceMarketDay(ctx: MarketCtx): void {
+  stepMarket(ctx.state, ctx.content, ctx.rng, ctx.state.day, true, ctx.emit);
+}
+
+/** How much longer than usual deliveries run late while events like a flood last. */
+function lateBoost(state: GameState, content: Content): number {
+  let boost = 0;
+  for (const ev of state.market.active) {
+    if (ev.start > state.day) continue;
+    boost += content.market.events.find((d) => d.id === ev.id)?.lateBoost ?? 0;
+  }
+  return boost;
+}
+
+// ---------------------------------------------------------------- pantry
+
+export const ingredientQty = (state: GameState, id: string): number => state.pantry.reduce((s, l) => (l.ingredient === id ? s + l.qty : s), 0);
+
+export function addLot(state: GameState, ingredient: string, qty: number, unitCost: number): void {
+  state.pantry.push({ ingredient, qty, bought: state.day, unitCost, stored: 'room' });
+}
+
+/** Uses up an ingredient, oldest stock first. Returns what was taken and what it cost. */
+export function consume(state: GameState, ingredient: string, amount: number): { taken: number; cost: number } {
+  let left = amount;
+  let cost = 0;
+  for (const lot of state.pantry) {
+    if (left <= 1e-9) break;
+    if (lot.ingredient !== ingredient) continue;
+    const used = Math.min(lot.qty, left);
+    lot.qty -= used;
+    left -= used;
+    cost += used * lot.unitCost;
+  }
+  state.pantry = state.pantry.filter((l) => l.qty > 1e-9);
+  return { taken: amount - left, cost };
+}
+
+/** Puts the oldest fridge-friendly stock in the small fridge until it is full; the rest stays at room temperature. */
+export function assignStorage(state: GameState, content: Content): void {
+  let used = 0;
+  const lots = [...state.pantry].sort((a, b) => a.bought - b.bought);
+  for (const lot of lots) {
+    const ing = content.ingredientById[lot.ingredient];
+    const helps = ing.life.fridge !== null && (ing.life.room === null || ing.life.fridge > ing.life.room);
+    const units = lot.qty / ing.unitSize;
+    if (helps && used + units <= content.market.fridgeCapacity + 1e-9) {
+      lot.stored = 'fridge';
+      used += units;
+    } else lot.stored = 'room';
+  }
+}
+
+/** Fridge space in use, in sold units. */
+export function fridgeUsed(state: GameState, content: Content): number {
+  return state.pantry.reduce((s, l) => (l.stored === 'fridge' ? s + l.qty / content.ingredientById[l.ingredient].unitSize : s), 0);
+}
+
+/** Overnight: whatever outlived its shelf life is thrown away. */
+export function spoilOvernight(ctx: MarketCtx): void {
+  const { state, content } = ctx;
+  const gone = new Map<string, Spoiled>();
+  state.pantry = state.pantry.filter((lot) => {
+    const ing = content.ingredientById[lot.ingredient];
+    const life = ing.life[lot.stored];
+    if (life === null || state.day - lot.bought <= life) return true;
+    const entry = gone.get(lot.ingredient) ?? { ingredient: lot.ingredient, qty: 0, value: 0 };
+    entry.qty += lot.qty / ing.unitSize;
+    entry.value += lot.qty * lot.unitCost;
+    gone.set(lot.ingredient, entry);
+    return false;
+  });
+  state.lastSpoiled = [...gone.values()].map((s) => ({ ...s, value: Math.round(s.value) }));
+  const value = state.lastSpoiled.reduce((s, x) => s + x.value, 0);
+  if (value > 0) ctx.emit({ type: 'spoiled', value });
+}
+
+// ---------------------------------------------------------------- dishes and goods
+
+export const portionOf = (state: GameState, item: Item): Portion => state.menu[item.id]?.portion ?? 'normal';
+
+/** What one portion of a dish uses right now, in each ingredient's base unit. */
+export function dishNeeds(state: GameState, content: Content, item: Item): Record<string, number> {
+  const mul = content.market.portion[portionOf(state, item)].mul;
+  return Object.fromEntries(Object.entries(item.recipe ?? {}).map(([ing, amount]) => [ing, amount * mul]));
+}
+
+/** The price a customer pays for one: the menu price for a dish, the shelf price for a good. */
+export const sellPrice = (state: GameState, item: Item): number => (item.kind === 'dish' ? (state.menu[item.id]?.price ?? item.price) : item.price);
+
+/** How many more of this item can be given out, counting what is already on the tray. */
+export function portionsLeft(state: GameState, content: Content, itemId: string, tray: Record<string, number> = {}): number {
+  const item = content.itemById[itemId];
+  if (!item) return 0;
+  if (item.kind === 'good') return Math.max(0, (state.stock[item.id] ?? 0) - (tray[item.id] ?? 0));
+  const reserved: Record<string, number> = {};
+  for (const [id, qty] of Object.entries(tray)) {
+    const other = content.itemById[id];
+    if (!other || other.kind !== 'dish' || qty <= 0) continue;
+    for (const [ing, need] of Object.entries(dishNeeds(state, content, other))) reserved[ing] = (reserved[ing] ?? 0) + need * qty;
+  }
+  let most = Infinity;
+  for (const [ing, need] of Object.entries(dishNeeds(state, content, item))) {
+    most = Math.min(most, Math.floor((ingredientQty(state, ing) - (reserved[ing] ?? 0) + 1e-9) / need));
+  }
+  return Number.isFinite(most) ? Math.max(0, most) : 0;
+}
+
+/** What a unit of a product costs on the market today (per sold unit). */
+export const marketPrice = (state: GameState, key: string): number => state.market.prices[key] ?? 0;
+
+/** The cost of one portion at today's market prices (what it would cost to replace what it uses). */
+export function costPerPortion(state: GameState, content: Content, item: Item, portion: Portion = portionOf(state, item)): number {
+  if (item.kind === 'good') return marketPrice(state, goodKey(item.id)) / (item.pack ?? 1);
+  const mul = content.market.portion[portion].mul;
+  let total = 0;
+  for (const [id, amount] of Object.entries(item.recipe ?? {})) {
+    const ing = content.ingredientById[id];
+    total += ((amount * mul) / ing.unitSize) * marketPrice(state, id);
+  }
+  return total;
+}
+
+/** What a portion would cost if every ingredient were at its base price, to show how far the market has moved. */
+export function baseCostPerPortion(content: Content, item: Item, portion: Portion = 'normal'): number {
+  const mul = content.market.portion[portion].mul;
+  let total = 0;
+  for (const [id, amount] of Object.entries(item.recipe ?? {})) {
+    const ing = content.ingredientById[id];
+    total += ((amount * mul) / ing.unitSize) * ing.price;
+  }
+  return total;
+}
+
+/** Uses up what a sale needs: ingredients for a dish, shelf stock for a good. Returns what it cost. */
+export function sellOut(state: GameState, content: Content, item: Item, qty: number): number {
+  if (item.kind === 'good') {
+    state.stock[item.id] = Math.max(0, (state.stock[item.id] ?? 0) - qty);
+    return qty * (state.goodsCost[item.id] ?? (item.buyPrice ?? 0));
+  }
+  let cost = 0;
+  for (const [ing, need] of Object.entries(dishNeeds(state, content, item))) cost += consume(state, ing, need * qty).cost;
+  return cost;
+}
+
+// ---------------------------------------------------------------- buying
+
+function addPurchased(ctx: MarketCtx, lines: PurchaseLine[]): void {
+  const { state, content } = ctx;
+  for (const line of lines) {
+    const product = content.productByKey[line.key];
+    if (product.kind === 'ingredient') {
+      const ing = content.ingredientById[product.id];
+      addLot(state, ing.id, line.qty * ing.unitSize, line.unitPrice / ing.unitSize);
+    } else {
+      const item = content.itemById[product.id];
+      const pieces = line.qty * (item.pack ?? 1);
+      const unitCost = line.unitPrice / (item.pack ?? 1);
+      const have = state.stock[item.id] ?? 0;
+      state.goodsCost[item.id] = (have * (state.goodsCost[item.id] ?? unitCost) + pieces * unitCost) / (have + pieces);
+      state.stock[item.id] = have + pieces;
+    }
+  }
+  assignStorage(state, content);
+}
+
+/** Checks a list of lines the player wants to buy; returns the merged lines or the reason it is refused. */
+function checkLines(content: Content, lines: Array<{ key: string; qty: number }>): { error: Err; merged: Array<{ key: string; qty: number }> } {
+  const merged = new Map<string, number>();
+  for (const l of lines) {
+    if (!content.productByKey[l.key]) return { error: 'unknown_product', merged: [] };
+    if (!Number.isInteger(l.qty) || l.qty < 0) return { error: 'invalid_quantity', merged: [] };
+    if (l.qty > 0) merged.set(l.key, (merged.get(l.key) ?? 0) + l.qty);
+  }
+  if (merged.size === 0) return { error: 'empty_order', merged: [] };
+  return { error: null, merged: [...merged].map(([key, qty]) => ({ key, qty })) };
+}
+
+/** What the phone app charges: supplier price per unit, and the delivery fee. */
+export function quoteOrder(state: GameState, content: Content, supplierId: string, lines: Array<{ key: string; qty: number }>, express: boolean) {
+  const supplier = content.supplierById[supplierId];
+  const priced: PurchaseLine[] = lines.map((l) => ({ key: l.key, qty: l.qty, unitPrice: roundPrice(marketPrice(state, l.key) * supplier.priceMul) }));
+  const subtotal = priced.reduce((s, l) => s + l.unitPrice * l.qty, 0);
+  const fee = express ? content.market.ordering.expressFee : supplier.freeAbove !== null && subtotal >= supplier.freeAbove ? 0 : supplier.deliveryFee;
+  return { priced, subtotal, fee, total: subtotal + fee };
+}
+
+/** When a standard order placed now would arrive: tomorrow before the cutoff, otherwise the day after. */
+export function standardArrivalDay(state: GameState, content: Content): number {
+  return state.minute < content.market.ordering.cutoffMinute && (state.phase === 'idle' || state.phase === 'open' || state.phase === 'dayoff') ? state.day + 1 : state.day + 2;
+}
+
+export function placeOrder(ctx: MarketCtx, cmd: { supplier: string; lines: Array<{ key: string; qty: number }>; express: boolean }): Err {
+  const { state, content } = ctx;
+  const supplier = content.supplierById[cmd.supplier];
+  if (!supplier) return 'unknown_supplier';
+  const checked = checkLines(content, cmd.lines);
+  if (checked.error) return checked.error;
+  const q = quoteOrder(state, content, cmd.supplier, checked.merged, cmd.express);
+  if (q.subtotal < supplier.minOrder) return 'below_minimum';
+  if (state.bank < q.total) return 'insufficient_funds';
+
+  const ordering = content.market.ordering;
+  let arriveDay = standardArrivalDay(state, content);
+  let arriveMinute = ordering.windowStart;
+  if (cmd.express) {
+    const resting = state.phase === 'ended' || state.phase === 'night' || state.phase === 'bed';
+    const at = state.minute + ordering.expressMinutes;
+    if (resting || at >= content.balance.closeMinute) {
+      arriveDay = state.day + 1;
+      arriveMinute = 0;
+    } else {
+      arriveDay = state.day;
+      arriveMinute = at;
+    }
+  }
+  const order: Order = {
+    id: state.nextOrderId++,
+    supplier: cmd.supplier,
+    lines: q.priced,
+    subtotal: q.subtotal,
+    fee: q.fee,
+    total: q.total,
+    express: cmd.express,
+    placedDay: state.day,
+    arriveDay,
+    arriveMinute,
+    late: false,
+    lateRolled: false,
+    status: 'transit',
+    deliveredDay: null,
+  };
+  state.bank -= q.total;
+  state.orders.push(order);
+  ctx.emit({ type: 'order_placed', orderId: order.id, total: order.total });
+  return null;
+}
+
+/** Delivers what is due. A standard order that is due for the first time may turn out to be late. */
+export function deliverDue(ctx: MarketCtx): void {
+  const { state, content, rng } = ctx;
+  for (const order of state.orders) {
+    if (order.status !== 'transit') continue;
+    const due = order.arriveDay < state.day || (order.arriveDay === state.day && (!order.express || order.arriveMinute <= state.minute));
+    if (!due) continue;
+    if (!order.express && !order.lateRolled) {
+      order.lateRolled = true;
+      const chance = Math.min(1, content.supplierById[order.supplier].lateChance + lateBoost(state, content));
+      if (rng.chance(chance)) {
+        order.late = true;
+        order.arriveDay = state.day + 1;
+        ctx.emit({ type: 'order_late', orderId: order.id, arriveDay: order.arriveDay });
+        continue;
+      }
+    }
+    addPurchased(ctx, order.lines);
+    order.status = 'delivered';
+    order.deliveredDay = state.day;
+    ctx.emit({ type: 'order_delivered', orderId: order.id });
+  }
+  const delivered = state.orders.filter((o) => o.status === 'delivered');
+  if (delivered.length > 15) {
+    const drop = new Set(delivered.slice(0, delivered.length - 15).map((o) => o.id));
+    state.orders = state.orders.filter((o) => !drop.has(o.id));
+  }
+}
+
+/** The day-off block the player is on, if it is a pasar trip. */
+export function onPasarTrip(state: GameState, content: Content): boolean {
+  if (state.phase !== 'dayoff') return false;
+  const block = content.balance.offBlocks[state.blockIndex];
+  return !!block && (state.offPlan[block.id] ?? []).includes('ke-pasar');
+}
+
+/** Buying in person: today's market price, a little haggling, a bulk discount, and the goods are yours at once. */
+export function pasarTrip(ctx: MarketCtx, cmd: { lines: Array<{ key: string; qty: number }> }): Err {
+  const { state, content, rng } = ctx;
+  if (!onPasarTrip(state, content)) return 'no_pasar_trip';
+  const checked = checkLines(content, cmd.lines);
+  if (checked.error) return checked.error;
+  const haggle = content.market.pasar.haggle;
+  const rngBefore = state.rng;
+  const priced: PurchaseLine[] = checked.merged.map((l) => ({
+    key: l.key,
+    qty: l.qty,
+    unitPrice: roundPrice(marketPrice(state, l.key) * (1 + (rng.float() * 2 - 1) * haggle)),
+  }));
+  const subtotal = priced.reduce((s, l) => s + l.unitPrice * l.qty, 0);
+  const off = [...content.market.pasar.grosir].reverse().find((g) => subtotal >= g.min)?.off ?? 0;
+  const total = Math.round((subtotal * (1 - off)) / 100) * 100;
+  if (state.bank < total) {
+    state.rng = rngBefore; // a refused purchase must leave no trace, not even the haggling dice
+    return 'insufficient_funds';
+  }
+  state.bank -= total;
+  // the discount lowers what each unit cost you
+  const factor = subtotal > 0 ? total / subtotal : 1;
+  addPurchased(ctx, priced.map((l) => ({ ...l, unitPrice: l.unitPrice * factor })));
+  ctx.emit({ type: 'pasar_bought', total });
+  return null;
+}
+
+/** What the pasar would charge right now, without haggling, for the app to show. */
+export function pasarQuote(state: GameState, content: Content, lines: Array<{ key: string; qty: number }>) {
+  const subtotal = lines.reduce((s, l) => s + marketPrice(state, l.key) * l.qty, 0);
+  const off = [...content.market.pasar.grosir].reverse().find((g) => subtotal >= g.min)?.off ?? 0;
+  return { subtotal, off, total: Math.round((subtotal * (1 - off)) / 100) * 100 };
+}
+
+export type { Lot };

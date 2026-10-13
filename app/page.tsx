@@ -81,10 +81,10 @@ export default function TitlePage() {
               </Button>
             </Card>
           )}
-          {(peek?.status === "invalid" || peek?.status === "newer") && (
+          {(peek?.status === "invalid" || peek?.status === "newer" || peek?.status === "outdated") && (
             <Card className="border-warn/50! p-3 text-sm" data-testid="save-problem">
               <b className="text-warn">{t("save.problem")}</b>
-              <p className="mt-1 text-xs text-muted">{peek.status === "newer" ? t("save.newer") : t("save.invalid")}</p>
+              <p className="mt-1 text-xs text-muted">{peek.status === "newer" ? t("save.newer") : peek.status === "outdated" ? t("save.outdated") : t("save.invalid")}</p>
             </Card>
           )}
 

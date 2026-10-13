@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Art } from "@/components/art";
 import { BarChart } from "@/components/bar-chart";
 import { Button, Card } from "@/components/ui";
-import { DENOMS, content, type Phase } from "@/engine";
+import { DENOMS, content, portionsLeft, type Phase } from "@/engine";
 import { rb, rp } from "@/lib/format";
 import { useGame } from "@/lib/game-store";
 import { HOME, useGuard } from "@/lib/use-guard";
@@ -57,7 +57,7 @@ export default function RingkasanPage() {
   const hourLabels = hours.map((_, i) => String(7 + i).padStart(2, "0"));
   const lowChange = SMALL.filter((d) => (state.drawer[d] ?? 0) < 3);
   const lowStock = content.items
-    .map((i) => ({ item: i, left: state.stock[i.id] ?? 0 }))
+    .map((i) => ({ item: i, left: portionsLeft(state, content, i.id) }))
     .filter((x) => x.left <= 5)
     .sort((a, b) => a.left - b.left);
   const peakHour = hours.indexOf(Math.max(...hours));
@@ -73,6 +73,14 @@ export default function RingkasanPage() {
       <div className="grid grid-cols-2 gap-2">
         <Stat label={t("summary.gross")} value={rp(s.grossSales)} sub={t("summary.grossSub", { cash: rb(s.cashRevenue), qris: rb(s.qrisRevenue), kasbon: rb(s.kasbonCredit) })} />
         <Stat label={t("summary.served")} value={String(s.served)} sub={t("summary.servedSub", { walk: s.walkaways, turned: s.turnedAway })} />
+        <div className="col-span-2">
+          <Stat
+            label={t("summary.profit")}
+            value={rp(s.netProfit)}
+            sub={t("summary.profitSub", { cost: rb(s.cogs), fees: rb(s.qrisFees) })}
+            tone={s.netProfit < 0 ? "text-bad" : s.netProfit > 0 ? "text-good" : ""}
+          />
+        </div>
         <Stat
           label={t("summary.changeErrors")}
           value={rp(changeErr)}

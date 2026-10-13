@@ -118,3 +118,72 @@ export async function plantRecord(page: Page, id: "main" | "backup", data: unkno
     { key: id, value: data },
   );
 }
+
+/** Starts a fresh game on the title screen and lands on the pre-open home. */
+export async function startGame(page: Page) {
+  await page.goto("/");
+  await page.getByTestId("start-chapter-1").click();
+  await page.waitForURL(/\/beranda$/);
+}
+
+/** Opens a phone app by its icon, through the tab bar like a player would. */
+export async function openApp(page: Page, app: "pasar" | "bank" | "berita" | "jadwal") {
+  await page.getByRole("link", { name: "Ponsel" }).click();
+  await page.getByTestId(`app-${app}`).click();
+}
+
+/** Opens and straight away closes the shop, ending on the summary. */
+export async function closeDay(page: Page) {
+  await page.getByTestId("open-warung").click();
+  await page.waitForURL(/\/kasir$/);
+  await page.getByTestId("close-warung").click();
+  await page.waitForURL(/\/ringkasan$/);
+}
+
+/** From the summary through free time to the question about tomorrow. */
+export async function toTomorrowQuestion(page: Page) {
+  await page.getByTestId("to-night").click();
+  await page.waitForURL(/\/malam$/);
+  await page.getByTestId("sleep").click();
+  await page.waitForURL(/\/besok$/);
+}
+
+/** Close the shop, sleep, and wake up to the next day (the start screen of that day). */
+export async function passTheNight(page: Page) {
+  if (!/\/(beranda|kasir)$/.test(page.url())) await page.getByRole("link", { name: "Kasir" }).click();
+  await closeDay(page);
+  await toTomorrowQuestion(page);
+  await page.getByTestId("go-to-bed").click();
+}
+
+/** Changes the running game directly, for setting up a situation (a price spike, an empty bank). */
+export async function mutateGame(page: Page, change: string) {
+  await page.evaluate((body) => {
+    const w = window as unknown as {
+      __warung: { store: { getState: () => { game: { state: unknown; snapshot: () => unknown } }; setState: (s: unknown) => void }; content: unknown };
+    };
+    const { store, content } = w.__warung;
+    const game = store.getState().game;
+    new Function("state", "content", body)(game.state, content);
+    store.setState({ state: game.snapshot() });
+  }, change);
+}
+
+/** The whole game state, as plain data. */
+export async function stateOf(page: Page) {
+  return page.evaluate(() => {
+    const w = window as unknown as { __warung: { store: { getState: () => { state: unknown } } } };
+    return JSON.parse(JSON.stringify(w.__warung.store.getState().state)) as {
+      day: number;
+      phase: string;
+      bank: number;
+      drawer: Record<string, number>;
+      pantry: Array<{ ingredient: string; qty: number; bought: number }>;
+      stock: Record<string, number>;
+      orders: Array<{ id: number; status: string; late: boolean; express: boolean; total: number; supplier: string; arriveDay: number }>;
+      menu: Record<string, { price: number; portion: string }>;
+      market: { prices: Record<string, number>; history: Record<string, number[]>; news: unknown[]; active: unknown[] };
+      stats: { cogs: number; served: number };
+    };
+  });
+}
