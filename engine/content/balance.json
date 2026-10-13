@@ -150,5 +150,11 @@
     "walkaway": -0.5,
     "min": -10,
     "max": 10
+  },
+  "leftovers": {
+    "obralMul": 0.5,
+    "eatHunger": 12,
+    "giveRep": 0.15,
+    "giveRepMax": 1.5
   }
 }

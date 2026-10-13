@@ -24,11 +24,23 @@ export const itemSchema = z
     reference: positiveInt.optional(),
     /** Dish only: amounts of each ingredient per normal portion, in the ingredient's base unit. */
     recipe: z.record(z.string(), z.number().positive()).optional(),
+    /** Dish only: cooked ahead in batches and kept on the display. Without it a dish is cooked to order from the pantry. */
+    batch: z
+      .object({
+        /** Portions one batch makes. */
+        portions: positiveInt,
+        /** Minutes of the cook's time one batch takes. */
+        minutes: positiveInt,
+        /** Minutes it stays good on the display. */
+        freshMinutes: positiveInt,
+      })
+      .optional(),
     /** Good only: what one piece costs from the supplier, and how many pieces come in one pack. */
     buyPrice: positiveInt.optional(),
     pack: positiveInt.optional(),
     ageRestricted: z.boolean().default(false),
   })
+  .refine((i) => i.kind === 'dish' || !i.batch, { message: 'only a dish can be cooked in batches' })
   .refine((i) => (i.kind === 'dish' ? !!i.recipe && Object.keys(i.recipe).length > 0 : !!i.buyPrice && !!i.pack), {
     message: 'a dish needs a recipe, a good needs buyPrice and pack',
   });
@@ -202,6 +214,16 @@ export const balanceSchema = z.object({
   hungerPerHour: z.number().min(0),
   sleepHunger: z.number().min(0),
   moodFromDay: z.object({ happy: z.number(), annoyed: z.number(), walkaway: z.number(), min: z.number(), max: z.number() }),
+  /** What the player can do with portions left on the display at night. */
+  leftovers: z.object({
+    /** Obral sells them at this share of the menu price. */
+    obralMul: z.number().min(0).max(1),
+    /** Hunger removed by eating one portion. */
+    eatHunger: z.number().min(0),
+    /** Reputation gained per portion given away, up to the cap per night. */
+    giveRep: z.number().min(0),
+    giveRepMax: z.number().min(0),
+  }),
 });
 
 export const contentSchema = z

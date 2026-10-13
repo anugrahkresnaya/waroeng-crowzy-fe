@@ -45,6 +45,7 @@ export function botAct(game: Game): boolean {
 
 /** Plays one whole open day. */
 export function playDay(game: Game, options: BotOptions = { actionsPerTick: 4 }): Game {
+  if (game.state.phase === 'idle') cookAhead(game, options.prepared ?? true);
   game.dispatch({ type: 'open', prepared: options.prepared ?? true });
   let budget = 0;
   while (game.state.phase === 'open') {
@@ -53,6 +54,17 @@ export function playDay(game: Game, options: BotOptions = { actionsPerTick: 4 })
     game.tick();
   }
   return game;
+}
+
+/** Cooks one batch of each batch dish that still fits in the pre-open time, keeping the time that preparing the shelves needs. */
+export function cookAhead(game: Game, prepared = true): void {
+  const { content } = game;
+  const reserve = prepared ? content.balance.prepareMinutes : 0;
+  for (const item of content.items) {
+    if (!item.batch) continue;
+    if (game.state.preOpenUsed + item.batch.minutes + reserve > content.balance.preOpenMinutes) continue;
+    game.dispatch({ type: 'cookBatch', item: item.id, batches: 1 });
+  }
 }
 
 /** From the end-of-day summary to the start of the next day, the way a player would. */

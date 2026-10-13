@@ -224,3 +224,34 @@ test("a save from before the market is explained, not opened", async ({ page }) 
   await expect(page.getByTestId("save-problem")).toContainText("sebelum pasar");
   await expect(page.getByTestId("continue-card")).toHaveCount(0);
 });
+
+test("the kitchen: cook ahead for the display, it sells from there, and leftovers are dealt with at night", async ({ page }) => {
+  await startGame(page);
+  await page.getByTestId("to-kitchen").click();
+  await expect(page.getByTestId("display-gorengan")).toHaveText("0");
+  await page.getByTestId("cook-gorengan").click();
+  await expect(page.getByTestId("display-gorengan")).toHaveText("20");
+  const s = await stateOf(page);
+  expect(s.preOpenUsed).toBe(15);
+  await expect(page.getByText("Sisa waktu pra-buka: 105 dari 120 menit")).toBeVisible();
+  await page.getByTestId("cook-nasi-bungkus").click();
+  await expect(page.getByTestId("display-nasi-bungkus")).toHaveText("10");
+  await page.getByTestId("cook-gorengan").click();
+  await expect(page.getByTestId("display-gorengan")).toHaveText("40");
+  await expect(page.getByTestId("cook-gorengan")).toBeDisabled(); // the flour is used up
+  await expect(page.getByText("Bahan kurang").first()).toBeVisible();
+  await mutateGame(page, "state.preOpenUsed = 115;");
+  await expect(page.getByText("Waktu pra-buka tidak cukup").first()).toBeVisible();
+  await expect(page.getByText("Waktu pra-buka tidak cukup").first()).toBeVisible();
+
+  await page.getByRole("link", { name: "Hari ini" }).click();
+  await closeDay(page);
+  await expect(page.getByTestId("leftover-gorengan")).toContainText("40 porsi");
+  const before = await stateOf(page);
+  await page.getByTestId("leftover-gorengan-trash").click();
+  await expect(page.getByTestId("leftover-gorengan")).toHaveCount(0);
+  const after = await stateOf(page);
+  expect(after.stats.waste).toBeGreaterThan(before.stats.waste);
+  await page.getByTestId("leftover-nasi-bungkus-eat").click();
+  await expect(page.getByTestId("leftovers")).toHaveCount(0);
+});

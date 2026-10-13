@@ -124,7 +124,11 @@
       "invalid_quantity": "Jumlah tidak valid",
       "no_pasar_trip": "Hari ini kamu tidak ke pasar",
       "not_a_dish": "Itu bukan menu masakan",
-      "invalid_price": "Harga tidak valid"
+      "invalid_price": "Harga tidak valid",
+      "not_a_batch_dish": "Hidangan ini dimasak saat dipesan",
+      "missing_ingredients": "Bahan tidak cukup",
+      "no_leftovers": "Tidak ada sisa",
+      "invalid_choice": "Pilihan tidak dikenal"
     },
     "blockDone": {
       "pagi": "Blok pagi selesai{{extra}}",
@@ -144,7 +148,9 @@
       "flood": "Kabar: banjir di daerah pemasok",
       "lpg-shortage": "Kabar: gas LPG langka",
       "market-operation": "Kabar: ada operasi pasar"
-    }
+    },
+    "cooked": "{{item}}: {{portions}} porsi siap di etalase",
+    "wentStale": "{{item}} {{portions}} porsi sudah tidak segar, dibuang"
   },
   "title": {
     "eyebrow": "OFFLINE · 1 PEMAIN",
@@ -212,7 +218,9 @@
         "name": "Tidur lagi",
         "desc": "Tidur lebih lama. Rak diisi sambil melayani."
       }
-    }
+    },
+    "displayTitle": "Etalase",
+    "toKitchen": "Ke dapur"
   },
   "exchange": {
     "title": "Tukar uang",
@@ -369,7 +377,8 @@
     "today": "Hari ini",
     "counter": "Kasir",
     "menu": "Menu",
-    "storage": "Gudang"
+    "storage": "Gudang",
+    "kitchen": "Dapur"
   },
   "menu": {
     "title": "Menu & harga",
@@ -536,5 +545,44 @@
     "more": "Tambah {{amount}}",
     "withdraw": "Tarik tunai",
     "withdrawHelp": "Mesin hanya mengeluarkan uang pecahan besar, jadi ini tidak menambah receh. Untuk receh, tukar uang sebelum buka."
+  },
+  "kitchen": {
+    "title": "Dapur",
+    "help": "Masak di muka agar etalase penuh saat buka. Masakan yang terlalu lama di etalase tidak segar dan dibuang.",
+    "timeLeft": "Sisa waktu pra-buka: {{left}} dari {{total}} menit",
+    "cooking": "Sedang memasak, kasir tertunda",
+    "closed": "Dapur hanya bisa dipakai sebelum dan saat buka",
+    "onDisplay": "Di etalase",
+    "empty": "Kosong",
+    "freshLeft": "segar {{h}} j {{m}} m lagi",
+    "perBatch": "{{portions}} porsi · {{minutes}} menit",
+    "cost": "Modal {{price}} per porsi",
+    "cook": "Masak 1 adonan",
+    "cookWhy": {
+      "no_time": "Waktu pra-buka tidak cukup",
+      "missing_ingredients": "Bahan kurang",
+      "busy": "Sedang memasak",
+      "shelves_not_ready": "Isi rak dulu",
+      "wrong_phase": "Belum bisa sekarang"
+    },
+    "needs": "Bahan per adonan",
+    "orderDishes": "Dimasak saat dipesan",
+    "orderDishesHelp": "Hidangan ini dibuat langsung dari gudang ketika pelanggan memesan.",
+    "batchSale": "Habis di etalase = habis terjual. Jangan sampai pelanggan pulang.",
+    "prepareNote": "Menyiapkan rak butuh {{minutes}} menit dari waktu ini."
+  },
+  "leftovers": {
+    "title": "Sisa di etalase",
+    "help": "Yang tidak diurus malam ini akan dibuang besok pagi.",
+    "portions": "{{n}} porsi",
+    "obral": "Obral",
+    "eat": "Makan",
+    "give": "Bagikan",
+    "trash": "Buang",
+    "obralHelp": "Jual {{share}}% dari harga",
+    "eatHelp": "Kenyang, hemat uang",
+    "giveHelp": "Reputasi naik sedikit",
+    "trashHelp": "Rugi bersih",
+    "waste": "Terbuang hari ini: {{value}}"
   }
 }

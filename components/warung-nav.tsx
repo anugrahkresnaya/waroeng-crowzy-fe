@@ -14,6 +14,7 @@ export function WarungNav() {
   const today = phase === "open" ? "/kasir" : phase === "dayoff" ? "/libur" : "/beranda";
   const links = [
     { href: today, label: phase === "open" ? t("nav.counter") : t("nav.today"), match: ["/beranda", "/kasir", "/libur"] },
+    { href: "/dapur", label: t("nav.kitchen"), match: ["/dapur"] },
     { href: "/menu", label: t("nav.menu"), match: ["/menu"] },
     { href: "/gudang", label: t("nav.storage"), match: ["/gudang"] },
   ];

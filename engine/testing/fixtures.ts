@@ -5,8 +5,8 @@ import { exactPieces, smallestNoteAtLeast, type Pieces } from '../money';
 import type { Content } from '../schema';
 import type { Customer, GameEvent, OrderLine, PaymentMethod } from '../types';
 
-/** Content with arrivals switched off, so scripted scenarios are not disturbed by random customers. */
-export function quietContent(base: Content = content, patch: Partial<Content['balance']> = {}): Content {
+/** Real content with arrivals switched off, so scripted scenarios are not disturbed by random customers. Batch dishes are kept. */
+export function kitchenContent(base: Content = content, patch: Partial<Content['balance']> = {}): Content {
   return {
     ...base,
     balance: {
@@ -15,6 +15,13 @@ export function quietContent(base: Content = content, patch: Partial<Content['ba
       ...patch,
     },
   };
+}
+
+/** Like `kitchenContent`, but every dish is cooked to order from the pantry, so scenarios need no prep. */
+export function quietContent(base: Content = content, patch: Partial<Content['balance']> = {}): Content {
+  const quiet = kitchenContent(base, patch);
+  const items = quiet.items.map((item) => ({ ...item, batch: undefined }));
+  return { ...quiet, items, itemById: Object.fromEntries(items.map((i) => [i.id, i])) };
 }
 
 /** An open game with an empty line. */

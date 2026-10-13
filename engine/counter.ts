@@ -3,6 +3,7 @@ import { dayPart, weekday } from './clock';
 import {
   advanceMarketDay, assignStorage, deliverDue, pasarTrip, placeOrder, portionOf, portionsLeft, sellPrice, spoilOvernight, sellOut,
 } from './market';
+import { clearDisplay, cookBatch, handleLeftover, sweepDisplay } from './kitchen';
 import { freshStats } from './state';
 import {
   addPieces, bigNotes, exactPieces, exchangeBreakdown, hasPieces, isValidPieces, makeChange, payOutBestEffort,
@@ -336,6 +337,7 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
       state.busyUntil = 0;
       state.preOpenUsed = 0;
       state.line = [];
+      clearDisplay(ctx); // nothing cooked yesterday is sold today
       state.stats = freshStats(content);
       // The overnight tick: prices move, due orders arrive, and what is too old is thrown out.
       advanceMarketDay(ctx);
@@ -350,6 +352,14 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
       if (state.phase !== 'open') return fail('wrong_phase');
       closeDay(ctx);
       return OK;
+    }
+    case 'cookBatch': {
+      const error = cookBatch(ctx, cmd);
+      return error ? fail(error) : OK;
+    }
+    case 'handleLeftover': {
+      const error = handleLeftover(ctx, cmd);
+      return error ? fail(error) : OK;
     }
     case 'placeOrder': {
       const error = placeOrder(ctx, cmd);
@@ -521,6 +531,7 @@ export function advance(ctx: Ctx): void {
   state.tick++;
   state.minute++;
   deliverDue(ctx);
+  sweepDisplay(ctx);
   if (state.busyUntil > 0 && state.tick >= state.busyUntil) {
     state.busyUntil = 0;
     state.shelfReady = true;

@@ -170,6 +170,29 @@ export function spoilOvernight(ctx: MarketCtx): void {
 
 // ---------------------------------------------------------------- dishes and goods
 
+/** Portions on the display that are still good. */
+export function displayPortions(state: GameState, itemId: string): number {
+  return (state.display[itemId] ?? []).reduce((s, b) => s + b.qty, 0);
+}
+
+/** Takes portions off the display, oldest first, and returns what they cost. */
+export function takeFromDisplay(state: GameState, itemId: string, qty: number): number {
+  const batches = state.display[itemId] ?? [];
+  let cost = 0;
+  let left = qty;
+  while (left > 0 && batches.length > 0) {
+    const batch = batches[0];
+    const take = Math.min(batch.qty, left);
+    cost += take * batch.unitCost;
+    batch.qty -= take;
+    left -= take;
+    if (batch.qty <= 0) batches.shift();
+  }
+  if (batches.length === 0) delete state.display[itemId];
+  return cost;
+}
+
+
 export const portionOf = (state: GameState, item: Item): Portion => state.menu[item.id]?.portion ?? 'normal';
 
 /** What one portion of a dish uses right now, in each ingredient's base unit. */
@@ -186,6 +209,7 @@ export function portionsLeft(state: GameState, content: Content, itemId: string,
   const item = content.itemById[itemId];
   if (!item) return 0;
   if (item.kind === 'good') return Math.max(0, (state.stock[item.id] ?? 0) - (tray[item.id] ?? 0));
+  if (item.batch) return Math.max(0, displayPortions(state, item.id) - (tray[item.id] ?? 0));
   const reserved: Record<string, number> = {};
   for (const [id, qty] of Object.entries(tray)) {
     const other = content.itemById[id];
@@ -231,6 +255,7 @@ export function sellOut(state: GameState, content: Content, item: Item, qty: num
     state.stock[item.id] = Math.max(0, (state.stock[item.id] ?? 0) - qty);
     return qty * (state.goodsCost[item.id] ?? (item.buyPrice ?? 0));
   }
+  if (item.batch) return takeFromDisplay(state, item.id, qty);
   let cost = 0;
   for (const [ing, need] of Object.entries(dishNeeds(state, content, item))) cost += consume(state, ing, need * qty).cost;
   return cost;

@@ -8,7 +8,7 @@ import { OrdersView } from "@/components/pasar/orders-view";
 import { TopBar } from "@/components/top-bar";
 import { Card, Chip, Meter, Pill } from "@/components/ui";
 import { WarungNav } from "@/components/warung-nav";
-import { content, fridgeUsed, portionsLeft, type Phase } from "@/engine";
+import { batchesPossible, content, displayPortions, fridgeUsed, portionsLeft, type Phase } from "@/engine";
 import { rp } from "@/lib/format";
 import { useGame } from "@/lib/game-store";
 import { useGuard } from "@/lib/use-guard";
@@ -40,7 +40,7 @@ export default function GudangPage() {
       return { ing, units, daysLeft, inFridge, lots };
     })
     .filter((g) => g.units > 0);
-  const cannotMake = content.items.filter((i) => i.kind === "dish" && portionsLeft(state, content, i.id) === 0);
+  const cannotMake = content.items.filter((i) => i.kind === "dish" && (i.batch ? displayPortions(state, i.id) === 0 && batchesPossible(state, content, i) === 0 : portionsLeft(state, content, i.id) === 0));
   const goods = content.items.filter((i) => i.kind === "good");
 
   return (

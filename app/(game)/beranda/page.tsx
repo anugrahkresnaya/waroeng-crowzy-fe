@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -9,10 +10,11 @@ import { MorningReport } from "@/components/morning-report";
 import { TopBar } from "@/components/top-bar";
 import { WarungNav } from "@/components/warung-nav";
 import { Button, Card, Chip } from "@/components/ui";
-import { DENOMS, content, exchangeBreakdown } from "@/engine";
+import { DENOMS, content, displayPortions, exchangeBreakdown } from "@/engine";
 import { rp } from "@/lib/format";
 import { useGame } from "@/lib/game-store";
 import { useGuard } from "@/lib/use-guard";
+import { useLocalize } from "@/lib/use-localize";
 
 const IDLE: ["idle"] = ["idle"];
 const AMOUNTS = [50000, 100000, 150000];
@@ -22,6 +24,7 @@ type Choice = "siapkan" | "tidur";
 
 export default function BerandaPage() {
   const { t } = useTranslation();
+  const loc = useLocalize();
   const router = useRouter();
   const ready = useGuard(IDLE);
   const state = useGame((s) => s.state);
@@ -122,6 +125,18 @@ export default function BerandaPage() {
             })}
           </div>
         </section>
+
+        <Card className="flex items-center gap-3 p-3" data-testid="display-card">
+          <span className="min-w-0 flex-1 leading-tight">
+            <b className="text-sm">{t("home.displayTitle")}</b>
+            <span className="block text-xs text-muted">
+              {content.items.filter((i) => i.batch).map((i) => `${loc(i.name)} ${displayPortions(state, i.id)}`).join(" · ")}
+            </span>
+          </span>
+          <Link href="/dapur" className="rounded-xl border-2 border-ink px-3 py-2 text-xs font-bold" data-testid="to-kitchen">
+            {t("home.toKitchen")}
+          </Link>
+        </Card>
 
         <Card className="p-3 text-xs text-muted">{t("home.hint")}</Card>
       </div>

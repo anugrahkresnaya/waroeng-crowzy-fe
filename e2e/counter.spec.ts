@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { categoryOf, frontCustomer, gameState, pause } from "./helpers";
+import { categoryOf, cookAhead, frontCustomer, gameState, mutateGame, pause } from "./helpers";
 
 async function startAndOpen(page: Page, exchange = false) {
   await page.goto("/");
@@ -8,6 +8,13 @@ async function startAndOpen(page: Page, exchange = false) {
   if (exchange) {
     await page.getByTestId("pre-tukar").click();
     await page.getByTestId("do-exchange").click();
+    // Changing money and preparing the shelves fill the pre-open block, so the display is stocked directly.
+    await mutateGame(
+      page,
+      "for (const id of ['gorengan', 'nasi-bungkus', 'es-teh']) state.display[id] = [{ qty: 20, cookedAt: state.day * 1440 + 420, unitCost: 300 }];",
+    );
+  } else {
+    await cookAhead(page);
   }
   await page.getByTestId("open-warung").click();
   await expect(page).toHaveURL(/\/kasir$/);

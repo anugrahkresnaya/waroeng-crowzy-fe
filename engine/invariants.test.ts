@@ -27,6 +27,8 @@ function randomCommand(r: ReturnType<typeof lcg>): Command {
   const make: Array<() => Command> = [
     () => ({ type: 'open', prepared: r.chance(0.5) }),
     () => ({ type: 'restockShelves' }),
+    () => ({ type: 'cookBatch', item: r.pick(ITEMS), batches: r.pick([0, 1, 1, 2, 3, 25, 1.5, -1]) }),
+    () => ({ type: 'handleLeftover', item: r.pick(ITEMS), choice: r.pick(['obral', 'eat', 'give', 'trash', 'sell'] as const) as never }),
     () => ({ type: 'closeWarung' }),
     () => ({ type: 'goToNight' }),
     () => ({ type: 'nextDay' }),
@@ -105,6 +107,8 @@ describe('rules that must always hold', () => {
         expect(Object.values(s.drawer).every((n) => n >= 0), `${ctx}: drawer`).toBe(true);
         expect(Object.values(s.stock).every((n) => n >= 0 && Number.isInteger(n)), `${ctx}: goods`).toBe(true);
         expect(s.pantry.every((l) => l.qty > 0 && Number.isFinite(l.unitCost)), `${ctx}: pantry`).toBe(true);
+        expect(Object.values(s.display).every((bs) => bs.length > 0 && bs.every((b) => b.qty > 0 && Number.isFinite(b.unitCost))), `${ctx}: display`).toBe(true);
+        expect(s.stats.waste, ctx).toBeGreaterThanOrEqual(0);
         expect(s.line.length, ctx).toBeLessThanOrEqual(content.balance.lineCapacity);
         expect(Object.values(s.market.prices).every((p) => p > 0 && Number.isFinite(p)), `${ctx}: prices`).toBe(true);
         expect(s.workDays.filter((w) => !w).length, ctx).toBeLessThanOrEqual(content.balance.maxDaysOff);

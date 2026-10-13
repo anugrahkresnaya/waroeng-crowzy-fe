@@ -6,9 +6,10 @@ export type { SaveData, SaveParse } from './save';
 export { moodOf, changeFor } from './counter';
 export { createInitialState } from './state';
 export {
-  baseCostPerPortion, costPerPortion, dishNeeds, fridgeUsed, ingredientQty, marketPrice, onPasarTrip, pasarQuote, portionsLeft, quoteOrder, roundPrice,
+  baseCostPerPortion, costPerPortion, dishNeeds, displayPortions, fridgeUsed, ingredientQty, marketPrice, onPasarTrip, pasarQuote, portionsLeft, quoteOrder, roundPrice,
   sellPrice, standardArrivalDay,
 } from './market';
+export { absoluteMinute, batchesPossible } from './kitchen';
 export { goodKey } from './schema';
 export { addDays } from './calendar';
 export { formatClock, dayPart, weekday } from './clock';

@@ -57,11 +57,19 @@ describe('a full day', () => {
     for (const item of content.items.filter((i) => i.kind === 'good')) {
       expect(game.state.stock[item.id], item.id).toBe(before.stock[item.id] - (s.itemsSold[item.id] ?? 0));
     }
-    // Ingredients used equal what the dishes sold needed (every portion was a normal one).
+    // Ingredients used equal what the dishes sold needed (every portion was a normal one). Batch dishes are cooked
+    // ahead, so they used at least what was sold, plus whatever is still on the display or went stale.
     for (const ing of content.ingredients) {
       let used = 0;
-      for (const item of content.items.filter((i) => i.kind === 'dish')) used += (item.recipe?.[ing.id] ?? 0) * (s.itemsSold[item.id] ?? 0);
-      expect(before.pantry[ing.id] - ingredientQty(game.state, ing.id), ing.id).toBeCloseTo(used, 5);
+      let batchUsed = 0;
+      for (const item of content.items.filter((i) => i.kind === 'dish')) {
+        const amount = (item.recipe?.[ing.id] ?? 0) * (s.itemsSold[item.id] ?? 0);
+        if (item.batch) batchUsed += amount;
+        else used += amount;
+      }
+      const gone = before.pantry[ing.id] - ingredientQty(game.state, ing.id);
+      if (batchUsed === 0) expect(gone, ing.id).toBeCloseTo(used, 5);
+      else expect(gone, ing.id).toBeGreaterThanOrEqual(used + batchUsed - 1e-6);
     }
     expect(s.cogs).toBeGreaterThan(0);
   });

@@ -62,6 +62,11 @@
    "teh": 3,
    "gula": 15,
    "es-batu": 150
+  },
+  "batch": {
+   "portions": 8,
+   "minutes": 10,
+   "freshMinutes": 180
   }
  },
  {
@@ -153,6 +158,11 @@
    "lpg": 6,
    "bawang-merah": 6,
    "cabai": 4
+  },
+  "batch": {
+   "portions": 10,
+   "minutes": 25,
+   "freshMinutes": 300
   }
  },
  {
@@ -210,6 +220,11 @@
    "sawi": 10,
    "minyak": 15,
    "lpg": 3
+  },
+  "batch": {
+   "portions": 20,
+   "minutes": 15,
+   "freshMinutes": 240
   }
  },
  {

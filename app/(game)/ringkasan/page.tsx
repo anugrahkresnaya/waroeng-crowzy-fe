@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { Art } from "@/components/art";
 import { BarChart } from "@/components/bar-chart";
+import { Leftovers } from "@/components/kitchen/leftovers";
 import { Button, Card } from "@/components/ui";
 import { DENOMS, content, portionsLeft, type Phase } from "@/engine";
 import { rb, rp } from "@/lib/format";
@@ -126,6 +127,8 @@ export default function RingkasanPage() {
           </div>
         )}
       </Card>
+
+      <Leftovers />
 
       {lowStock.length > 0 && (
         <Card className="p-3">

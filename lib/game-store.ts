@@ -9,6 +9,7 @@ import {
   type GameState,
 } from "@/engine";
 import { rp } from "@/lib/format";
+import i18n from "@/lib/i18n";
 import { readSave } from "@/lib/save-db";
 
 export type ToastTone = "good" | "bad" | "info";
@@ -40,6 +41,8 @@ interface GameStore {
 
 let toastId = 0;
 
+const itemName = (id: string) => content.itemById[id]?.name[i18n.language === "en" ? "en" : "id"] ?? id;
+
 function toastFor(event: GameEvent): Omit<Toast, "id"> | null {
   switch (event.type) {
     case "sale":
@@ -66,6 +69,10 @@ function toastFor(event: GameEvent): Omit<Toast, "id"> | null {
       return { key: "pasarBought", vars: { total: rp(event.total) }, tone: "good" };
     case "spoiled":
       return { key: "spoiled", vars: { value: rp(event.value) }, tone: "bad" };
+    case "cooked":
+      return { key: "cooked", vars: { item: itemName(event.item), portions: event.portions }, tone: "good" };
+    case "went_stale":
+      return { key: "wentStale", vars: { item: itemName(event.item), portions: event.portions }, tone: "bad" };
     case "news":
       return { key: `news.${event.event}`, tone: "info" };
     case "shelves_ready":

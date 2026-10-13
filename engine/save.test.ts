@@ -73,6 +73,23 @@ describe('reading what storage returns', () => {
     expect(parseSave({ ...good(), format: SAVE_FORMAT + 1 })).toEqual({ ok: false, reason: 'newer' });
   });
 
+  it('carries a format 2 save (before the kitchen) forward with an empty display', () => {
+    const save = good() as unknown as { state: { display?: unknown; stats: Record<string, unknown> } };
+    delete save.state.display;
+    for (const k of ['waste', 'obralRevenue', 'givenRep']) delete save.state.stats[k];
+    const parsed = parseSave({ ...save, format: 2 });
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) {
+      expect(parsed.save.format).toBe(SAVE_FORMAT);
+      expect(parsed.save.state.display).toEqual({});
+      expect(parsed.save.state.stats.waste).toBe(0);
+    }
+  });
+
+  it('says a format 1 save (before the market) is outdated', () => {
+    expect(parseSave({ ...good(), format: 1 })).toEqual({ ok: false, reason: 'outdated' });
+  });
+
   it('rejects a save whose state has been damaged', () => {
     type Loose = { phase: string; workDays: boolean[]; stock: Record<string, number>; drawer: Record<string, number>; stats?: unknown; day: unknown };
     const damaged = (mutate: (s: Loose) => void) => {

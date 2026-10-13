@@ -7,7 +7,7 @@ import { Game } from './game';
 import { isValidBlockPlan, type Content } from './schema';
 import type { GameState } from './types';
 
-export const SAVE_FORMAT = 2;
+export const SAVE_FORMAT = 3;
 
 const num = z.number();
 const pieces = z.record(z.string(), z.number().int().min(0));
@@ -33,7 +33,7 @@ const stats = z.object({
   itemsSold: z.record(z.string(), num),
   cashRevenue: num, qrisRevenue: num, qrisFees: num, kasbonCredit: num, kasbonRefused: num,
   wrongTrays: num, stockoutDeclines: num, underageSales: num, overChange: num,
-  shortChangeCaught: num, shortChangeUnnoticed: num, shortChangeGained: num, cogs: num, exchangeFees: num,
+  shortChangeCaught: num, shortChangeUnnoticed: num, shortChangeGained: num, cogs: num, waste: num, obralRevenue: num, givenRep: num, exchangeFees: num,
   salesByHour: z.array(num),
   moods: z.object({ happy: num, neutral: num, annoyed: num }),
 });
@@ -100,6 +100,7 @@ const state = z.object({
   stock: z.record(z.string(), z.number().int().min(0)),
   goodsCost: z.record(z.string(), num),
   menu: z.record(z.string(), z.object({ price: z.number().int().positive(), portion: z.enum(['small', 'normal', 'large']) })),
+  display: z.record(z.string(), z.array(z.object({ qty: num, cookedAt: num, unitCost: num }))),
   orders: z.array(order),
   nextOrderId: num,
   lastSpoiled: z.array(z.object({ ingredient: z.string(), qty: num, value: num })),
@@ -129,6 +130,13 @@ export type SaveData = z.infer<typeof saveSchema>;
 const MIGRATIONS: Record<number, (raw: Record<string, unknown>) => Record<string, unknown> | null> = {
   // Format 1 was before the market: no prices, pantry, menu or orders, so there is nothing to build them from.
   1: () => null,
+  // Format 2 had no kitchen: nothing on the display, and no waste or leftover figures yet.
+  2: (raw) => {
+    const state = raw.state as Record<string, unknown> | undefined;
+    if (!state || typeof state !== 'object') return null;
+    const stats = (state.stats ?? {}) as Record<string, unknown>;
+    return { ...raw, state: { ...state, display: {}, stats: { ...stats, waste: 0, obralRevenue: 0, givenRep: 0 } } };
+  },
 };
 
 export type SaveParse =
@@ -194,6 +202,10 @@ export function reconcile(saved: GameState, content: Content): GameState {
     .filter((o) => o.supplier in content.supplierById)
     .map((o) => ({ ...o, lines: o.lines.filter((l) => l.key in content.productByKey) }))
     .filter((o) => o.lines.length > 0);
+  for (const id of Object.keys(s.display)) {
+    if (!content.itemById[id]?.batch) delete s.display[id];
+    else s.display[id] = s.display[id].filter((b) => b.qty > 0);
+  }
   s.lastSpoiled = s.lastSpoiled.filter((x) => x.ingredient in content.ingredientById);
 
   // Prices: keep what is known, start new products at their base price, drop products that are gone.

@@ -124,7 +124,11 @@
       "invalid_quantity": "Invalid quantity",
       "no_pasar_trip": "You are not at the pasar today",
       "not_a_dish": "That is not a cooked dish",
-      "invalid_price": "Invalid price"
+      "invalid_price": "Invalid price",
+      "not_a_batch_dish": "This dish is cooked to order",
+      "missing_ingredients": "Not enough ingredients",
+      "no_leftovers": "Nothing left over",
+      "invalid_choice": "Unknown choice"
     },
     "blockDone": {
       "pagi": "Morning block done{{extra}}",
@@ -144,7 +148,9 @@
       "flood": "News: flooding at the suppliers",
       "lpg-shortage": "News: LPG is scarce",
       "market-operation": "News: a market operation"
-    }
+    },
+    "cooked": "{{item}}: {{portions}} portions ready on the display",
+    "wentStale": "{{item}}: {{portions}} portions went stale and were thrown out"
   },
   "title": {
     "eyebrow": "OFFLINE · 1 PLAYER",
@@ -212,7 +218,9 @@
         "name": "Sleep in",
         "desc": "Rest longer. Stock the shelves while serving."
       }
-    }
+    },
+    "displayTitle": "Display case",
+    "toKitchen": "To the kitchen"
   },
   "exchange": {
     "title": "Exchange cash",
@@ -369,7 +377,8 @@
     "today": "Today",
     "counter": "Counter",
     "menu": "Menu",
-    "storage": "Storage"
+    "storage": "Storage",
+    "kitchen": "Kitchen"
   },
   "menu": {
     "title": "Menu & prices",
@@ -536,5 +545,44 @@
     "more": "More {{amount}}",
     "withdraw": "Withdraw cash",
     "withdrawHelp": "The machine only pays out big notes, so this does not add small change. For small change, exchange cash before opening."
+  },
+  "kitchen": {
+    "title": "Kitchen",
+    "help": "Cook ahead so the display is full when you open. Food left on the display too long goes stale and is thrown out.",
+    "timeLeft": "Pre-open time left: {{left}} of {{total}} minutes",
+    "cooking": "Cooking, the counter has to wait",
+    "closed": "The kitchen can only be used before and during opening hours",
+    "onDisplay": "On display",
+    "empty": "Empty",
+    "freshLeft": "fresh for {{h}} h {{m}} m",
+    "perBatch": "{{portions}} portions · {{minutes}} min",
+    "cost": "Cost {{price}} per portion",
+    "cook": "Cook 1 batch",
+    "cookWhy": {
+      "no_time": "Not enough pre-open time",
+      "missing_ingredients": "Missing ingredients",
+      "busy": "Already cooking",
+      "shelves_not_ready": "Stock the shelves first",
+      "wrong_phase": "Not possible right now"
+    },
+    "needs": "Ingredients per batch",
+    "orderDishes": "Cooked to order",
+    "orderDishesHelp": "These are made from the storeroom when a customer orders.",
+    "batchSale": "An empty display means lost sales. Do not send customers home.",
+    "prepareNote": "Preparing the shelves takes {{minutes}} of these minutes."
+  },
+  "leftovers": {
+    "title": "Left on the display",
+    "help": "Anything you do not deal with tonight is thrown out tomorrow morning.",
+    "portions": "{{n}} portions",
+    "obral": "Sell cheap",
+    "eat": "Eat",
+    "give": "Give away",
+    "trash": "Throw away",
+    "obralHelp": "Sell at {{share}}% of the price",
+    "eatHelp": "Full tummy, saves money",
+    "giveHelp": "A little reputation",
+    "trashHelp": "A clean loss",
+    "waste": "Wasted today: {{value}}"
   }
 }

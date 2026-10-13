@@ -106,6 +106,17 @@ export interface MenuEntry {
   portion: Portion;
 }
 
+/** Portions of a batch dish cooked ahead and waiting on the display. */
+export interface DisplayBatch {
+  qty: number;
+  /** Minutes since day 0 when it came off the stove. It is good for the dish's freshMinutes after that. */
+  cookedAt: number;
+  /** What one portion cost in ingredients. */
+  unitCost: number;
+}
+
+export type LeftoverChoice = 'obral' | 'eat' | 'give' | 'trash';
+
 export interface Spoiled {
   ingredient: string;
   /** In sold units. */
@@ -144,6 +155,12 @@ export interface Stats {
   shortChangeGained: number;
   /** What the ingredients and goods that were sold cost to buy. */
   cogs: number;
+  /** Cost of cooked portions that went stale or were thrown away. */
+  waste: number;
+  /** Money from selling leftovers cheaply (obral). */
+  obralRevenue: number;
+  /** Reputation gained today by giving food away. */
+  givenRep: number;
   /** Rupiah paid as fee when exchanging big notes for small ones. */
   exchangeFees: number;
   /** Gross sales per open hour, index 0 is the first hour after opening. */
@@ -187,6 +204,8 @@ export interface GameState {
   goodsCost: Record<string, number>;
   /** The player's menu: price and portion size for each dish. */
   menu: Record<string, MenuEntry>;
+  /** Cooked portions on the display, by batch dish id, oldest first. */
+  display: Record<string, DisplayBatch[]>;
   orders: Order[];
   nextOrderId: number;
   /** What spoiled overnight, to tell the player in the morning. */
@@ -208,6 +227,8 @@ export interface GameState {
 export type Command =
   | { type: 'open'; prepared: boolean }
   | { type: 'restockShelves' }
+  | { type: 'cookBatch'; item: string; batches: number }
+  | { type: 'handleLeftover'; item: string; choice: LeftoverChoice }
   | { type: 'placeOrder'; supplier: string; lines: Array<{ key: string; qty: number }>; express: boolean }
   | { type: 'pasarTrip'; lines: Array<{ key: string; qty: number }> }
   | { type: 'setDishPrice'; item: string; price: number }
@@ -262,6 +283,10 @@ export type CommandError =
   | 'invalid_quantity'
   | 'no_pasar_trip'
   | 'not_a_dish'
+  | 'not_a_batch_dish'
+  | 'missing_ingredients'
+  | 'no_leftovers'
+  | 'invalid_choice'
   | 'invalid_price';
 
 export type WalkawayReason = 'patience' | 'closing' | 'empty_order' | 'kasbon_refused';
@@ -286,6 +311,9 @@ export type GameEvent =
   | { type: 'order_late'; orderId: number; arriveDay: number }
   | { type: 'pasar_bought'; total: number }
   | { type: 'spoiled'; value: number }
+  | { type: 'cooked'; item: string; portions: number }
+  | { type: 'went_stale'; item: string; portions: number }
+  | { type: 'leftover_handled'; item: string; choice: LeftoverChoice; portions: number }
   | { type: 'news'; event: string }
   | { type: 'closed' };
 

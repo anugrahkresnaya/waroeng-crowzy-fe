@@ -183,7 +183,17 @@ export async function stateOf(page: Page) {
       orders: Array<{ id: number; status: string; late: boolean; express: boolean; total: number; supplier: string; arriveDay: number }>;
       menu: Record<string, { price: number; portion: string }>;
       market: { prices: Record<string, number>; history: Record<string, number[]>; news: unknown[]; active: unknown[] };
-      stats: { cogs: number; served: number };
+      stats: { cogs: number; served: number; waste: number };
+      preOpenUsed: number;
     };
   });
+}
+
+/** Cooks one batch of gorengan and es teh in the kitchen, the way a player fills the display before opening. */
+export async function cookAhead(page: Page) {
+  await page.getByTestId("to-kitchen").click();
+  await page.getByTestId("cook-gorengan").click();
+  await page.getByTestId("cook-es-teh").click();
+  await page.getByRole("link", { name: "Hari ini" }).click();
+  await page.waitForURL(/\/beranda$/);
 }
