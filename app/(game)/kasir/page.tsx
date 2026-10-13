@@ -8,6 +8,7 @@ import { OpenHoursBar } from "@/components/kasir/open-hours-bar";
 import { Stage } from "@/components/kasir/stage";
 import { TopBar } from "@/components/top-bar";
 import { Button } from "@/components/ui";
+import { content } from "@/engine";
 import { useCounterUi } from "@/lib/counter-ui-store";
 import { useGame } from "@/lib/game-store";
 import { useGuard } from "@/lib/use-guard";
@@ -18,7 +19,10 @@ function tap(kind: string, id: string) {
   const { send, state } = useGame.getState();
   const customer = state?.line[0];
   if (!state || !customer) return;
-  if (kind === "item") send({ type: "pick", itemId: id });
+  if (kind === "item") {
+    if (content.itemById[id]?.cook) send({ type: "startCook", item: id, auto: useCounterUi.getState().auto });
+    else send({ type: "pick", itemId: id });
+  }
   else if (kind === "piece" && customer.stage === "change") {
     const d = Number(id);
     const { given, addPiece } = useCounterUi.getState();

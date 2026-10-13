@@ -56,6 +56,13 @@ Framework-free, deterministic cashier-counter simulation. ESLint (`eslint.config
 - `sweepDisplay` (each tick) throws out batches older than `freshMinutes`, counted in `stats.waste`; `clearDisplay` empties it on `nextDay`. At night `handleLeftover` per dish: obral (cash into the drawer), eat (hunger), give (reputation, capped), trash.
 - Tests that need cook-to-order behavior use `quietContent` (batches stripped); `kitchenContent` keeps them. Saves went to format 3 with a migration from 2.
 
+## Cooking to order (`engine/cooking.ts`)
+
+- Dishes with `cook` in `items.json` (Indomie, kopi, telur) go on one of `balance.burners` burners with `startCook` (manual or auto) and come off with `plate`. Burners run on game ticks, so the result depends only on the tick the command was logged at and replays exactly. Plating inside `cook.minutes ± (window + practice)` is `pas`, earlier `kurang`, later `gosong`; auto-cook takes `autoMul` times as long and always gives `biasa`.
+- Ingredients are used when the dish goes on, the plated portion sits in `customer.cooked` (quality and cost) and on the tray, and a customer who leaves or declines wastes both the stove and the tray portion. `pick` refuses a cooked dish (`needs_cooking`). Sales add the stored cost to COGS and apply `balance.cooking.rep`; a `kurang`/`gosong` plate makes the customer annoyed.
+- `state.skill[item]` counts perfect plates; every `practicePerMinute` of them widens the window by a minute, up to `maxPractice`.
+- The UI is `components/kasir/stove.tsx` inside the ordering panel. The clock runs 2 game minutes per second, so the bar moves in 2-minute steps. Browser tests pause the clock and use `advanceMinutes` from `e2e/helpers.ts`. `quietContent` strips `cook` too, so scenario tests need no stove. Save format 4.
+
 ## Gotchas
 
 - This is not the Next.js in your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing Next code (see AGENTS.md above).

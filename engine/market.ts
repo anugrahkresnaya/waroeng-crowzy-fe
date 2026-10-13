@@ -213,7 +213,7 @@ export function portionsLeft(state: GameState, content: Content, itemId: string,
   const reserved: Record<string, number> = {};
   for (const [id, qty] of Object.entries(tray)) {
     const other = content.itemById[id];
-    if (!other || other.kind !== 'dish' || qty <= 0) continue;
+    if (!other || other.kind !== 'dish' || other.cook || other.batch || qty <= 0) continue;
     for (const [ing, need] of Object.entries(dishNeeds(state, content, other))) reserved[ing] = (reserved[ing] ?? 0) + need * qty;
   }
   let most = Infinity;

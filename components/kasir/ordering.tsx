@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Art } from "@/components/art";
+import { Stove } from "@/components/kasir/stove";
 import { Button, Chip } from "@/components/ui";
 import { content, portionsLeft, sellPrice, type Customer } from "@/engine";
 import { useCounterUi } from "@/lib/counter-ui-store";
@@ -42,6 +43,7 @@ export function Ordering({ customer }: { customer: Customer }) {
       <ul className="mb-2 divide-y divide-line rounded-xl border border-line bg-panel px-3" aria-label={t("counter.request")}>
         {customer.order.map((line) => {
           const have = customer.tray[line.itemId] ?? 0;
+          const cooking = content.itemById[line.itemId].cook && state ? state.burners.filter((b) => b && b.customerId === customer.id && b.item === line.itemId).length : 0;
           const tone = have === line.qty ? "text-good" : have > line.qty ? "text-bad" : "text-muted";
           return (
             <li key={line.itemId} className="flex items-center gap-2 py-1">
@@ -51,6 +53,7 @@ export function Ordering({ customer }: { customer: Customer }) {
               <span className="flex-1 text-[13px]">{loc(content.itemById[line.itemId].name)}</span>
               <span className={`font-mono text-xs tabular-nums ${tone}`}>
                 {have}/{line.qty}
+                {cooking > 0 && <span className="text-warn"> +{cooking}</span>}
               </span>
               <button
                 onClick={() => send({ type: "declineItem", itemId: line.itemId })}
@@ -71,7 +74,18 @@ export function Ordering({ customer }: { customer: Customer }) {
         {trayEntries.length === 0 ? (
           <span className="text-xs text-muted">{t("counter.trayHint")}</span>
         ) : (
-          trayEntries.map(([id, qty]) => (
+          trayEntries.map(([id, qty]) =>
+            content.itemById[id].cook ? (
+              <span key={id} className="flex items-center gap-1 rounded-lg border border-line bg-bg py-1 pl-1 pr-2 text-xs font-bold" data-testid={`plated-${id}`}>
+                <span className="w-6">
+                  <Art id={content.itemById[id].art} />
+                </span>
+                {qty}
+                <span className="ml-1" aria-hidden>
+                  {(customer.cooked[id] ?? []).map((p) => (p.quality === "pas" ? "★" : p.quality === "biasa" ? "•" : "✕")).join("")}
+                </span>
+              </span>
+            ) : (
             <button
               key={id}
               onClick={() => send({ type: "unpick", itemId: id })}
@@ -84,9 +98,12 @@ export function Ordering({ customer }: { customer: Customer }) {
               {qty}
               <span className="ml-1 text-muted">×</span>
             </button>
-          ))
+            ),
+          )
         )}
       </div>
+
+      {(customer.order.some((l) => content.itemById[l.itemId].cook) || state?.burners.some((b) => b)) && <Stove />}
 
       <div className="mb-2 flex gap-1.5">
         {CATEGORIES.map((c) => (

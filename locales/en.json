@@ -128,7 +128,14 @@
       "not_a_batch_dish": "This dish is cooked to order",
       "missing_ingredients": "Not enough ingredients",
       "no_leftovers": "Nothing left over",
-      "invalid_choice": "Unknown choice"
+      "invalid_choice": "Unknown choice",
+      "needs_cooking": "Cook it on the stove first",
+      "not_cooked_to_order": "This does not need cooking",
+      "no_burner": "All burners are busy",
+      "nothing_to_cook": "The burner is empty",
+      "no_such_burner": "No such burner",
+      "already_cooked": "Already cooked",
+      "auto_cooking": "Auto-cooking, wait for it"
     },
     "blockDone": {
       "pagi": "Morning block done{{extra}}",
@@ -150,7 +157,14 @@
       "market-operation": "News: a market operation"
     },
     "cooked": "{{item}}: {{portions}} portions ready on the display",
-    "wentStale": "{{item}}: {{portions}} portions went stale and were thrown out"
+    "wentStale": "{{item}}: {{portions}} portions went stale and were thrown out",
+    "plated": {
+      "pas": "{{item}}: just right!",
+      "biasa": "{{item}} done (auto)",
+      "kurang": "{{item}} is undercooked",
+      "gosong": "{{item}} is burnt"
+    },
+    "burnerWasted": "{{item}} on the stove was wasted"
   },
   "title": {
     "eyebrow": "OFFLINE · 1 PLAYER",
@@ -254,7 +268,9 @@
     "nextDay": "Next day",
     "toNight": "On to the night",
     "profit": "Net profit",
-    "profitSub": "After {{cost}} of ingredients and {{fees}} of QRIS fees"
+    "profitSub": "After {{cost}} of ingredients and {{fees}} of QRIS fees",
+    "cooking": "Cooking today",
+    "cookingLine": "Just right {{pas}} · Auto {{biasa}} · Undercooked {{kurang}} · Burnt {{gosong}}"
   },
   "phone": {
     "eyebrow": "PHONE",
@@ -584,5 +600,26 @@
     "giveHelp": "A little reputation",
     "trashHelp": "A clean loss",
     "waste": "Wasted today: {{value}}"
+  },
+  "stove": {
+    "title": "Stove",
+    "hint": "Tap a dish to put it on the stove, then lift it while the bar is green.",
+    "burner": "Burner {{n}}",
+    "empty": "Free",
+    "lift": "Lift",
+    "auto": "Auto",
+    "manual": "By hand",
+    "mode": "How to cook",
+    "raw": "Raw",
+    "ready": "Just right!",
+    "burnt": "Burnt",
+    "autoCooking": "Cooking by itself…",
+    "cooking": "cooking {{n}}",
+    "cooked": "done {{n}}",
+    "zone": {
+      "kurang": "Undercooked",
+      "pas": "Just right",
+      "gosong": "Burnt"
+    }
   }
 }

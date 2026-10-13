@@ -9,6 +9,21 @@ export type Stage = 'ordering' | 'paying' | 'change';
 /** idle: before opening. open: shop live. ended: day summary. dayoff: day-off blocks. night: free time. bed: tomorrow's decision. */
 export type Phase = 'idle' | 'open' | 'ended' | 'dayoff' | 'night' | 'bed';
 
+/** How a cooked portion came out. `biasa` is what auto-cook makes: fine, but nothing to be proud of. */
+export type Quality = 'kurang' | 'pas' | 'gosong' | 'biasa';
+
+/** A dish on the stove, cooking for the customer at the counter. */
+export interface Burner {
+  item: string;
+  customerId: number;
+  /** state.tick when it went on. */
+  startedAt: number;
+  /** Cooks by itself and is plated at `autoMinutes`, at lower quality. */
+  auto: boolean;
+  /** What its ingredients cost, so a dish nobody takes still counts as a loss. */
+  cost: number;
+}
+
 export interface OrderLine {
   itemId: string;
   qty: number;
@@ -32,6 +47,8 @@ export interface Customer {
   /** Cash the customer hands over (empty unless method is cash). */
   tender: Pieces;
   ktpChecked: boolean;
+  /** The cooked portions on the tray, by item: how each came out and what its ingredients cost. */
+  cooked: Record<string, Array<{ quality: Quality; cost: number }>>;
 }
 
 /** A purchase of one ingredient that is still in the pantry. Quantities are in the ingredient's base unit. */
@@ -157,6 +174,8 @@ export interface Stats {
   cogs: number;
   /** Cost of cooked portions that went stale or were thrown away. */
   waste: number;
+  /** Cooked-to-order portions by how they came out, today. */
+  cooking: Record<Quality, number>;
   /** Money from selling leftovers cheaply (obral). */
   obralRevenue: number;
   /** Reputation gained today by giving food away. */
@@ -206,6 +225,10 @@ export interface GameState {
   menu: Record<string, MenuEntry>;
   /** Cooked portions on the display, by batch dish id, oldest first. */
   display: Record<string, DisplayBatch[]>;
+  /** What is on the stove, one slot per burner (null when free). */
+  burners: Array<Burner | null>;
+  /** Perfect plates so far for each cooked-to-order dish. Practice widens the just-right window. */
+  skill: Record<string, number>;
   orders: Order[];
   nextOrderId: number;
   /** What spoiled overnight, to tell the player in the morning. */
@@ -228,6 +251,8 @@ export type Command =
   | { type: 'open'; prepared: boolean }
   | { type: 'restockShelves' }
   | { type: 'cookBatch'; item: string; batches: number }
+  | { type: 'startCook'; item: string; auto: boolean }
+  | { type: 'plate'; burner: number }
   | { type: 'handleLeftover'; item: string; choice: LeftoverChoice }
   | { type: 'placeOrder'; supplier: string; lines: Array<{ key: string; qty: number }>; express: boolean }
   | { type: 'pasarTrip'; lines: Array<{ key: string; qty: number }> }
@@ -287,6 +312,13 @@ export type CommandError =
   | 'missing_ingredients'
   | 'no_leftovers'
   | 'invalid_choice'
+  | 'needs_cooking'
+  | 'not_cooked_to_order'
+  | 'no_burner'
+  | 'nothing_to_cook'
+  | 'no_such_burner'
+  | 'already_cooked'
+  | 'auto_cooking'
   | 'invalid_price';
 
 export type WalkawayReason = 'patience' | 'closing' | 'empty_order' | 'kasbon_refused';
@@ -312,6 +344,8 @@ export type GameEvent =
   | { type: 'pasar_bought'; total: number }
   | { type: 'spoiled'; value: number }
   | { type: 'cooked'; item: string; portions: number }
+  | { type: 'plated'; item: string; quality: Quality }
+  | { type: 'burner_wasted'; item: string }
   | { type: 'went_stale'; item: string; portions: number }
   | { type: 'leftover_handled'; item: string; choice: LeftoverChoice; portions: number }
   | { type: 'news'; event: string }

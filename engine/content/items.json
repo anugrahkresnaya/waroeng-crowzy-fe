@@ -15,6 +15,10 @@
    "minyak": 5,
    "bawang-merah": 4,
    "lpg": 8
+  },
+  "cook": {
+   "minutes": 8,
+   "window": 2
   }
  },
  {
@@ -32,6 +36,10 @@
    "mi-instan": 1,
    "sawi": 15,
    "lpg": 8
+  },
+  "cook": {
+   "minutes": 8,
+   "window": 2
   }
  },
  {
@@ -84,6 +92,10 @@
    "kopi": 8,
    "gula": 10,
    "lpg": 4
+  },
+  "cook": {
+   "minutes": 6,
+   "window": 2
   }
  },
  {
@@ -254,6 +266,10 @@
   "reference": 2500,
   "recipe": {
    "telur": 1
+  },
+  "cook": {
+   "minutes": 6,
+   "window": 2
   }
  }
 ]

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { categoryOf, cookAhead, frontCustomer, gameState, mutateGame, pause } from "./helpers";
+import { advanceMinutes, categoryOf, cookAhead, cookMinutes, frontCustomer, gameState, mutateGame, pause } from "./helpers";
 
 async function startAndOpen(page: Page, exchange = false) {
   await page.goto("/");
@@ -30,7 +30,15 @@ async function serve(page: Page) {
   expect(c).not.toBeNull();
   for (const line of c!.order) {
     await page.getByTestId(`cat-${await categoryOf(page, line.itemId)}`).click();
-    for (let i = 0; i < line.qty; i++) await page.getByTestId(`item-${line.itemId}`).click();
+    const minutes = await cookMinutes(page, line.itemId);
+    for (let i = 0; i < line.qty; i++) {
+      await page.getByTestId(`item-${line.itemId}`).click();
+      if (minutes !== null) {
+        // Cooked to order: put it on the stove, let it cook just right, then lift it.
+        await advanceMinutes(page, minutes);
+        await page.getByTestId("lift-0").click();
+      }
+    }
   }
   await page.getByTestId("confirm-order").click();
 
@@ -94,7 +102,8 @@ test("dragging an item to the tray picks it", async ({ page }) => {
   const itemId = c!.order[0].itemId;
   await page.getByTestId(`cat-${await categoryOf(page, itemId)}`).click();
   await page.getByTestId(`item-${itemId}`).dragTo(page.getByTestId("tray"));
-  await expect(page.getByTestId("tray").getByRole("button")).toHaveCount(1);
+  if ((await cookMinutes(page, itemId)) === null) await expect(page.getByTestId("tray").getByRole("button")).toHaveCount(1);
+  else await expect(page.getByTestId("burner-0")).toHaveAttribute("data-zone", "kurang"); // a cooked dish goes on the stove instead
 });
 
 test("a wrong tray is refused and costs the customer patience, not a sale", async ({ page }) => {

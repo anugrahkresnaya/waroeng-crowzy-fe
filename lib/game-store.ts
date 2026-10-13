@@ -73,6 +73,10 @@ function toastFor(event: GameEvent): Omit<Toast, "id"> | null {
       return { key: "cooked", vars: { item: itemName(event.item), portions: event.portions }, tone: "good" };
     case "went_stale":
       return { key: "wentStale", vars: { item: itemName(event.item), portions: event.portions }, tone: "bad" };
+    case "plated":
+      return { key: `plated.${event.quality}`, vars: { item: itemName(event.item) }, tone: event.quality === "pas" ? "good" : event.quality === "biasa" ? "info" : "bad" };
+    case "burner_wasted":
+      return { key: "burnerWasted", vars: { item: itemName(event.item) }, tone: "bad" };
     case "news":
       return { key: `news.${event.event}`, tone: "info" };
     case "shelves_ready":

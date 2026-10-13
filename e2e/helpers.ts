@@ -183,7 +183,8 @@ export async function stateOf(page: Page) {
       orders: Array<{ id: number; status: string; late: boolean; express: boolean; total: number; supplier: string; arriveDay: number }>;
       menu: Record<string, { price: number; portion: string }>;
       market: { prices: Record<string, number>; history: Record<string, number[]>; news: unknown[]; active: unknown[] };
-      stats: { cogs: number; served: number; waste: number };
+      stats: { cogs: number; served: number; waste: number; cooking: Record<string, number>; moods: Record<string, number> };
+      burners: Array<{ item: string } | null>;
       preOpenUsed: number;
     };
   });
@@ -196,4 +197,25 @@ export async function cookAhead(page: Page) {
   await page.getByTestId("cook-es-teh").click();
   await page.getByRole("link", { name: "Hari ini" }).click();
   await page.waitForURL(/\/beranda$/);
+}
+
+/** Moves the game clock on by whole game minutes while the clock is paused, so cooking can be timed exactly. */
+export async function advanceMinutes(page: Page, minutes: number) {
+  await page.evaluate((n) => {
+    const w = window as unknown as {
+      __warung: { store: { getState: () => { game: { tick: () => unknown; snapshot: () => unknown } }; setState: (s: unknown) => void } };
+    };
+    const { store } = w.__warung;
+    const game = store.getState().game;
+    for (let i = 0; i < n; i++) game.tick();
+    store.setState({ state: game.snapshot() });
+  }, minutes);
+}
+
+/** How many minutes a dish needs on the stove to come out just right, or null when it is not cooked to order. */
+export async function cookMinutes(page: Page, itemId: string): Promise<number | null> {
+  return page.evaluate((id) => {
+    const w = window as unknown as { __warung: { content: { itemById: Record<string, { cook?: { minutes: number } }> } } };
+    return w.__warung.content.itemById[id].cook?.minutes ?? null;
+  }, itemId);
 }

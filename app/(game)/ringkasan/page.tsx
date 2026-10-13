@@ -128,6 +128,13 @@ export default function RingkasanPage() {
         )}
       </Card>
 
+      {Object.values(state.stats.cooking).some((n) => n > 0) && (
+        <Card className="p-3" data-testid="cooking-summary">
+          <div className="text-xs font-bold">{t("summary.cooking")}</div>
+          <div className="font-mono text-xs tabular-nums text-muted">{t("summary.cookingLine", state.stats.cooking)}</div>
+        </Card>
+      )}
+
       <Leftovers />
 
       {lowStock.length > 0 && (

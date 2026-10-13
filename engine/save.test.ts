@@ -86,6 +86,21 @@ describe('reading what storage returns', () => {
     }
   });
 
+  it('carries a format 3 save (before the stove) forward with nothing cooking', () => {
+    const save = good() as unknown as { state: { burners?: unknown; skill?: unknown; stats: Record<string, unknown>; line: Array<Record<string, unknown>> } };
+    delete save.state.burners;
+    delete save.state.skill;
+    delete save.state.stats.cooking;
+    for (const c of save.state.line) delete c.cooked;
+    const parsed = parseSave({ ...save, format: 3 });
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) {
+      expect(parsed.save.state.burners).toEqual([null, null]);
+      expect(parsed.save.state.skill).toEqual({});
+      expect(parsed.save.state.stats.cooking.pas).toBe(0);
+    }
+  });
+
   it('says a format 1 save (before the market) is outdated', () => {
     expect(parseSave({ ...good(), format: 1 })).toEqual({ ok: false, reason: 'outdated' });
   });
@@ -162,7 +177,7 @@ describe('content that changed since the save', () => {
     g.dispatch({ type: 'open', prepared: true });
     const mk = (type: string, itemId: string) => ({
       id: g.state.nextCustomerId++, type, age: 30, order: [{ itemId, qty: 1 }], tray: {}, patience: 10, maxPatience: 10,
-      arrivedAt: 0, stage: 'ordering' as const, method: 'qris' as const, bill: 1000, tender: {}, ktpChecked: false,
+      arrivedAt: 0, stage: 'ordering' as const, method: 'qris' as const, bill: 1000, tender: {}, ktpChecked: false, cooked: {},
     });
     g.state.line = [mk('langganan', 'es-teh'), mk('langganan', 'permen'), mk('hantu', 'es-teh')];
     const r = raw();

@@ -3,6 +3,7 @@ import { dayPart, weekday } from './clock';
 import {
   advanceMarketDay, assignStorage, deliverDue, pasarTrip, placeOrder, portionOf, portionsLeft, sellPrice, spoilOvernight, sellOut,
 } from './market';
+import { dropBurners, plate, startCook, tickBurners, wasteCooked } from './cooking';
 import { clearDisplay, cookBatch, handleLeftover, sweepDisplay } from './kitchen';
 import { freshStats } from './state';
 import {
@@ -106,6 +107,7 @@ function spawnCustomer(ctx: Ctx, type: CustomerType): void {
     bill: 0,
     tender: {},
     ktpChecked: false,
+    cooked: {},
   };
   planPayment(ctx, customer);
   state.line.push(customer);
@@ -136,6 +138,8 @@ function removeFromLine(ctx: Ctx, c: Customer): void {
 }
 
 function walkAway(ctx: Ctx, c: Customer, reason: WalkawayReason): void {
+  dropBurners(ctx, c.id);
+  wasteCooked(ctx, c);
   removeFromLine(ctx, c);
   ctx.emit({ type: 'walkaway', customerId: c.id, reason });
 }
@@ -155,16 +159,24 @@ function drainPatience(ctx: Ctx): void {
 
 function completeSale(ctx: Ctx, c: Customer, moodOverride?: Mood): void {
   const { state, content } = ctx;
-  const mood = moodOverride ?? moodOf(c);
+  let spoiled = false;
   let restricted = false;
   for (const line of c.order) {
     const item = content.itemById[line.itemId];
-    state.stats.cogs += sellOut(state, content, item, line.qty);
+    if (item.cook) {
+      for (const p of c.cooked[item.id] ?? []) {
+        state.stats.cogs += p.cost;
+        changeReputation(ctx, content.balance.cooking.rep[p.quality]);
+        if (p.quality === 'kurang' || p.quality === 'gosong') spoiled = true;
+      }
+    } else state.stats.cogs += sellOut(state, content, item, line.qty);
     // Small portions let the regulars down a little, large ones win them over.
     if (item.kind === 'dish') changeReputation(ctx, content.market.portion[portionOf(state, item)].rep);
     state.stats.itemsSold[line.itemId] = (state.stats.itemsSold[line.itemId] ?? 0) + line.qty;
     if (content.itemById[line.itemId].ageRestricted) restricted = true;
   }
+  // A badly cooked dish annoys whoever gets it, however patient they were.
+  const mood = moodOverride ?? (spoiled ? 'annoyed' : moodOf(c));
   state.stats.served++;
   state.stats.moods[mood]++;
   const hour = Math.min(state.stats.salesByHour.length - 1, Math.max(0, Math.floor((state.minute - content.balance.openMinute) / 60)));
@@ -405,10 +417,19 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
   if (!c) return fail('no_customer');
 
   switch (cmd.type) {
+    case 'startCook': {
+      const error = startCook(ctx, c, cmd);
+      return error ? fail(error) : OK;
+    }
+    case 'plate': {
+      const error = plate(ctx, cmd);
+      return error ? fail(error) : OK;
+    }
     case 'pick': {
       if (c.stage !== 'ordering') return fail('wrong_stage');
       const item = content.itemById[cmd.itemId];
       if (!item) return fail('unknown_item');
+      if (item.cook) return fail('needs_cooking');
       if (portionsLeft(state, content, item.id, c.tray) <= 0) return fail('out_of_stock');
       c.tray[item.id] = (c.tray[item.id] ?? 0) + 1;
       return OK;
@@ -416,6 +437,7 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
     case 'unpick': {
       if (c.stage !== 'ordering') return fail('wrong_stage');
       if ((c.tray[cmd.itemId] ?? 0) <= 0) return fail('not_in_tray');
+      if (content.itemById[cmd.itemId]?.cook) return fail('already_cooked');
       c.tray[cmd.itemId] -= 1;
       if (c.tray[cmd.itemId] === 0) delete c.tray[cmd.itemId];
       return OK;
@@ -427,6 +449,8 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
       if (portionsLeft(state, content, line.itemId) < line.qty) state.stats.stockoutDeclines++;
       c.order = c.order.filter((l) => l !== line);
       delete c.tray[cmd.itemId];
+      dropBurners(ctx, c.id, cmd.itemId);
+      wasteCooked(ctx, c, cmd.itemId);
       c.patience -= b.penalties.decline;
       if (c.order.length === 0) {
         changeReputation(ctx, b.reputation.emptyOrder);
@@ -532,6 +556,7 @@ export function advance(ctx: Ctx): void {
   state.minute++;
   deliverDue(ctx);
   sweepDisplay(ctx);
+  tickBurners(ctx);
   if (state.busyUntil > 0 && state.tick >= state.busyUntil) {
     state.busyUntil = 0;
     state.shelfReady = true;

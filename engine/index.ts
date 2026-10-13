@@ -9,6 +9,7 @@ export {
   baseCostPerPortion, costPerPortion, dishNeeds, displayPortions, fridgeUsed, ingredientQty, marketPrice, onPasarTrip, pasarQuote, portionsLeft, quoteOrder, roundPrice,
   sellPrice, standardArrivalDay,
 } from './market';
+export { autoMinutes, justRight, practiceBonus, qualityAt, stillToCook } from './cooking';
 export { absoluteMinute, batchesPossible } from './kitchen';
 export { goodKey } from './schema';
 export { addDays } from './calendar';

@@ -156,5 +156,17 @@
     "eatHunger": 12,
     "giveRep": 0.15,
     "giveRepMax": 1.5
+  },
+  "burners": 2,
+  "cooking": {
+    "rep": {
+      "pas": 0.15,
+      "biasa": 0,
+      "kurang": -0.3,
+      "gosong": -0.5
+    },
+    "autoMul": 1.5,
+    "practicePerMinute": 4,
+    "maxPractice": 2
   }
 }

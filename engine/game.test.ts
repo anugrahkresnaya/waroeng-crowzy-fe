@@ -64,7 +64,7 @@ describe('a full day', () => {
       let batchUsed = 0;
       for (const item of content.items.filter((i) => i.kind === 'dish')) {
         const amount = (item.recipe?.[ing.id] ?? 0) * (s.itemsSold[item.id] ?? 0);
-        if (item.batch) batchUsed += amount;
+        if (item.batch || item.cook) batchUsed += amount; // cooked ahead or on a burner: some may be wasted
         else used += amount;
       }
       const gone = before.pantry[ing.id] - ingredientQty(game.state, ing.id);

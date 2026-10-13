@@ -20,7 +20,7 @@ export function kitchenContent(base: Content = content, patch: Partial<Content['
 /** Like `kitchenContent`, but every dish is cooked to order from the pantry, so scenarios need no prep. */
 export function quietContent(base: Content = content, patch: Partial<Content['balance']> = {}): Content {
   const quiet = kitchenContent(base, patch);
-  const items = quiet.items.map((item) => ({ ...item, batch: undefined }));
+  const items = quiet.items.map((item) => ({ ...item, batch: undefined, cook: undefined }));
   return { ...quiet, items, itemById: Object.fromEntries(items.map((i) => [i.id, i])) };
 }
 
@@ -60,6 +60,7 @@ export function addCustomer(game: Game, spec: CustomerSpec): Customer {
     bill,
     tender: method === 'cash' ? (spec.tender ?? smallestNoteAtLeast(bill)) : {},
     ktpChecked: false,
+    cooked: {},
   };
   game.state.line.push(customer);
   return customer;

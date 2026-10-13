@@ -128,7 +128,14 @@
       "not_a_batch_dish": "Hidangan ini dimasak saat dipesan",
       "missing_ingredients": "Bahan tidak cukup",
       "no_leftovers": "Tidak ada sisa",
-      "invalid_choice": "Pilihan tidak dikenal"
+      "invalid_choice": "Pilihan tidak dikenal",
+      "needs_cooking": "Masak dulu di kompor",
+      "not_cooked_to_order": "Ini tidak perlu dimasak",
+      "no_burner": "Kompor penuh",
+      "nothing_to_cook": "Kompor kosong",
+      "no_such_burner": "Kompor tidak ada",
+      "already_cooked": "Sudah dimasak",
+      "auto_cooking": "Masak otomatis, tunggu selesai"
     },
     "blockDone": {
       "pagi": "Blok pagi selesai{{extra}}",
@@ -150,7 +157,14 @@
       "market-operation": "Kabar: ada operasi pasar"
     },
     "cooked": "{{item}}: {{portions}} porsi siap di etalase",
-    "wentStale": "{{item}} {{portions}} porsi sudah tidak segar, dibuang"
+    "wentStale": "{{item}} {{portions}} porsi sudah tidak segar, dibuang",
+    "plated": {
+      "pas": "{{item}}: pas matang!",
+      "biasa": "{{item}} matang (otomatis)",
+      "kurang": "{{item}} masih mentah",
+      "gosong": "{{item}} gosong"
+    },
+    "burnerWasted": "{{item}} di kompor terbuang"
   },
   "title": {
     "eyebrow": "OFFLINE · 1 PEMAIN",
@@ -254,7 +268,9 @@
     "nextDay": "Hari berikutnya",
     "toNight": "Lanjut ke malam",
     "profit": "Laba bersih",
-    "profitSub": "Setelah modal bahan {{cost}} dan biaya QRIS {{fees}}"
+    "profitSub": "Setelah modal bahan {{cost}} dan biaya QRIS {{fees}}",
+    "cooking": "Masakan hari ini",
+    "cookingLine": "Pas {{pas}} · Otomatis {{biasa}} · Mentah {{kurang}} · Gosong {{gosong}}"
   },
   "phone": {
     "eyebrow": "PONSEL",
@@ -584,5 +600,26 @@
     "giveHelp": "Reputasi naik sedikit",
     "trashHelp": "Rugi bersih",
     "waste": "Terbuang hari ini: {{value}}"
+  },
+  "stove": {
+    "title": "Kompor",
+    "hint": "Ketuk makanan untuk menaruhnya di kompor, lalu angkat saat bar hijau.",
+    "burner": "Kompor {{n}}",
+    "empty": "Kosong",
+    "lift": "Angkat",
+    "auto": "Otomatis",
+    "manual": "Sendiri",
+    "mode": "Cara masak",
+    "raw": "Mentah",
+    "ready": "Pas!",
+    "burnt": "Gosong",
+    "autoCooking": "Memasak sendiri…",
+    "cooking": "dimasak {{n}}",
+    "cooked": "matang {{n}}",
+    "zone": {
+      "kurang": "Masih mentah",
+      "pas": "Pas matang",
+      "gosong": "Gosong"
+    }
   }
 }

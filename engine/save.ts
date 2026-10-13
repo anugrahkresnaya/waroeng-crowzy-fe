@@ -7,10 +7,12 @@ import { Game } from './game';
 import { isValidBlockPlan, type Content } from './schema';
 import type { GameState } from './types';
 
-export const SAVE_FORMAT = 3;
+export const SAVE_FORMAT = 4;
 
 const num = z.number();
 const pieces = z.record(z.string(), z.number().int().min(0));
+
+const quality = z.enum(['kurang', 'pas', 'gosong', 'biasa']);
 
 const customer = z.object({
   id: num,
@@ -26,6 +28,7 @@ const customer = z.object({
   bill: num,
   tender: pieces,
   ktpChecked: z.boolean(),
+  cooked: z.record(z.string(), z.array(z.object({ quality: quality, cost: num }))),
 });
 
 const stats = z.object({
@@ -33,7 +36,7 @@ const stats = z.object({
   itemsSold: z.record(z.string(), num),
   cashRevenue: num, qrisRevenue: num, qrisFees: num, kasbonCredit: num, kasbonRefused: num,
   wrongTrays: num, stockoutDeclines: num, underageSales: num, overChange: num,
-  shortChangeCaught: num, shortChangeUnnoticed: num, shortChangeGained: num, cogs: num, waste: num, obralRevenue: num, givenRep: num, exchangeFees: num,
+  shortChangeCaught: num, shortChangeUnnoticed: num, shortChangeGained: num, cogs: num, waste: num, cooking: z.object({ kurang: num, pas: num, gosong: num, biasa: num }), obralRevenue: num, givenRep: num, exchangeFees: num,
   salesByHour: z.array(num),
   moods: z.object({ happy: num, neutral: num, annoyed: num }),
 });
@@ -101,6 +104,8 @@ const state = z.object({
   goodsCost: z.record(z.string(), num),
   menu: z.record(z.string(), z.object({ price: z.number().int().positive(), portion: z.enum(['small', 'normal', 'large']) })),
   display: z.record(z.string(), z.array(z.object({ qty: num, cookedAt: num, unitCost: num }))),
+  burners: z.array(z.object({ item: z.string(), customerId: num, startedAt: num, auto: z.boolean(), cost: num }).nullable()),
+  skill: z.record(z.string(), num),
   orders: z.array(order),
   nextOrderId: num,
   lastSpoiled: z.array(z.object({ ingredient: z.string(), qty: num, value: num })),
@@ -136,6 +141,17 @@ const MIGRATIONS: Record<number, (raw: Record<string, unknown>) => Record<string
     if (!state || typeof state !== 'object') return null;
     const stats = (state.stats ?? {}) as Record<string, unknown>;
     return { ...raw, state: { ...state, display: {}, stats: { ...stats, waste: 0, obralRevenue: 0, givenRep: 0 } } };
+  },
+  // Format 3 had no stove: nothing cooking, no practice, and no cooked portions on any tray.
+  3: (raw) => {
+    const state = raw.state as Record<string, unknown> | undefined;
+    if (!state || typeof state !== 'object') return null;
+    const stats = (state.stats ?? {}) as Record<string, unknown>;
+    const line = Array.isArray(state.line) ? (state.line as Array<Record<string, unknown>>).map((c) => ({ ...c, cooked: {} })) : [];
+    return {
+      ...raw,
+      state: { ...state, burners: [null, null], skill: {}, line, stats: { ...stats, cooking: { kurang: 0, pas: 0, gosong: 0, biasa: 0 } } },
+    };
   },
 };
 
@@ -236,6 +252,15 @@ export function reconcile(saved: GameState, content: Content): GameState {
 
   s.line = s.line.filter((c) => c.type in content.typeById && c.order.every((l) => l.itemId in content.itemById));
   for (const c of s.line) for (const id of Object.keys(c.tray)) if (!(id in content.itemById)) delete c.tray[id];
+  for (const c of s.line) for (const id of Object.keys(c.cooked)) if (!content.itemById[id]?.cook) delete c.cooked[id];
+
+  // The stove: the right number of slots, and only dishes that are still cooked to order for customers still here.
+  const here = new Set(s.line.map((c) => c.id));
+  s.burners = Array.from({ length: b.burners }, (_, i) => {
+    const burner = s.burners[i];
+    return burner && content.itemById[burner.item]?.cook && here.has(burner.customerId) ? burner : null;
+  });
+  for (const id of Object.keys(s.skill)) if (!content.itemById[id]?.cook) delete s.skill[id];
 
   const offPlan: GameState['offPlan'] = {};
   for (const block of b.offBlocks) {

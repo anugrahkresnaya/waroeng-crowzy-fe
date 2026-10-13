@@ -35,12 +35,22 @@ export const itemSchema = z
         freshMinutes: positiveInt,
       })
       .optional(),
+    /** Dish only: cooked to order on a burner. The player plates it when it is done: too early is undercooked, too late is burnt. */
+    cook: z
+      .object({
+        /** Game minutes on the burner until it is just right. */
+        minutes: positiveInt,
+        /** How many minutes either side of that still count as just right. */
+        window: z.number().int().min(0),
+      })
+      .optional(),
     /** Good only: what one piece costs from the supplier, and how many pieces come in one pack. */
     buyPrice: positiveInt.optional(),
     pack: positiveInt.optional(),
     ageRestricted: z.boolean().default(false),
   })
-  .refine((i) => i.kind === 'dish' || !i.batch, { message: 'only a dish can be cooked in batches' })
+  .refine((i) => !(i.batch && i.cook), { message: 'a dish is cooked either in batches or to order' })
+  .refine((i) => i.kind === 'dish' || (!i.batch && !i.cook), { message: 'only a dish can be cooked in batches' })
   .refine((i) => (i.kind === 'dish' ? !!i.recipe && Object.keys(i.recipe).length > 0 : !!i.buyPrice && !!i.pack), {
     message: 'a dish needs a recipe, a good needs buyPrice and pack',
   });
@@ -223,6 +233,18 @@ export const balanceSchema = z.object({
     /** Reputation gained per portion given away, up to the cap per night. */
     giveRep: z.number().min(0),
     giveRepMax: z.number().min(0),
+  }),
+  /** Burners on the stove: how many dishes can be cooked at once. */
+  burners: positiveInt,
+  cooking: z.object({
+    /** Reputation per cooked portion by how it came out. */
+    rep: z.object({ pas: z.number(), biasa: z.number(), kurang: z.number(), gosong: z.number() }),
+    /** Auto-cook takes this many times as long as doing it by hand. */
+    autoMul: z.number().min(1),
+    /** Perfect plates of a dish needed for each extra minute of window. */
+    practicePerMinute: positiveInt,
+    /** The most minutes practice can widen the window by. */
+    maxPractice: z.number().int().min(0),
   }),
 });
 

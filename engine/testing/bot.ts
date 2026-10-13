@@ -1,6 +1,7 @@
 // A headless player used by tests and, later, balance checks. It never rolls dice itself,
 // so a run is fully decided by the seed and these rules.
 import { changeFor } from '../counter';
+import { stillToCook } from '../cooking';
 import { portionsLeft, quoteOrder } from '../market';
 import { Game } from '../game';
 import { payOutBestEffort, addPieces } from '../money';
@@ -24,8 +25,17 @@ export function botAct(game: Game): boolean {
     const restricted = c.order.find((l) => content.itemById[l.itemId].ageRestricted);
     if (restricted && !c.ktpChecked) return send({ type: 'checkKtp' });
     if (restricted && c.age < 18) return send({ type: 'declineItem', itemId: restricted.itemId });
+    // Plate whatever has reached its time, then put on what still needs cooking.
+    const ready = state.burners.findIndex((b) => b && !b.auto && b.customerId === c.id && state.tick - b.startedAt >= content.itemById[b.item].cook!.minutes);
+    if (ready >= 0) return send({ type: 'plate', burner: ready });
     for (const line of c.order) {
       if ((c.tray[line.itemId] ?? 0) >= line.qty) continue;
+      if (content.itemById[line.itemId].cook) {
+        if (stillToCook(state, c, line.itemId) <= 0) return false; // on the stove, wait for it
+        if (portionsLeft(state, content, line.itemId) <= 0) return send({ type: 'declineItem', itemId: line.itemId });
+        if (state.burners.every((b) => b)) return false;
+        return send({ type: 'startCook', item: line.itemId, auto: false });
+      }
       if (portionsLeft(state, content, line.itemId, c.tray) <= 0) return send({ type: 'declineItem', itemId: line.itemId });
       return send({ type: 'pick', itemId: line.itemId });
     }
