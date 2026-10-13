@@ -1,0 +1,18 @@
+[
+  {"id": "indomie-goreng", "art": "indomie-goreng", "name": {"id": "Indomie goreng", "en": "Fried instant noodles"}, "category": "makanan", "price": 4500, "startStock": 40},
+  {"id": "indomie-kuah", "art": "indomie-kuah", "name": {"id": "Indomie kuah", "en": "Instant noodle soup"}, "category": "makanan", "price": 4000, "startStock": 30},
+  {"id": "keripik", "art": "keripik", "name": {"id": "Keripik", "en": "Chips"}, "category": "makanan", "price": 2000, "startStock": 30},
+  {"id": "es-teh", "art": "es-teh", "name": {"id": "Es teh", "en": "Iced tea"}, "category": "minuman", "price": 3000, "startStock": 50},
+  {"id": "kopi-hitam", "art": "kopi-hitam", "name": {"id": "Kopi hitam", "en": "Black coffee"}, "category": "minuman", "price": 3000, "startStock": 40},
+  {"id": "kopi-sachet", "art": "kopi-sachet", "name": {"id": "Kopi sachet", "en": "Coffee sachet"}, "category": "minuman", "price": 1500, "startStock": 40},
+  {"id": "teh-botol", "art": "teh-botol", "name": {"id": "Teh botol", "en": "Bottled tea"}, "category": "minuman", "price": 5000, "startStock": 30},
+  {"id": "air-mineral", "art": "air-mineral", "name": {"id": "Air mineral", "en": "Bottled water"}, "category": "minuman", "price": 3500, "startStock": 40},
+  {"id": "kerupuk", "art": "kerupuk", "name": {"id": "Kerupuk", "en": "Crackers"}, "category": "makanan", "price": 1000, "startStock": 60},
+  {"id": "nasi-bungkus", "art": "nasi-bungkus", "name": {"id": "Nasi bungkus", "en": "Wrapped rice"}, "category": "makanan", "price": 7000, "startStock": 25},
+  {"id": "roti", "art": "roti", "name": {"id": "Roti", "en": "Bread"}, "category": "makanan", "price": 3000, "startStock": 20},
+  {"id": "permen", "art": "permen", "name": {"id": "Permen", "en": "Candy"}, "category": "lainnya", "price": 500, "startStock": 100},
+  {"id": "sampo-sachet", "art": "sampo-sachet", "name": {"id": "Sampo sachet", "en": "Shampoo sachet"}, "category": "lainnya", "price": 1000, "startStock": 40},
+  {"id": "gorengan", "art": "gorengan", "name": {"id": "Gorengan", "en": "Fried snacks"}, "category": "makanan", "price": 1000, "startStock": 60},
+  {"id": "rokok", "art": "rokok", "name": {"id": "Rokok", "en": "Cigarettes"}, "category": "lainnya", "price": 28000, "startStock": 12, "ageRestricted": true},
+  {"id": "telur", "art": "telur", "name": {"id": "Telur", "en": "Egg"}, "category": "makanan", "price": 2500, "startStock": 50}
+]
