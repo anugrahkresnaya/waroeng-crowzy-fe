@@ -9,6 +9,7 @@ import { Button, Card } from "@/components/ui";
 import { DENOMS, content } from "@/engine";
 import { rb, rp } from "@/lib/format";
 import { useGame } from "@/lib/game-store";
+import { HOME } from "@/lib/use-guard";
 import { useLocalize } from "@/lib/use-localize";
 
 const pieceArt = (d: number) => (d >= 1000 ? `uang-${d}` : `koin-${d}`);
@@ -38,6 +39,7 @@ export default function RingkasanPage() {
   if (!game || !state) return null;
 
   if (state.phase !== "ended") {
+    const back = HOME[state.phase];
     return (
       <div className="grid min-h-0 flex-1 place-items-center p-6 text-center">
         <div className="flex flex-col items-center gap-3">
@@ -45,7 +47,7 @@ export default function RingkasanPage() {
             <Art id="tanda-buka" />
           </span>
           <p className="text-sm text-muted">{t("summary.notYet")}</p>
-          <Button onClick={() => router.push(state.phase === "open" ? "/kasir" : "/beranda")}>{t("summary.back")}</Button>
+          <Button onClick={() => router.push(back)}>{t("summary.back")}</Button>
         </div>
       </div>
     );
@@ -136,13 +138,13 @@ export default function RingkasanPage() {
       )}
 
       <Button
-        data-testid="next-day"
+        data-testid="to-night"
         onClick={() => {
-          const r = send({ type: "nextDay" });
-          if (r.ok) router.push("/beranda");
+          const r = send({ type: "goToNight" });
+          if (r.ok) router.push("/malam");
         }}
       >
-        {t("summary.nextDay")}
+        {t("summary.toNight")}
       </Button>
     </div>
   );

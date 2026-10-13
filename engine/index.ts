@@ -6,4 +6,5 @@ export { createInitialState } from './state';
 export { formatClock, dayPart, weekday } from './clock';
 export { DENOMS, total, makeChange, exactPieces, exchangeBreakdown } from './money';
 export type * from './types';
-export type { Content, Item, CustomerType, Balance } from './schema';
+export { isValidBlockPlan } from './schema';
+export type { Content, Item, CustomerType, Balance, Activity } from './schema';

@@ -54,6 +54,12 @@ function toastFor(event: GameEvent): Omit<Toast, "id"> | null {
       return { key: "exchanged", vars: { amount: rp(event.amount), fee: rp(event.fee) }, tone: "good" };
     case "shelves_ready":
       return { key: "shelvesReady", tone: "info" };
+    case "block_done": {
+      const extra = event.cash === 0 ? "" : ` · ${event.cash > 0 ? "+" : ""}${rp(event.cash)}`;
+      return { key: `blockDone.${event.block}`, vars: { extra }, tone: "good" };
+    }
+    case "unplanned_closure":
+      return { key: "unplannedClosure", tone: "bad" };
     case "new_day":
       return { key: "newDay", vars: { day: event.day + 1 }, tone: "info" };
     default:

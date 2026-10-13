@@ -37,6 +37,26 @@ const partRates = z.object({
   morning: weight, lunch: weight, afternoon: weight, evening: weight, night: weight,
 });
 
+const range = z.tuple([z.number().int().min(0), z.number().int().min(0)]);
+
+export const activitySchema = z.object({
+  id: z.string().min(1),
+  kind: z.enum(['heavy', 'light']),
+  name: localized,
+  /** Art id for the free-time list. */
+  art: z.string().optional(),
+  /** False while the system it needs (for example the market) is not built yet. */
+  available: z.boolean().default(true),
+  effects: z.object({
+    mood: z.number().optional(),
+    hunger: z.number().optional(),
+    /** Money earned, a seeded roll between the two numbers. */
+    cash: range.optional(),
+    /** Money spent, a seeded roll between the two numbers. */
+    cost: range.optional(),
+  }),
+});
+
 export const balanceSchema = z.object({
   openMinute: z.number().int().min(0),
   closeMinute: z.number().int().min(1),
@@ -58,9 +78,18 @@ export const balanceSchema = z.object({
   startReputation: z.number().min(0).max(100),
   reputation: z.object({
     happy: z.number(), neutral: z.number(), annoyed: z.number(), walkaway: z.number(), underage: z.number(),
-    shortChangeCaught: z.number(), emptyOrder: z.number(), kasbonRefused: z.number(), turnedAway: z.number(),
+    shortChangeCaught: z.number(), emptyOrder: z.number(), kasbonRefused: z.number(), turnedAway: z.number(), unplannedClosure: z.number(),
   }),
   startDrawer: z.record(z.string(), z.number().int().min(0)),
+  maxDaysOff: z.number().int().min(0).max(7),
+  defaultWorkDays: z.array(z.boolean()).length(7),
+  offBlocks: z.array(z.object({ id: z.string().min(1), start: z.number().int(), end: z.number().int() })).min(1),
+  defaultOffPlan: z.record(z.string(), z.array(z.string())),
+  freeTime: z.object({ start: positiveInt, end: positiveInt, slotMinutes: positiveInt }),
+  start: z.object({ mood: z.number().min(0).max(100), hunger: z.number().min(0).max(100) }),
+  hungerPerHour: z.number().min(0),
+  sleepHunger: z.number().min(0),
+  moodFromDay: z.object({ happy: z.number(), annoyed: z.number(), walkaway: z.number(), min: z.number(), max: z.number() }),
 });
 
 export const contentSchema = z
@@ -68,6 +97,7 @@ export const contentSchema = z
     items: z.array(itemSchema).min(1),
     customers: z.array(customerTypeSchema).min(1),
     balance: balanceSchema,
+    activities: z.object({ dayOff: z.array(activitySchema).min(1), freeTime: z.array(activitySchema).min(1) }),
   })
   .superRefine((c, ctx) => {
     const problem = (message: string, path: (string | number)[]) => ctx.addIssue({ code: 'custom', message, path });
@@ -88,6 +118,26 @@ export const contentSchema = z
       if (t.distinctItems[0] > t.distinctItems[1]) problem('distinctItems min is above max', ['customers', i, 'distinctItems']);
       if (t.ageRange[0] > t.ageRange[1]) problem('ageRange min is above max', ['customers', i, 'ageRange']);
     });
+    const dayOffIds = new Map(c.activities.dayOff.map((a) => [a.id, a]));
+    const freeIds = new Set<string>();
+    for (const [name, list] of [['dayOff', c.activities.dayOff], ['freeTime', c.activities.freeTime]] as const) {
+      const seen = new Set<string>();
+      list.forEach((a, i) => {
+        if (seen.has(a.id)) problem(`duplicate activity "${a.id}"`, ['activities', name, i, 'id']);
+        seen.add(a.id);
+        if (name === 'freeTime') freeIds.add(a.id);
+      });
+    }
+    const blockIds = new Set(c.balance.offBlocks.map((b) => b.id));
+    c.balance.offBlocks.forEach((b, i) => {
+      if (b.end <= b.start) problem('block end must be after start', ['balance', 'offBlocks', i]);
+    });
+    for (const [block, list] of Object.entries(c.balance.defaultOffPlan)) {
+      if (!blockIds.has(block)) problem(`unknown block "${block}"`, ['balance', 'defaultOffPlan', block]);
+      if (!isValidBlockPlan(list, (id) => dayOffIds.get(id))) problem(`invalid plan for block "${block}"`, ['balance', 'defaultOffPlan', block]);
+    }
+    if (c.balance.defaultWorkDays.filter((w) => !w).length > c.balance.maxDaysOff) problem('default plan has too many days off', ['balance', 'defaultWorkDays']);
+    if (c.balance.freeTime.end <= c.balance.freeTime.start) problem('free time end must be after start', ['balance', 'freeTime']);
     if (c.balance.closeMinute <= c.balance.openMinute) problem('closeMinute must be after openMinute', ['balance', 'closeMinute']);
     for (const key of Object.keys(c.balance.startDrawer)) {
       if (!(DENOMS as readonly number[]).includes(Number(key))) problem(`"${key}" is not a rupiah denomination`, ['balance', 'startDrawer', key]);
@@ -97,6 +147,19 @@ export const contentSchema = z
 export type Item = z.infer<typeof itemSchema>;
 export type CustomerType = z.infer<typeof customerTypeSchema>;
 export type Balance = z.infer<typeof balanceSchema>;
+export type Activity = z.infer<typeof activitySchema>;
+
+/**
+ * A day-off block holds one heavy activity, or up to two light ones. Unavailable
+ * and unknown activities are never allowed, and nothing may repeat.
+ */
+export function isValidBlockPlan(ids: readonly string[], lookup: (id: string) => Activity | undefined): boolean {
+  if (new Set(ids).size !== ids.length) return false;
+  const acts = ids.map(lookup);
+  if (acts.some((a) => !a || !a.available)) return false;
+  const heavy = acts.filter((a) => a!.kind === 'heavy').length;
+  return heavy === 0 ? acts.length <= 2 : heavy === 1 && acts.length === 1;
+}
 
 export interface Content {
   items: Item[];
@@ -104,4 +167,7 @@ export interface Content {
   customers: CustomerType[];
   typeById: Record<string, CustomerType>;
   balance: Balance;
+  activities: { dayOff: Activity[]; freeTime: Activity[] };
+  activityById: Record<string, Activity>;
+  freeTimeById: Record<string, Activity>;
 }

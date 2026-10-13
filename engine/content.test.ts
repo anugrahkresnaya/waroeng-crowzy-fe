@@ -1,10 +1,16 @@
 import { describe, expect, it } from 'vitest';
+import activities from './content/activities.json';
 import balance from './content/balance.json';
 import customers from './content/customers.json';
 import items from './content/items.json';
 import { content, parseContent } from './content';
 
-const raw = () => structuredClone({ items, customers, balance });
+const raw = () => structuredClone({ items, customers, balance, activities }) as unknown as {
+  items: typeof items;
+  customers: typeof customers;
+  balance: Omit<typeof balance, 'defaultOffPlan' | 'defaultWorkDays'> & { defaultOffPlan: Record<string, string[]>; defaultWorkDays: boolean[]; closeMinute: number };
+  activities: { dayOff: Array<Record<string, unknown>>; freeTime: Array<Record<string, unknown>> };
+};
 
 describe('content', () => {
   it('loads the shipped content', () => {
@@ -41,6 +47,30 @@ describe('content', () => {
     const bad = raw();
     bad.balance.closeMinute = 100;
     expect(() => parseContent(bad)).toThrow(/closeMinute/);
+  });
+
+  it('rejects a default plan with an activity that does not exist or breaks the block rule', () => {
+    const unknown = raw();
+    unknown.balance.defaultOffPlan.sore = ['tidak-ada'];
+    expect(() => parseContent(unknown)).toThrow(/invalid plan for block/);
+    const crowded = raw();
+    crowded.balance.defaultOffPlan.sore = ['narik-ojol', 'cek-chat'];
+    expect(() => parseContent(crowded)).toThrow(/invalid plan/);
+  });
+
+  it('rejects a default plan for a block that is not defined, or too many default days off', () => {
+    const block = raw();
+    block.balance.defaultOffPlan.subuh = [];
+    expect(() => parseContent(block)).toThrow(/unknown block/);
+    const days = raw();
+    days.balance.defaultWorkDays = [false, false, false, true, true, true, true];
+    expect(() => parseContent(days)).toThrow(/too many days off/);
+  });
+
+  it('rejects duplicate activity ids', () => {
+    const dup = raw();
+    dup.activities.dayOff.push({ ...dup.activities.dayOff[0] });
+    expect(() => parseContent(dup)).toThrow(/duplicate activity/);
   });
 
   it('points every item and customer at an existing art asset', async () => {

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Art } from "@/components/art";
+import { MoodMeters } from "@/components/mood-meters";
 import { TopBar } from "@/components/top-bar";
 import { Button, Card, Chip } from "@/components/ui";
 import { DENOMS, content, exchangeBreakdown } from "@/engine";
@@ -71,6 +72,9 @@ export default function BerandaPage() {
               <span>07 {t("home.shapeOpen")}</span>
               <span>22 {t("home.shapeFree")}</span>
             </div>
+          </div>
+          <div className="border-t border-line p-3">
+            <MoodMeters />
           </div>
         </Card>
 

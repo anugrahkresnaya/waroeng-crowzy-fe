@@ -109,7 +109,7 @@ test("pausing stops the clock", async ({ page }) => {
   await expect.poll(() => page.getByTestId("clock").textContent(), { timeout: 5000 }).not.toBe(before);
 });
 
-test("closing the shop shows the summary, and the next day starts fresh", async ({ page }) => {
+test("closing the shop shows the summary and leads on to the evening", async ({ page }) => {
   await startAndOpen(page);
   await waitForCustomer(page);
   await pause(page);
@@ -117,9 +117,6 @@ test("closing the shop shows the summary, and the next day starts fresh", async 
   await page.getByTestId("close-warung").click();
   await expect(page).toHaveURL(/\/ringkasan$/);
   await expect(page.getByTestId("summary")).toBeVisible();
-  await page.getByTestId("next-day").click();
-  await expect(page).toHaveURL(/\/beranda$/);
-  const s = await gameState(page);
-  expect(s.day).toBe(1);
-  expect(s.phase).toBe("idle");
+  await page.getByTestId("to-night").click();
+  await expect(page).toHaveURL(/\/malam$/);
 });

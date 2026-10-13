@@ -1,0 +1,19 @@
+{
+  "dayOff": [
+    { "id": "narik-ojol", "kind": "heavy", "name": { "id": "Narik ojol", "en": "Drive ojol" }, "effects": { "mood": -2, "hunger": 10, "cash": [22000, 60000], "cost": [5000, 12000] } },
+    { "id": "ke-pasar", "kind": "heavy", "available": false, "name": { "id": "Ke pasar", "en": "Go to the market" }, "effects": { "mood": 0, "hunger": 6 } },
+    { "id": "bantu-keluarga", "kind": "heavy", "name": { "id": "Bantu keluarga", "en": "Help family" }, "effects": { "mood": 8, "hunger": 6 } },
+    { "id": "istirahat-panjang", "kind": "heavy", "name": { "id": "Istirahat panjang", "en": "Rest properly" }, "effects": { "mood": 14, "hunger": 8 } },
+    { "id": "cek-chat", "kind": "light", "name": { "id": "Cek chat", "en": "Check chat" }, "effects": { "mood": 3 } },
+    { "id": "istirahat", "kind": "light", "name": { "id": "Istirahat", "en": "Short rest" }, "effects": { "mood": 5, "hunger": 2 } },
+    { "id": "cuci-baju", "kind": "light", "name": { "id": "Cuci baju", "en": "Do laundry" }, "effects": { "mood": 2, "hunger": 2 } },
+    { "id": "nongkrong", "kind": "light", "name": { "id": "Nongkrong", "en": "Hang out" }, "effects": { "mood": 7, "hunger": 3, "cost": [3000, 8000] } },
+    { "id": "masak-sendiri", "kind": "light", "name": { "id": "Masak sendiri", "en": "Cook for yourself" }, "effects": { "mood": 2, "hunger": -30, "cost": [4000, 9000] } }
+  ],
+  "freeTime": [
+    { "id": "chat", "kind": "light", "name": { "id": "Chat keluarga", "en": "Chat with family" }, "art": "ikon-app-chat", "effects": { "mood": 6 } },
+    { "id": "tv", "kind": "light", "name": { "id": "Nonton TV", "en": "Watch TV" }, "art": "ikon-app-berita", "effects": { "mood": 8 } },
+    { "id": "makan", "kind": "light", "name": { "id": "Makan malam", "en": "Eat dinner" }, "art": "nasi-bungkus", "effects": { "mood": 4, "hunger": -35, "cost": [6000, 12000] } },
+    { "id": "game", "kind": "light", "name": { "id": "Main game", "en": "Play a game" }, "art": "ponsel", "effects": { "mood": 10 } }
+  ]
+}

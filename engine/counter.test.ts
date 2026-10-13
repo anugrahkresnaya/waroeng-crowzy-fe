@@ -343,6 +343,9 @@ describe('days', () => {
     g.dispatch({ type: 'closeWarung' });
     expect(g.dispatch({ type: 'open', prepared: true })).toEqual({ ok: false, error: 'wrong_phase' });
     g.state.stock['indomie-goreng'] = 3;
+    expect(g.dispatch({ type: 'nextDay' })).toEqual({ ok: false, error: 'wrong_phase' });
+    g.dispatch({ type: 'goToNight' });
+    g.dispatch({ type: 'spendFreeTime', activities: ['makan'] });
     const res = g.dispatch({ type: 'nextDay' });
     expect(res.ok && res.events).toEqual([{ type: 'new_day', day: 1 }]);
     expect(g.state.phase).toBe('idle');

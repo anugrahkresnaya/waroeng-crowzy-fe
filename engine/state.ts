@@ -30,6 +30,7 @@ export function freshStats(content: Content): Stats {
 }
 
 export function createInitialState(content: Content, seed: number, day = 0): GameState {
+  const startsOff = !content.balance.defaultWorkDays[((day % 7) + 7) % 7];
   const startDrawer: Record<number, number> = {};
   for (const [denom, count] of Object.entries(content.balance.startDrawer)) startDrawer[Number(denom)] = count;
   return {
@@ -38,9 +39,16 @@ export function createInitialState(content: Content, seed: number, day = 0): Gam
     rng: seedToState(seed),
     tick: 0,
     day,
-    minute: content.balance.openMinute,
-    phase: 'idle',
+    minute: startsOff ? content.balance.offBlocks[0].start : content.balance.openMinute,
+    phase: startsOff ? 'dayoff' : 'idle',
     shelfReady: false,
+    mood: content.balance.start.mood,
+    hunger: content.balance.start.hunger,
+    workDays: [...content.balance.defaultWorkDays],
+    offPlan: Object.fromEntries(content.balance.offBlocks.map((b) => [b.id, [...(content.balance.defaultOffPlan[b.id] ?? [])]])),
+    blockIndex: 0,
+    tomorrowOpen: null,
+    planConfirmed: false,
     preOpenUsed: 0,
     busyUntil: 0,
     drawer: clonePieces(startDrawer),

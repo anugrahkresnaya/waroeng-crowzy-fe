@@ -9,5 +9,8 @@ export function parseContent(raw: unknown): Content {
     customers: parsed.customers,
     typeById: Object.fromEntries(parsed.customers.map((t) => [t.id, t])),
     balance: parsed.balance,
+    activities: parsed.activities,
+    activityById: Object.fromEntries(parsed.activities.dayOff.map((a) => [a.id, a])),
+    freeTimeById: Object.fromEntries(parsed.activities.freeTime.map((a) => [a.id, a])),
   };
 }

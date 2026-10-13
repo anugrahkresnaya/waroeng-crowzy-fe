@@ -6,7 +6,7 @@ import {
   removePieces, smallestNoteAtLeast, total,
 } from './money';
 import type { Rng } from './rng';
-import type { Content, CustomerType } from './schema';
+import { isValidBlockPlan, type Activity, type Content, type CustomerType } from './schema';
 import type {
   Command, CommandError, Customer, GameEvent, GameState, Mood, OrderLine, WalkawayReason,
 } from './types';
@@ -28,6 +28,23 @@ export function moodOf(c: Pick<Customer, 'patience' | 'maxPatience'>): Mood {
   if (ratio >= 0.5) return 'happy';
   if (ratio >= 0.2) return 'neutral';
   return 'annoyed';
+}
+
+const clamp100 = (n: number) => Math.min(100, Math.max(0, n));
+
+/** Applies an activity's effects. Money is a seeded roll rounded to Rp500; returns the net change to the bank. */
+function applyEffects(ctx: Ctx, e: Activity['effects']): number {
+  const { state, rng } = ctx;
+  if (e.mood) state.mood = clamp100(state.mood + e.mood);
+  if (e.hunger) state.hunger = clamp100(state.hunger + e.hunger);
+  let net = 0;
+  if (e.cash) net += rng.int(e.cash[0], e.cash[1]);
+  if (e.cost) net -= rng.int(e.cost[0], e.cost[1]);
+  net = Math.round(net / 500) * 500;
+  const next = Math.max(0, state.bank + net);
+  const applied = next - state.bank;
+  state.bank = next;
+  return applied;
 }
 
 function changeReputation(ctx: Ctx, delta: number): void {
@@ -179,7 +196,11 @@ function guardServing(ctx: Ctx): Result {
 }
 
 function closeDay(ctx: Ctx): void {
-  const { state } = ctx;
+  const { state, content } = ctx;
+  const m = content.balance.moodFromDay;
+  const delta = m.happy * state.stats.moods.happy + m.annoyed * state.stats.moods.annoyed + m.walkaway * state.stats.walkaways;
+  state.mood = clamp100(state.mood + Math.min(m.max, Math.max(m.min, delta)));
+  state.hunger = clamp100(state.hunger + (content.balance.hungerPerHour * (state.minute - content.balance.openMinute)) / 60);
   for (const c of [...state.line]) {
     state.stats.leftAtClose++;
     walkAway(ctx, c, 'closing');
@@ -227,11 +248,83 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
       ctx.emit({ type: 'exchanged', amount: cmd.amount, fee });
       return OK;
     }
-    case 'nextDay': {
+    case 'goToNight': {
       if (state.phase !== 'ended') return fail('wrong_phase');
+      state.phase = 'night';
+      state.minute = b.freeTime.start;
+      return OK;
+    }
+    case 'setPlan': {
+      if (state.phase === 'open') return fail('wrong_phase');
+      if (!Number.isInteger(cmd.day) || cmd.day < 0 || cmd.day > 6) return fail('invalid_amount');
+      const off = state.workDays.filter((w) => !w).length;
+      if (!cmd.work && state.workDays[cmd.day] && off >= b.maxDaysOff) return fail('too_many_days_off');
+      state.workDays[cmd.day] = cmd.work;
+      return OK;
+    }
+    case 'setBlock': {
+      if (state.phase === 'open') return fail('wrong_phase');
+      if (!(cmd.block in state.offPlan)) return fail('invalid_block');
+      if (!isValidBlockPlan(cmd.activities, (id) => content.activityById[id])) return fail('invalid_activities');
+      state.offPlan[cmd.block] = [...cmd.activities];
+      return OK;
+    }
+    case 'confirmPlan': {
+      if (state.phase !== 'bed') return fail('wrong_phase');
+      state.planConfirmed = true;
+      return OK;
+    }
+    case 'runBlock': {
+      if (state.phase !== 'dayoff') return fail('wrong_phase');
+      const block = b.offBlocks[state.blockIndex];
+      let cash = 0;
+      for (const id of state.offPlan[block.id] ?? []) {
+        const activity = content.activityById[id];
+        if (activity?.available) cash += applyEffects(ctx, activity.effects);
+      }
+      state.hunger = clamp100(state.hunger + (b.hungerPerHour * (block.end - block.start)) / 60);
+      state.minute = block.end;
+      state.blockIndex++;
+      ctx.emit({ type: 'block_done', block: block.id, cash });
+      if (state.blockIndex >= b.offBlocks.length) {
+        state.phase = 'night';
+        state.minute = b.freeTime.start;
+      }
+      return OK;
+    }
+    case 'spendFreeTime': {
+      if (state.phase !== 'night') return fail('wrong_phase');
+      const slots = Math.floor((b.freeTime.end - b.freeTime.start) / b.freeTime.slotMinutes);
+      const ids = cmd.activities;
+      if (new Set(ids).size !== ids.length || ids.length > slots || ids.some((id) => !content.freeTimeById[id])) return fail('invalid_activities');
+      for (const id of ids) applyEffects(ctx, content.freeTimeById[id].effects);
+      state.minute = b.freeTime.end;
+      state.phase = 'bed';
+      state.tomorrowOpen = null;
+      ctx.emit({ type: 'free_time_done' });
+      return OK;
+    }
+    case 'decideTomorrow': {
+      if (state.phase !== 'bed') return fail('wrong_phase');
+      state.tomorrowOpen = cmd.open;
+      return OK;
+    }
+    case 'nextDay': {
+      if (state.phase !== 'bed') return fail('wrong_phase');
+      const tomorrow = weekday(state.day + 1);
+      const plannedOff = !state.workDays[tomorrow];
+      const off = state.tomorrowOpen === null ? plannedOff : !state.tomorrowOpen;
+      if (!plannedOff && off) {
+        changeReputation(ctx, b.reputation.unplannedClosure);
+        ctx.emit({ type: 'unplanned_closure' });
+      }
       state.day++;
-      state.phase = 'idle';
-      state.minute = b.openMinute;
+      state.phase = off ? 'dayoff' : 'idle';
+      state.minute = off ? b.offBlocks[0].start : b.openMinute;
+      state.blockIndex = 0;
+      state.tomorrowOpen = null;
+      if (tomorrow === 6) state.planConfirmed = false;
+      state.hunger = clamp100(state.hunger + b.sleepHunger);
       state.shelfReady = false;
       state.busyUntil = 0;
       state.preOpenUsed = 0;

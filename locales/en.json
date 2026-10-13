@@ -7,8 +7,21 @@
   "day": "Day {{n}}",
   "age": "{{n}} y/o",
   "noCustomer": "No customers yet.",
-  "weekday": { "0": "Monday", "1": "Tuesday", "2": "Wednesday", "3": "Thursday", "4": "Friday", "5": "Saturday", "6": "Sunday" },
-  "tab": { "label": "Main menu", "kasir": "Counter", "ringkasan": "Summary", "ponsel": "Phone" },
+  "weekday": {
+    "0": "Monday",
+    "1": "Tuesday",
+    "2": "Wednesday",
+    "3": "Thursday",
+    "4": "Friday",
+    "5": "Saturday",
+    "6": "Sunday"
+  },
+  "tab": {
+    "label": "Main menu",
+    "kasir": "Counter",
+    "ringkasan": "Summary",
+    "ponsel": "Phone"
+  },
   "hours": {
     "label": "Open 07.00 to 22.00",
     "legend": "shop open",
@@ -18,7 +31,11 @@
     "normal": "normal",
     "close": "Close shop"
   },
-  "category": { "makanan": "Food", "minuman": "Drinks", "lainnya": "Other" },
+  "category": {
+    "makanan": "Food",
+    "minuman": "Drinks",
+    "lainnya": "Other"
+  },
   "counter": {
     "request": "Customer's order",
     "decline": "Refuse",
@@ -95,8 +112,18 @@
       "invalid_pieces": "Invalid cash",
       "not_in_drawer": "That cash is not in the drawer",
       "no_time": "Not enough pre-open time",
-      "invalid_amount": "Invalid amount"
-    }
+      "invalid_amount": "Invalid amount",
+      "too_many_days_off": "At most 2 days off a week",
+      "invalid_block": "Unknown block",
+      "invalid_activities": "The block is full or the activity is unavailable"
+    },
+    "blockDone": {
+      "pagi": "Morning block done{{extra}}",
+      "siang": "Midday block done{{extra}}",
+      "sore": "Afternoon block done{{extra}}",
+      "malam": "Evening block done{{extra}}"
+    },
+    "unplannedClosure": "Closed without planning: regulars are disappointed, reputation dropped a little"
   },
   "title": {
     "eyebrow": "OFFLINE · 1 PLAYER",
@@ -116,10 +143,22 @@
     "inputNote": "Tap and drag always on"
   },
   "chapters": {
-    "1": { "name": "Opening the Warung", "desc": "The first week of the shop. The counter and customer types." },
-    "2": { "name": "Prices Rise", "desc": "Ingredient prices climb. The first power outage." },
-    "3": { "name": "Busy Kitchen", "desc": "A big order from the neighborhood. Cooking and stock." },
-    "4": { "name": "Fasting Month", "desc": "Takjil, staff and a rival." }
+    "1": {
+      "name": "Opening the Warung",
+      "desc": "The first week of the shop. The counter and customer types."
+    },
+    "2": {
+      "name": "Prices Rise",
+      "desc": "Ingredient prices climb. The first power outage."
+    },
+    "3": {
+      "name": "Busy Kitchen",
+      "desc": "A big order from the neighborhood. Cooking and stock."
+    },
+    "4": {
+      "name": "Fasting Month",
+      "desc": "Takjil, staff and a rival."
+    }
   },
   "home": {
     "eyebrow": "{{weekday}} · Day {{n}}",
@@ -136,10 +175,22 @@
     "open": "Open the shop",
     "hint": "If the shelves are not stocked when you open, you can still stock them while serving. Customers wait meanwhile.",
     "options": {
-      "siapkan": { "name": "Prepare the shop", "desc": "Full shelves, stocked fridge, prices checked. 90 minutes." },
-      "tukar": { "name": "Exchange cash", "desc": "Swap big notes for small change at a shop. 30 minutes, 2% fee." },
-      "ojol": { "name": "Drive ojol", "desc": "A little extra, fuel costs money." },
-      "tidur": { "name": "Sleep in", "desc": "Rest longer. Stock the shelves while serving." }
+      "siapkan": {
+        "name": "Prepare the shop",
+        "desc": "Full shelves, stocked fridge, prices checked. 90 minutes."
+      },
+      "tukar": {
+        "name": "Exchange cash",
+        "desc": "Swap big notes for small change at a shop. 30 minutes, 2% fee."
+      },
+      "ojol": {
+        "name": "Drive ojol",
+        "desc": "A little extra, fuel costs money."
+      },
+      "tidur": {
+        "name": "Sleep in",
+        "desc": "Rest longer. Stock the shelves while serving."
+      }
     }
   },
   "exchange": {
@@ -171,12 +222,99 @@
     "lowChangeHint": "Exchange cash before opening tomorrow.",
     "lowStock": "Low stock",
     "left": "{{n}} left",
-    "nextDay": "Next day"
+    "nextDay": "Next day",
+    "toNight": "On to the night"
   },
   "phone": {
     "eyebrow": "PHONE",
     "title": "Phone",
     "soon": "Phone apps arrive in later phases: chat, bank, ojol, market, planner, ledger.",
-    "apps": { "chat": "Chat", "bank": "Bank", "ojol": "Ojol", "pasar": "Market", "jadwal": "Planner", "buku-kas": "Ledger", "layanan": "Services", "berita": "News" }
+    "apps": {
+      "chat": "Chat",
+      "bank": "Bank",
+      "ojol": "Ojol",
+      "pasar": "Market",
+      "jadwal": "Planner",
+      "buku-kas": "Ledger",
+      "layanan": "Services",
+      "berita": "News"
+    }
+  },
+  "stat": {
+    "mood": "Mood",
+    "hunger": "Hunger"
+  },
+  "weekdayShort": {
+    "0": "Mon",
+    "1": "Tue",
+    "2": "Wed",
+    "3": "Thu",
+    "4": "Fri",
+    "5": "Sat",
+    "6": "Sun"
+  },
+  "block": {
+    "pagi": "Morning",
+    "siang": "Midday",
+    "sore": "Afternoon",
+    "malam": "Evening"
+  },
+  "off": {
+    "eyebrow": "{{weekday}} · Day {{n}} · Day off",
+    "title": "Day off",
+    "desc": "The shop is closed. There are 4 blocks. Each holds one heavy activity or two light ones.",
+    "blocks": "Day-off blocks",
+    "done": "Done ✓",
+    "now": "Now",
+    "noPlan": "Nothing planned",
+    "changePlan": "Change plan",
+    "run": "Run {{block}}",
+    "hint": "Time only moves when you run a block. After the evening block comes free time, 22.00–24.00."
+  },
+  "night": {
+    "eyebrow": "22.00–24.00 · FREE TIME",
+    "title": "Night",
+    "timeLeft": "Time left",
+    "hm": "{{h}} h {{m}} min",
+    "minutes": "{{n}} min",
+    "mood": "mood {{n}}",
+    "hunger": "hunger {{n}}",
+    "cost": "costs {{range}}",
+    "picked": "Picked",
+    "sleep": "Sleep"
+  },
+  "tomorrow": {
+    "eyebrow": "NIGHT · BEFORE BED",
+    "title": "Open tomorrow?",
+    "plan": "This week's plan: {{plan}}",
+    "work": "work",
+    "off": "day off",
+    "open": "Open the shop",
+    "dayOff": "Day off",
+    "openPlanned": "The shop opens 07.00–22.00. Pre-open starts at 05.00.",
+    "openOnDayOff": "You are working on a day off. No penalty, but no rest either.",
+    "closedUnplanned": "Closing when it was not planned costs a little reputation, because regulars expect the shop to be open.",
+    "closedPlanned": "A planned day off, so no penalty. Tomorrow has 4 blocks of activities.",
+    "seePlan": "See this week's plan",
+    "sleep": "Sleep"
+  },
+  "planner": {
+    "sunday": "SUNDAY NIGHT · NEXT WEEK'S PLAN",
+    "eyebrow": "PLANNER",
+    "title": "Weekly plan",
+    "week": "This week",
+    "offCount": "Off {{n}}/{{max}}",
+    "work": "Work",
+    "off": "Off",
+    "k": "W",
+    "l": "O",
+    "rule": "At most {{max}} days off a week, no minimum. Tap a day to switch between work and off.",
+    "blocks": "Day-off activities",
+    "heavyUsed": "1 heavy",
+    "lightUsed": "{{n}}/2 light",
+    "soon": "soon",
+    "blockHint": "Dashed = heavy activity (one per block). The rest are light (two per block).",
+    "save": "Save plan",
+    "back": "Back"
   }
 }

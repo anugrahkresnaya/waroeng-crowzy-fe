@@ -7,8 +7,21 @@
   "day": "Hari {{n}}",
   "age": "{{n}} th",
   "noCustomer": "Belum ada pelanggan.",
-  "weekday": { "0": "Senin", "1": "Selasa", "2": "Rabu", "3": "Kamis", "4": "Jumat", "5": "Sabtu", "6": "Minggu" },
-  "tab": { "label": "Menu utama", "kasir": "Kasir", "ringkasan": "Ringkasan", "ponsel": "Ponsel" },
+  "weekday": {
+    "0": "Senin",
+    "1": "Selasa",
+    "2": "Rabu",
+    "3": "Kamis",
+    "4": "Jumat",
+    "5": "Sabtu",
+    "6": "Minggu"
+  },
+  "tab": {
+    "label": "Menu utama",
+    "kasir": "Kasir",
+    "ringkasan": "Ringkasan",
+    "ponsel": "Ponsel"
+  },
   "hours": {
     "label": "Jam buka 07.00 sampai 22.00",
     "legend": "warung buka",
@@ -18,7 +31,11 @@
     "normal": "normal",
     "close": "Tutup warung"
   },
-  "category": { "makanan": "Makanan", "minuman": "Minuman", "lainnya": "Lainnya" },
+  "category": {
+    "makanan": "Makanan",
+    "minuman": "Minuman",
+    "lainnya": "Lainnya"
+  },
   "counter": {
     "request": "Pesanan pelanggan",
     "decline": "Tolak",
@@ -95,8 +112,18 @@
       "invalid_pieces": "Uang tidak valid",
       "not_in_drawer": "Uang itu tidak ada di laci",
       "no_time": "Waktu pra-buka tidak cukup",
-      "invalid_amount": "Jumlah tidak valid"
-    }
+      "invalid_amount": "Jumlah tidak valid",
+      "too_many_days_off": "Maksimal 2 hari libur seminggu",
+      "invalid_block": "Blok tidak dikenal",
+      "invalid_activities": "Blok penuh atau kegiatan tidak tersedia"
+    },
+    "blockDone": {
+      "pagi": "Blok pagi selesai{{extra}}",
+      "siang": "Blok siang selesai{{extra}}",
+      "sore": "Blok sore selesai{{extra}}",
+      "malam": "Blok malam selesai{{extra}}"
+    },
+    "unplannedClosure": "Tutup tanpa rencana: langganan kecewa, reputasi turun sedikit"
   },
   "title": {
     "eyebrow": "OFFLINE · 1 PEMAIN",
@@ -116,10 +143,22 @@
     "inputNote": "Tap dan seret selalu aktif"
   },
   "chapters": {
-    "1": { "name": "Buka Warung", "desc": "Minggu pertama toko. Kasir dan jenis pelanggan." },
-    "2": { "name": "Harga Naik", "desc": "Harga bahan naik. Mati lampu pertama." },
-    "3": { "name": "Dapur Sibuk", "desc": "Pesanan besar dari RT. Masak dan stok." },
-    "4": { "name": "Bulan Puasa", "desc": "Takjil, pegawai dan saingan." }
+    "1": {
+      "name": "Buka Warung",
+      "desc": "Minggu pertama toko. Kasir dan jenis pelanggan."
+    },
+    "2": {
+      "name": "Harga Naik",
+      "desc": "Harga bahan naik. Mati lampu pertama."
+    },
+    "3": {
+      "name": "Dapur Sibuk",
+      "desc": "Pesanan besar dari RT. Masak dan stok."
+    },
+    "4": {
+      "name": "Bulan Puasa",
+      "desc": "Takjil, pegawai dan saingan."
+    }
   },
   "home": {
     "eyebrow": "{{weekday}} · Hari {{n}}",
@@ -136,10 +175,22 @@
     "open": "Buka warung",
     "hint": "Kalau rak belum diisi saat buka, kamu tetap bisa mengisinya sambil melayani. Pelanggan akan menunggu selama itu.",
     "options": {
-      "siapkan": { "name": "Siapkan warung", "desc": "Rak penuh, kulkas terisi, harga dicek. 90 menit." },
-      "tukar": { "name": "Tukar uang", "desc": "Tukar uang besar jadi receh di toko. 30 menit, biaya 2%." },
-      "ojol": { "name": "Narik ojol", "desc": "Tambahan kecil, bensin keluar." },
-      "tidur": { "name": "Tidur lagi", "desc": "Tidur lebih lama. Rak diisi sambil melayani." }
+      "siapkan": {
+        "name": "Siapkan warung",
+        "desc": "Rak penuh, kulkas terisi, harga dicek. 90 menit."
+      },
+      "tukar": {
+        "name": "Tukar uang",
+        "desc": "Tukar uang besar jadi receh di toko. 30 menit, biaya 2%."
+      },
+      "ojol": {
+        "name": "Narik ojol",
+        "desc": "Tambahan kecil, bensin keluar."
+      },
+      "tidur": {
+        "name": "Tidur lagi",
+        "desc": "Tidur lebih lama. Rak diisi sambil melayani."
+      }
     }
   },
   "exchange": {
@@ -171,12 +222,99 @@
     "lowChangeHint": "Besok tukar uang dulu sebelum buka.",
     "lowStock": "Stok menipis",
     "left": "{{n}} sisa",
-    "nextDay": "Hari berikutnya"
+    "nextDay": "Hari berikutnya",
+    "toNight": "Lanjut ke malam"
   },
   "phone": {
     "eyebrow": "PONSEL",
     "title": "Ponsel",
     "soon": "Aplikasi ponsel menyusul di fase berikutnya: chat, bank, ojol, pasar, jadwal, buku kas.",
-    "apps": { "chat": "Chat", "bank": "Bank", "ojol": "Ojol", "pasar": "Pasar", "jadwal": "Jadwal", "buku-kas": "Buku kas", "layanan": "Layanan", "berita": "Berita" }
+    "apps": {
+      "chat": "Chat",
+      "bank": "Bank",
+      "ojol": "Ojol",
+      "pasar": "Pasar",
+      "jadwal": "Jadwal",
+      "buku-kas": "Buku kas",
+      "layanan": "Layanan",
+      "berita": "Berita"
+    }
+  },
+  "stat": {
+    "mood": "Mood",
+    "hunger": "Lapar"
+  },
+  "weekdayShort": {
+    "0": "Sen",
+    "1": "Sel",
+    "2": "Rab",
+    "3": "Kam",
+    "4": "Jum",
+    "5": "Sab",
+    "6": "Min"
+  },
+  "block": {
+    "pagi": "Pagi",
+    "siang": "Siang",
+    "sore": "Sore",
+    "malam": "Malam"
+  },
+  "off": {
+    "eyebrow": "{{weekday}} · Hari {{n}} · Libur",
+    "title": "Hari libur",
+    "desc": "Warung tutup. Ada 4 blok. Tiap blok satu kegiatan berat atau dua ringan.",
+    "blocks": "Blok hari libur",
+    "done": "Selesai ✓",
+    "now": "Sekarang",
+    "noPlan": "Belum ada rencana",
+    "changePlan": "Ubah rencana",
+    "run": "Jalankan {{block}}",
+    "hint": "Waktu hanya berjalan saat kamu menjalankan sebuah blok. Setelah blok Malam, lanjut ke waktu bebas 22.00–24.00."
+  },
+  "night": {
+    "eyebrow": "22.00–24.00 · WAKTU BEBAS",
+    "title": "Malam",
+    "timeLeft": "Sisa waktu",
+    "hm": "{{h}} j {{m}} mnt",
+    "minutes": "{{n}} menit",
+    "mood": "mood {{n}}",
+    "hunger": "lapar {{n}}",
+    "cost": "biaya {{range}}",
+    "picked": "Dipilih",
+    "sleep": "Tidur"
+  },
+  "tomorrow": {
+    "eyebrow": "MALAM · SEBELUM TIDUR",
+    "title": "Besok buka?",
+    "plan": "Rencana minggu ini: {{plan}}",
+    "work": "kerja",
+    "off": "libur",
+    "open": "Buka warung",
+    "dayOff": "Libur",
+    "openPlanned": "Warung buka 07.00–22.00. Pra-buka mulai 05.00.",
+    "openOnDayOff": "Kamu masuk di hari libur. Tidak ada hukuman, tapi tidak ada istirahat.",
+    "closedUnplanned": "Libur yang tidak ada di rencana mengurangi reputasi sedikit, karena langganan mengira warung buka.",
+    "closedPlanned": "Libur sesuai rencana, tidak ada hukuman. Besok ada 4 blok kegiatan.",
+    "seePlan": "Lihat rencana minggu ini",
+    "sleep": "Tidur"
+  },
+  "planner": {
+    "sunday": "MINGGU MALAM · RENCANA MINGGU DEPAN",
+    "eyebrow": "JADWAL",
+    "title": "Rencana minggu",
+    "week": "Minggu ini",
+    "offCount": "Libur {{n}}/{{max}}",
+    "work": "Kerja",
+    "off": "Libur",
+    "k": "K",
+    "l": "L",
+    "rule": "Maksimal {{max}} libur seminggu, tanpa minimum. Ketuk hari untuk ganti kerja atau libur.",
+    "blocks": "Kegiatan hari libur",
+    "heavyUsed": "1 berat",
+    "lightUsed": "{{n}}/2 ringan",
+    "soon": "segera",
+    "blockHint": "Garis putus = kegiatan berat (satu per blok). Lainnya ringan (dua per blok).",
+    "save": "Simpan rencana",
+    "back": "Kembali"
   }
 }

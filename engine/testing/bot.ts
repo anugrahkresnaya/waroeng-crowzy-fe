@@ -54,3 +54,20 @@ export function playDay(game: Game, options: BotOptions = { actionsPerTick: 4 })
   }
   return game;
 }
+
+/** From the end-of-day summary to the start of the next day, the way a player would. */
+export function sleepThrough(game: Game, options: { freeTime?: string[]; open?: boolean } = {}): void {
+  if (game.state.phase === 'ended') game.dispatch({ type: 'goToNight' });
+  game.dispatch({ type: 'spendFreeTime', activities: options.freeTime ?? ['makan'] });
+  if (options.open !== undefined) game.dispatch({ type: 'decideTomorrow', open: options.open });
+  game.dispatch({ type: 'nextDay' });
+}
+
+/** Plays whatever the current day is: a shop day with the bot, or every day-off block. */
+export function playAnyDay(game: Game, options: BotOptions = { actionsPerTick: 4 }): void {
+  if (game.state.phase === 'dayoff') {
+    while (game.state.phase === 'dayoff') game.dispatch({ type: 'runBlock' });
+    return;
+  }
+  playDay(game, options);
+}

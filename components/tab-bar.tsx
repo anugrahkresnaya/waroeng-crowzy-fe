@@ -11,10 +11,11 @@ export function TabBar() {
   const { t } = useTranslation();
   const pathname = usePathname();
   const phase = useGame((s) => s.state?.phase ?? "idle");
+  const evening = phase === "ended" || phase === "night" || phase === "bed";
   const tabs = [
-    { href: phase === "open" ? "/kasir" : HOME.idle, match: ["/beranda", "/kasir"], label: t("tab.kasir"), icon: "laci-uang" },
-    { href: "/ringkasan", match: ["/ringkasan"], label: t("tab.ringkasan"), icon: "ikon-app-buku-kas" },
-    { href: "/ponsel", match: ["/ponsel"], label: t("tab.ponsel"), icon: "ponsel" },
+    { href: HOME[phase], match: ["/beranda", "/kasir", "/libur"], label: t("tab.kasir"), icon: "laci-uang" },
+    { href: evening ? HOME[phase] : "/ringkasan", match: ["/ringkasan", "/malam", "/besok"], label: t("tab.ringkasan"), icon: "ikon-app-buku-kas" },
+    { href: "/ponsel", match: ["/ponsel", "/jadwal"], label: t("tab.ponsel"), icon: "ponsel" },
   ];
   return (
     <nav className="grid shrink-0 grid-cols-3 border-t-2 border-ink bg-panel" aria-label={t("tab.label")}>

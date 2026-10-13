@@ -7,8 +7,11 @@ import { useGame } from "@/lib/game-store";
 
 const HOME: Record<Phase, string> = {
   idle: "/beranda",
+  dayoff: "/libur",
   open: "/kasir",
   ended: "/ringkasan",
+  night: "/malam",
+  bed: "/besok",
 };
 
 /**

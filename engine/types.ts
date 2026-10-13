@@ -5,7 +5,8 @@ export type { Pieces };
 export type PaymentMethod = 'cash' | 'qris' | 'kasbon';
 export type Mood = 'happy' | 'neutral' | 'annoyed';
 export type Stage = 'ordering' | 'paying' | 'change';
-export type Phase = 'idle' | 'open' | 'ended';
+/** idle: before opening. open: shop live. ended: day summary. dayoff: day-off blocks. night: free time. bed: tomorrow's decision. */
+export type Phase = 'idle' | 'open' | 'ended' | 'dayoff' | 'night' | 'bed';
 
 export interface OrderLine {
   itemId: string;
@@ -81,6 +82,20 @@ export interface GameState {
   minute: number;
   phase: Phase;
   shelfReady: boolean;
+  /** 0 to 100, higher is better. Restored by rest, free time and good days. */
+  mood: number;
+  /** 0 to 100, higher is hungrier. Rises with time, drops when eating. */
+  hunger: number;
+  /** Work (true) or day off (false) for each weekday, Monday first. */
+  workDays: boolean[];
+  /** What the player does in each day-off block, by block id. */
+  offPlan: Record<string, string[]>;
+  /** Which day-off block is next (dayoff phase). */
+  blockIndex: number;
+  /** The player's answer to "open tomorrow?", null until asked. */
+  tomorrowOpen: boolean | null;
+  /** Whether this week's plan was confirmed on Sunday night. */
+  planConfirmed: boolean;
   /** Minutes of the pre-open block already spent (preparing, exchanging cash). */
   preOpenUsed: number;
   /** Tick when shelf restocking finishes, 0 when not restocking. */
@@ -99,6 +114,13 @@ export interface GameState {
 export type Command =
   | { type: 'open'; prepared: boolean }
   | { type: 'restockShelves' }
+  | { type: 'goToNight' }
+  | { type: 'setPlan'; day: number; work: boolean }
+  | { type: 'setBlock'; block: string; activities: string[] }
+  | { type: 'confirmPlan' }
+  | { type: 'runBlock' }
+  | { type: 'spendFreeTime'; activities: string[] }
+  | { type: 'decideTomorrow'; open: boolean }
   | { type: 'exchangeCash'; amount: number }
   | { type: 'nextDay' }
   | { type: 'pick'; itemId: string }
@@ -128,7 +150,10 @@ export type CommandError =
   | 'invalid_pieces'
   | 'not_in_drawer'
   | 'no_time'
-  | 'invalid_amount';
+  | 'invalid_amount'
+  | 'too_many_days_off'
+  | 'invalid_block'
+  | 'invalid_activities';
 
 export type WalkawayReason = 'patience' | 'closing' | 'empty_order' | 'kasbon_refused';
 
@@ -144,6 +169,9 @@ export type GameEvent =
   | { type: 'underage_sale'; customerId: number }
   | { type: 'exchanged'; amount: number; fee: number }
   | { type: 'new_day'; day: number }
+  | { type: 'block_done'; block: string; cash: number }
+  | { type: 'free_time_done' }
+  | { type: 'unplanned_closure' }
   | { type: 'closed' };
 
 export type CommandResult = { ok: true; events: GameEvent[] } | { ok: false; error: CommandError };
