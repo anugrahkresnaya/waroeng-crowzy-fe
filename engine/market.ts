@@ -1,6 +1,7 @@
 // The market: simulated prices, supplier orders and delivery, the pantry (with spoilage and a small
 // fridge), pasar trips, and what each dish costs to make. Time and chance come only from the game.
 import { addDays, inRange } from './calendar';
+import { freezerFailedOvernight, freezerRoom, frozenSlotsNeeded } from './freezer';
 import { fridgeSpoilsAsRoom } from './outage';
 import type { Rng } from './rng';
 import { goodKey, type Content, type Item, type Portion, type Product } from './schema';
@@ -130,17 +131,33 @@ export function consume(state: GameState, ingredient: string, amount: number): {
   return { taken: amount - left, cost };
 }
 
-/** Puts the oldest fridge-friendly stock in the small fridge until it is full; the rest stays at room temperature. */
+/** Days a lot keeps in a place; null means it does not spoil there, undefined that the place cannot hold it. */
+const lifeIn = (ing: Content['ingredients'][number], place: 'room' | 'fridge' | 'freezer'): number | null | undefined => ing.life[place];
+
+/** Longest an ingredient keeps in a place, counting "does not spoil" as forever. */
+const keeps = (days: number | null | undefined): number => (days === undefined ? -1 : days === null ? Infinity : days);
+
+/**
+ * Puts the oldest stock where it keeps longest. The freezer comes first (what it holds that freezes well, after the frozen goods),
+ * then the small fridge for what lasts longer cold; the rest stays at room temperature.
+ */
 export function assignStorage(state: GameState, content: Content): void {
-  let used = 0;
   const lots = [...state.pantry].sort((a, b) => a.bought - b.bought);
+  let frozen = state.freezer ? content.items.reduce((s, i) => s + (i.frozen ? (state.stock[i.id] ?? 0) * i.frozen.slots : 0), 0) : 0;
+  let cold = 0;
   for (const lot of lots) {
     const ing = content.ingredientById[lot.ingredient];
-    const helps = ing.life.fridge !== null && (ing.life.room === null || ing.life.fridge > ing.life.room);
     const units = lot.qty / ing.unitSize;
-    if (helps && used + units <= content.market.fridgeCapacity + 1e-9) {
+    const other = Math.max(keeps(lifeIn(ing, 'room')), keeps(lifeIn(ing, 'fridge')));
+    if (state.freezer && keeps(lifeIn(ing, 'freezer')) > other && frozen + units <= content.market.freezerCapacity + 1e-9) {
+      lot.stored = 'freezer';
+      frozen += units;
+      continue;
+    }
+    const helps = ing.life.fridge !== null && (ing.life.room === null || ing.life.fridge > ing.life.room);
+    if (helps && cold + units <= content.market.fridgeCapacity + 1e-9) {
       lot.stored = 'fridge';
-      used += units;
+      cold += units;
     } else lot.stored = 'room';
   }
 }
@@ -155,9 +172,11 @@ export function spoilOvernight(ctx: MarketCtx): void {
   const { state, content } = ctx;
   const gone = new Map<string, Spoiled>();
   const fridgeFailed = fridgeSpoilsAsRoom(state, content);
+  const freezerFailed = freezerFailedOvernight(state, content);
   state.pantry = state.pantry.filter((lot) => {
     const ing = content.ingredientById[lot.ingredient];
-    const life = ing.life[lot.stored === 'fridge' && fridgeFailed ? 'room' : lot.stored];
+    const place = (lot.stored === 'fridge' && fridgeFailed) || (lot.stored === 'freezer' && freezerFailed) ? 'room' : lot.stored;
+    const life = ing.life[place] ?? null;
     if (life === null || state.day - lot.bought <= life) return true;
     const entry = gone.get(lot.ingredient) ?? { ingredient: lot.ingredient, qty: 0, value: 0 };
     entry.qty += lot.qty / ing.unitSize;
@@ -166,6 +185,16 @@ export function spoilOvernight(ctx: MarketCtx): void {
     return false;
   });
   state.lastSpoiled = [...gone.values()].map((s) => ({ ...s, value: Math.round(s.value) }));
+  // A freezer that lost its cold ruins every frozen good in it.
+  if (freezerFailed) {
+    for (const item of content.items) {
+      const pieces = state.stock[item.id] ?? 0;
+      if (!item.frozen || pieces <= 0) continue;
+      state.lastSpoiled.push({ ingredient: item.id, qty: pieces, value: Math.round(pieces * (state.goodsCost[item.id] ?? 0)), good: true });
+      state.stats.waste += pieces * (state.goodsCost[item.id] ?? 0);
+      state.stock[item.id] = 0;
+    }
+  }
   const value = state.lastSpoiled.reduce((s, x) => s + x.value, 0);
   if (value > 0) ctx.emit({ type: 'spoiled', value });
 }
@@ -274,8 +303,18 @@ function addPurchased(ctx: MarketCtx, lines: PurchaseLine[]): void {
       addLot(state, ing.id, line.qty * ing.unitSize, line.unitPrice / ing.unitSize);
     } else {
       const item = content.itemById[product.id];
-      const pieces = line.qty * (item.pack ?? 1);
+      let pieces = line.qty * (item.pack ?? 1);
       const unitCost = line.unitPrice / (item.pack ?? 1);
+      if (item.frozen) {
+        // Frozen goods go straight into the freezer: what does not fit (or has no freezer) is lost.
+        const fit = Math.min(pieces, Math.floor((freezerRoom(state, content) + 1e-9) / item.frozen.slots));
+        if (fit < pieces) {
+          state.stats.waste += (pieces - fit) * unitCost;
+          ctx.emit({ type: 'frozen_lost', item: item.id, pieces: pieces - fit });
+        }
+        pieces = fit;
+        if (pieces === 0) continue;
+      }
       const have = state.stock[item.id] ?? 0;
       state.goodsCost[item.id] = (have * (state.goodsCost[item.id] ?? unitCost) + pieces * unitCost) / (have + pieces);
       state.stock[item.id] = have + pieces;
@@ -301,8 +340,10 @@ export function quoteOrder(state: GameState, content: Content, supplierId: strin
   const supplier = content.supplierById[supplierId];
   const priced: PurchaseLine[] = lines.map((l) => ({ key: l.key, qty: l.qty, unitPrice: roundPrice(marketPrice(state, l.key) * supplier.priceMul) }));
   const subtotal = priced.reduce((s, l) => s + l.unitPrice * l.qty, 0);
-  const fee = express ? content.market.ordering.expressFee : supplier.freeAbove !== null && subtotal >= supplier.freeAbove ? 0 : supplier.deliveryFee;
-  return { priced, subtotal, fee, total: subtotal + fee };
+  const base = express ? content.market.ordering.expressFee : supplier.freeAbove !== null && subtotal >= supplier.freeAbove ? 0 : supplier.deliveryFee;
+  const cold = frozenSlotsNeeded(content, lines) > 0 ? content.market.ordering.frozenFee : 0;
+  const fee = base + cold;
+  return { priced, subtotal, fee, cold, total: subtotal + fee };
 }
 
 /** When a standard order placed now would arrive: tomorrow before the cutoff, otherwise the day after. */
@@ -316,6 +357,7 @@ export function placeOrder(ctx: MarketCtx, cmd: { supplier: string; lines: Array
   if (!supplier) return 'unknown_supplier';
   const checked = checkLines(content, cmd.lines);
   if (checked.error) return checked.error;
+  if (!state.freezer && frozenSlotsNeeded(content, checked.merged) > 0) return 'needs_freezer';
   const q = quoteOrder(state, content, cmd.supplier, checked.merged, cmd.express);
   if (q.subtotal < supplier.minOrder) return 'below_minimum';
   if (state.bank < q.total) return 'insufficient_funds';
@@ -398,6 +440,9 @@ export function pasarTrip(ctx: MarketCtx, cmd: { lines: Array<{ key: string; qty
   if (!onPasarTrip(state, content)) return 'no_pasar_trip';
   const checked = checkLines(content, cmd.lines);
   if (checked.error) return checked.error;
+  const slots = frozenSlotsNeeded(content, checked.merged);
+  if (slots > 0 && !state.freezer) return 'needs_freezer';
+  if (slots > freezerRoom(state, content) + 1e-9) return 'freezer_full';
   const haggle = content.market.pasar.haggle;
   const rngBefore = state.rng;
   const priced: PurchaseLine[] = checked.merged.map((l) => ({

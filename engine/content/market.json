@@ -192,7 +192,8 @@
   "expressFee": 25000,
   "expressMinutes": 180,
   "windowStart": 360,
-  "windowEnd": 540
+  "windowEnd": 540,
+  "frozenFee": 8000
  },
  "pasar": {
   "haggle": 0.03,
@@ -221,5 +222,7 @@
    "mul": 1.25,
    "rep": 0.05
   }
- }
+ },
+ "freezerCapacity": 30,
+ "freezerPrice": 1800000
 }

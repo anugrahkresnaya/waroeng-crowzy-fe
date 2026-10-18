@@ -156,7 +156,9 @@
       "cannot_verify": "Pembayaran tidak bisa dicek",
       "can_verify": "Pembayaran bisa dicek",
       "phone_dead": "HP mati",
-      "no_data": "Paket data habis"
+      "no_data": "Paket data habis",
+      "needs_freezer": "Barang beku butuh freezer",
+      "freezer_full": "Freezer tidak muat"
     },
     "blockDone": {
       "pagi": "Blok pagi selesai{{extra}}",
@@ -209,7 +211,9 @@
     "phoneLow": "Baterai HP tinggal {{battery}}%",
     "dataLow": "Paket data hampir habis: sisa {{mb}} MB",
     "dataBought": "Paket data +{{mb}} MB (bayar tunai {{price}})",
-    "powerbankBought": "Beli powerbank: {{price}}"
+    "powerbankBought": "Beli powerbank: {{price}}",
+    "freezerBought": "Beli freezer: {{price}}",
+    "frozenLost": "{{pieces}} {{item}} tidak kebagian tempat dan mencair"
   },
   "title": {
     "eyebrow": "OFFLINE · 1 PEMAIN",
@@ -499,7 +503,15 @@
     "keeps": "Awet",
     "today": "Hari ini",
     "days": "{{n}} hari lagi",
-    "goodsCost": "modal rata-rata {{price}} per buah"
+    "goodsCost": "modal rata-rata {{price}} per buah",
+    "freezer": "Freezer {{used}} / {{cap}} slot",
+    "freezerHold": "Dingin bertahan {{hours}} jam saat listrik mati. Sehari penuh ({{full}} jam) kalau isinya minimal {{pct}}%.",
+    "noFreezer": "Belum ada freezer",
+    "freezerBuyHelp": "Freezer menyimpan ayam sekitar sebulan dan es batu. Hanya di sini barang beku bisa disimpan: es krim, nugget, sosis, bakso, dan dimsum. Listrik mati lama bisa merusak semuanya.",
+    "buyFreezer": "Beli freezer · {{price}}",
+    "frozen": "Beku",
+    "inFreezer": "di freezer",
+    "pcs": "biji"
   },
   "pasar": {
     "title": "Pasar",
@@ -599,7 +611,11 @@
       "market-operation": "Operasi pasar pemerintah. Harga beras dan minyak goreng turun, {{starts}}."
     },
     "noPhone": "HP mati. Isi daya atau pakai powerbank.",
-    "noData": "Paket data habis. Isi di layar HP."
+    "noData": "Paket data habis. Isi di layar HP.",
+    "frozenTag": "Beku",
+    "coldFee": "Ongkos dingin",
+    "needsFreezer": "Barang beku butuh freezer. Beli dulu di gudang.",
+    "freezerTight": "Freezer mungkin tidak muat: yang tidak muat saat tiba akan mencair."
   },
   "news": {
     "title": "Berita",
@@ -744,6 +760,7 @@
     "dataLow": "Paket data hampir habis: sisa {{mb}} MB",
     "buyData": "Beli {{mb}} MB · {{price}} tunai",
     "phoneLow": "Baterai HP tinggal {{pct}}%",
-    "buyPowerbank": "Beli powerbank · {{price}}"
+    "buyPowerbank": "Beli powerbank · {{price}}",
+    "freezer": "Freezer tidak akan tahan selama itu. Barang beku dan ayam bisa rusak malam ini."
   }
 }

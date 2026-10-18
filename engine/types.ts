@@ -60,7 +60,7 @@ export interface Lot {
   /** What one base unit cost, so used-up stock can be costed. */
   unitCost: number;
   /** Where it is kept, decided each night: the small fridge has limited room. */
-  stored: 'room' | 'fridge';
+  stored: 'room' | 'fridge' | 'freezer';
 }
 
 export interface MarketEvent {
@@ -136,9 +136,11 @@ export type LeftoverChoice = 'obral' | 'eat' | 'give' | 'trash';
 
 export interface Spoiled {
   ingredient: string;
-  /** In sold units. */
+  /** In sold units, or pieces for a good. */
   qty: number;
   value: number;
+  /** True when `ingredient` is the id of a resale good, not an ingredient. */
+  good?: boolean;
 }
 
 export interface KasbonEntry {
@@ -259,6 +261,8 @@ export interface GameState {
   phone: Phone;
   /** QRIS payments accepted on trust, settled when the phone can check them again. */
   qrisPending: PendingQris[];
+  /** Whether the player owns a freezer. */
+  freezer: boolean;
   /** Prepaid electricity credit in rupiah. At zero the power is out until it is topped up. */
   token: number;
   /** Minutes today the token was empty while the shop was open (plus the night, if it was empty at bedtime). */
@@ -300,6 +304,7 @@ export type Command =
   | { type: 'buyGas' }
   | { type: 'buyIce' }
   | { type: 'buyLantern' }
+  | { type: 'buyFreezer' }
   | { type: 'buyToken'; amount: number }
   | { type: 'trustQris' }
   | { type: 'refuseQris' }
@@ -348,6 +353,8 @@ export type CommandError =
   | 'no_outage'
   | 'already_owned'
   | 'unknown_bill'
+  | 'needs_freezer'
+  | 'freezer_full'
   | 'cannot_verify'
   | 'can_verify'
   | 'phone_dead'
@@ -419,6 +426,8 @@ export type GameEvent =
   | { type: 'data_low'; mb: number }
   | { type: 'data_bought'; mb: number; price: number }
   | { type: 'powerbank_bought'; price: number }
+  | { type: 'freezer_bought'; price: number }
+  | { type: 'frozen_lost'; item: string; pieces: number }
   | { type: 'token_low'; token: number }
   | { type: 'token_out' }
   | { type: 'token_bought'; amount: number; fee: number }

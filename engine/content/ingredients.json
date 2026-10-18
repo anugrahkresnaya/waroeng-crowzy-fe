@@ -164,7 +164,8 @@
   "swing": "medium",
   "life": {
    "room": 0,
-   "fridge": 2
+   "fridge": 2,
+   "freezer": 30
   }
  },
  {
@@ -452,7 +453,8 @@
   "swing": "low",
   "life": {
    "room": 0,
-   "fridge": 0
+   "fridge": 0,
+   "freezer": null
   }
  },
  {

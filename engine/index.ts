@@ -15,6 +15,7 @@ export { tokenEmpty, plnOff } from './outage';
 export { phoneAlive, phoneGate, qrisCheck, signalOf } from './phone';
 export { arrivalMul, fridgeFailed, iceMissing, outageEnd, outageToday, powerOff } from './outage';
 export { gasFlames, gasPrice, gasShort, gasTanks } from './gas';
+export { freezerHoldHours, freezerRoom, freezerUsed, frozenSlotsNeeded, slotsPerPiece } from './freezer';
 export { absoluteMinute, batchesPossible } from './kitchen';
 export { goodKey } from './schema';
 export { addDays } from './calendar';

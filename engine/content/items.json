@@ -271,5 +271,85 @@
    "minutes": 6,
    "window": 2
   }
+ },
+ {
+  "id": "es-krim",
+  "art": "es-krim",
+  "name": {
+   "id": "Es krim stik",
+   "en": "Ice cream bar"
+  },
+  "category": "makanan",
+  "kind": "good",
+  "price": 5000,
+  "buyPrice": 3000,
+  "pack": 20,
+  "frozen": {
+   "slots": 0.25
+  }
+ },
+ {
+  "id": "nugget",
+  "art": "nugget",
+  "name": {
+   "id": "Nugget ayam",
+   "en": "Chicken nuggets"
+  },
+  "category": "makanan",
+  "kind": "good",
+  "price": 38000,
+  "buyPrice": 32000,
+  "pack": 5,
+  "frozen": {
+   "slots": 1
+  }
+ },
+ {
+  "id": "sosis",
+  "art": "sosis",
+  "name": {
+   "id": "Sosis",
+   "en": "Sausages"
+  },
+  "category": "makanan",
+  "kind": "good",
+  "price": 33000,
+  "buyPrice": 28000,
+  "pack": 5,
+  "frozen": {
+   "slots": 1
+  }
+ },
+ {
+  "id": "bakso-beku",
+  "art": "bakso-beku",
+  "name": {
+   "id": "Bakso beku",
+   "en": "Frozen meatballs"
+  },
+  "category": "makanan",
+  "kind": "good",
+  "price": 35000,
+  "buyPrice": 30000,
+  "pack": 5,
+  "frozen": {
+   "slots": 1
+  }
+ },
+ {
+  "id": "dimsum",
+  "art": "dimsum",
+  "name": {
+   "id": "Dimsum",
+   "en": "Dim sum"
+  },
+  "category": "makanan",
+  "kind": "good",
+  "price": 25000,
+  "buyPrice": 20000,
+  "pack": 5,
+  "frozen": {
+   "slots": 1
+  }
  }
 ]

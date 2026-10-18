@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
-import { content, formatClock, outageEnd, plnOff, powerOff, tokenEmpty, type CommandError } from "@/engine";
+import { content, formatClock, freezerHoldHours, freezerUsed, outageEnd, plnOff, powerOff, tokenEmpty, type CommandError } from "@/engine";
 import { rp } from "@/lib/format";
 import { useGame } from "@/lib/game-store";
 
@@ -72,6 +72,9 @@ export function OutageBanner() {
             {t(today ? (plnOff(state) ? "outage.now" : "outage.today") : "outage.tomorrow", { from: formatClock(o.from), until: formatClock(outageEnd(o)) })}
           </b>
           {today && !o.ice && o.hours > c.fridgeHoldHours && <p className="mt-0.5 text-[11px] text-muted">{t("outage.fridge")}</p>}
+          {today && state.freezer && freezerUsed(state, content) > 0 && o.hours > freezerHoldHours(state, content) + (o.ice ? c.ice.holdHours : 0) && (
+            <p className="mt-0.5 text-[11px] text-muted" data-testid="freezer-risk">{t("outage.freezer")}</p>
+          )}
           {today && o.ice && <p className="mt-0.5 text-[11px] text-good">{t("outage.icy")}</p>}
           {state.lantern && <p className="mt-0.5 text-[11px] text-good">{t("outage.lantern")}</p>}
           <div className="mt-1 flex flex-wrap items-center gap-1.5">

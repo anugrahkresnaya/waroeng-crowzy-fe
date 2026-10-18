@@ -23,7 +23,7 @@ export function MorningReport() {
   }
   if (state.lastSpoiled.length > 0) {
     const value = state.lastSpoiled.reduce((s, x) => s + x.value, 0);
-    const names = state.lastSpoiled.map((s) => loc(content.ingredientById[s.ingredient].name)).join(", ");
+    const names = state.lastSpoiled.map((s) => loc(s.good ? content.itemById[s.ingredient].name : content.ingredientById[s.ingredient].name)).join(", ");
     lines.push({ key: "spoiled", tone: "bad", text: t("morning.spoiled", { names, value: rp(value) }) });
   }
   for (const n of state.market.news) {

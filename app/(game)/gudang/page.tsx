@@ -6,9 +6,9 @@ import { useTranslation } from "react-i18next";
 import { Art } from "@/components/art";
 import { OrdersView } from "@/components/pasar/orders-view";
 import { TopBar } from "@/components/top-bar";
-import { Card, Chip, Meter, Pill } from "@/components/ui";
+import { Button, Card, Chip, Meter, Pill } from "@/components/ui";
 import { WarungNav } from "@/components/warung-nav";
-import { batchesPossible, content, displayPortions, fridgeUsed, portionsLeft, type Phase } from "@/engine";
+import { batchesPossible, content, displayPortions, freezerHoldHours, freezerUsed, fridgeUsed, portionsLeft, type Phase } from "@/engine";
 import { rp } from "@/lib/format";
 import { useGame } from "@/lib/game-store";
 import { useGuard } from "@/lib/use-guard";
@@ -23,6 +23,7 @@ export default function GudangPage() {
   const loc = useLocalize();
   const ready = useGuard(ANY);
   const state = useGame((s) => s.state);
+  const send = useGame((s) => s.send);
   const [tab, setTab] = useState<Tab>("bahan");
   if (!ready || !state) return null;
 
@@ -33,11 +34,12 @@ export default function GudangPage() {
       const lots = state.pantry.filter((l) => l.ingredient === ing.id);
       const units = lots.reduce((s, l) => s + l.qty, 0) / ing.unitSize;
       const daysLeft = lots.reduce((min, l) => {
-        const life = ing.life[l.stored];
+        const life = ing.life[l.stored] ?? null;
         return life === null ? min : Math.min(min, l.bought + life - state.day);
       }, Infinity);
       const inFridge = lots.some((l) => l.stored === "fridge");
-      return { ing, units, daysLeft, inFridge, lots };
+      const inFreezer = lots.some((l) => l.stored === "freezer");
+      return { ing, units, daysLeft, inFridge, inFreezer, lots };
     })
     .filter((g) => g.units > 0);
   const cannotMake = content.items.filter((i) => i.kind === "dish" && (i.batch ? displayPortions(state, i.id) === 0 && batchesPossible(state, content, i) === 0 : portionsLeft(state, content, i.id) === 0));
@@ -57,10 +59,45 @@ export default function GudangPage() {
           <div className="text-[11px] leading-tight text-muted">{t("storage.fridgeHelp")}</div>
         </Card>
 
+        <Card className="p-3" data-testid="freezer-card">
+          {state.freezer ? (
+            <div className="grid grid-cols-2 gap-3">
+              <Meter
+                label={t("storage.freezer", { used: freezerUsed(state, content).toFixed(1), cap: content.market.freezerCapacity })}
+                pct={(freezerUsed(state, content) / content.market.freezerCapacity) * 100}
+                tone="bg-accent"
+              />
+              <div className="text-[11px] leading-tight text-muted" data-testid="freezer-hold">
+                {t("storage.freezerHold", {
+                  hours: freezerHoldHours(state, content),
+                  full: content.balance.outage.freezerHoldHours,
+                  pct: Math.round(content.balance.outage.freezerWellFilled * 100),
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2">
+              <b className="font-display text-base">{t("storage.noFreezer")}</b>
+              <p className="text-[11px] text-muted">{t("storage.freezerBuyHelp")}</p>
+              <Button className="py-2" disabled={state.bank < content.market.freezerPrice} data-testid="buy-freezer" onClick={() => send({ type: "buyFreezer" })}>
+                {t("storage.buyFreezer", { price: rp(content.market.freezerPrice) })}
+              </Button>
+              {state.bank < content.market.freezerPrice && <p className="text-[11px] text-muted">{t("pasar.noFunds")}</p>}
+            </div>
+          )}
+        </Card>
+
         {state.lastSpoiled.length > 0 && (
           <div className="rounded-xl border border-bad/50 bg-bad/10 p-3 text-xs" data-testid="spoiled-report">
             <b className="text-bad">{t("storage.spoiled")}</b>{" "}
-            {state.lastSpoiled.map((s) => `${loc(content.ingredientById[s.ingredient].name)} ${Math.round(s.qty * 10) / 10} ${loc(content.ingredientById[s.ingredient].unit)}`).join(", ")} ·{" "}
+            {state.lastSpoiled
+              .map((s) =>
+                s.good
+                  ? `${loc(content.itemById[s.ingredient].name)} ${Math.round(s.qty)} ${t("storage.pcs")}`
+                  : `${loc(content.ingredientById[s.ingredient].name)} ${Math.round(s.qty * 10) / 10} ${loc(content.ingredientById[s.ingredient].unit)}`,
+              )
+              .join(", ")}{" "}
+            ·{" "}
             {rp(state.lastSpoiled.reduce((sum, s) => sum + s.value, 0))}
           </div>
         )}
@@ -88,7 +125,7 @@ export default function GudangPage() {
               <p className="p-6 text-center text-xs text-muted">{t("storage.empty")}</p>
             ) : (
               <ul className="divide-y divide-line">
-                {groups.map(({ ing, units, daysLeft, inFridge }) => (
+                {groups.map(({ ing, units, daysLeft, inFridge, inFreezer }) => (
                   <li key={ing.id} className="flex items-center gap-3 px-3 py-2" data-testid={`stock-${ing.id}`}>
                     <span className="w-9 shrink-0">
                       <Art id={ing.art} />
@@ -96,7 +133,7 @@ export default function GudangPage() {
                     <span className="min-w-0 flex-1 leading-tight">
                       <b className="text-sm">{loc(ing.name)}</b>
                       <span className="block font-mono text-[11px] tabular-nums text-muted">
-                        {Math.round(units * 10) / 10} {loc(ing.unit)} {inFridge ? `· ${t("storage.inFridge")}` : ""}
+                        {Math.round(units * 10) / 10} {loc(ing.unit)} {inFreezer ? `· ${t("storage.inFreezer")}` : inFridge ? `· ${t("storage.inFridge")}` : ""}
                       </span>
                     </span>
                     {!Number.isFinite(daysLeft) ? (
@@ -127,6 +164,7 @@ export default function GudangPage() {
                     </span>
                     <span className="min-w-0 flex-1 leading-tight">
                       <b className="text-sm">{loc(item.name)}</b>
+                      {item.frozen && <span className="ml-1.5 align-middle"><Pill tone="mute">{t("storage.frozen")}</Pill></span>}
                       <span className="block text-[11px] text-muted">{t("storage.goodsCost", { price: rp(Math.round(state.goodsCost[item.id] ?? 0)) })}</span>
                     </span>
                     <b className={`font-mono text-sm tabular-nums ${left <= 5 ? "text-bad" : ""}`}>{left}</b>

@@ -507,6 +507,7 @@ describe('spoilage and the small fridge', () => {
   const spoilTest = (patch: ((r: RawContent) => void) | undefined, ingredient: string, qty: number, nights: number) => {
     const g = gameWith((r) => {
       noEvents(r);
+      r.balance.outage.chancePerDay = 0; // a power cut would spoil the fridge and spoil the measurement
       patch?.(r);
     });
     emptyPantry(g);

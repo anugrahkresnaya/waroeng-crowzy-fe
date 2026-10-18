@@ -5,6 +5,7 @@ import { replay } from './replay';
 import { SAVE_FORMAT, createSave, parseSave, reconcile, restoreGame } from './save';
 import { playAnyDay, sleepThrough } from './testing/bot';
 import { rawContent } from './testing/raw-content';
+import type { GameState } from './types';
 
 const json = (g: Game) => JSON.stringify(g.state);
 const viaStorage = (value: unknown) => JSON.parse(JSON.stringify(value)) as unknown;
@@ -126,6 +127,22 @@ describe('reading what storage returns', () => {
       const fixed = reconcile(parsed.save.state as never, content);
       expect(Object.keys(fixed.bills)).toEqual(content.balance.bills.map((b) => b.id));
       expect(fixed.bills[content.balance.bills[0].id].dueDay).toBe(fixed.day + content.balance.bills[0].firstDue);
+    }
+  });
+
+  it('carries a format 7 save (before the freezer) forward with none owned and no frozen stock', () => {
+    const save = good() as unknown as { state: { freezer?: unknown } };
+    delete save.state.freezer;
+    const parsed = parseSave({ ...save, format: 7 });
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) {
+      expect(parsed.save.state.freezer).toBe(false);
+      const stocked = structuredClone(parsed.save.state) as never as GameState;
+      stocked.stock.nugget = 10; // frozen stock without a freezer cannot exist
+      stocked.pantry.push({ ingredient: 'ayam', qty: 500, bought: 0, unitCost: 39, stored: 'freezer' });
+      const fixed = reconcile(stocked, content);
+      expect(fixed.stock.nugget).toBe(0);
+      expect(fixed.pantry.filter((l) => l.stored === 'freezer')).toEqual([]);
     }
   });
 

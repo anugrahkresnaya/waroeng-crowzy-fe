@@ -68,6 +68,7 @@ export function createInitialState(content: Content, seed: number, day = 0): Gam
     goodsCost: {},
     menu: Object.fromEntries(content.items.filter((i) => i.kind === 'dish').map((i) => [i.id, { price: i.price, portion: 'normal' as const }])),
     display: {},
+    freezer: false,
     phone: { battery: content.balance.phone.start.battery, powerbank: null, data: content.balance.phone.start.data },
     qrisPending: [],
     token: content.balance.token.start,

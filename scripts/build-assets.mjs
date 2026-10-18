@@ -108,6 +108,29 @@ add('barang', 'rokok', 'Rokok', SH +
   '<rect class="c-navy" x="26" y="26" width="44" height="58" rx="4"/><rect class="c-blue" x="26" y="26" width="44" height="14" rx="4"/>' +
   '<rect class="c-paper" x="26" y="52" width="44" height="16"/><text x="48" y="64.5" text-anchor="middle" font-size="12" class="c-ink">18+</text>');
 
+/* Frozen goods: sold from the freezer. */
+const frost = '<path class="d s-paper o5" d="M70 18v10M65 23h10M67 20l6 6M73 20l-6 6"/>';
+add('barang', 'es-krim', 'Es krim stik', SH +
+  '<rect class="c-wood" x="44" y="56" width="8" height="26" rx="3"/>' +
+  '<path class="c-pink" d="M28 58V34q0-18 20-18t20 18v24z"/><path class="n c-paper o5" d="M34 34q0-10 8-12" />' +
+  '<path class="c-coffee" d="M28 44q6 6 10 0t10 0 10 0 10 0v14H28z"/>' + frost);
+add('barang', 'nugget', 'Nugget ayam', SH +
+  '<rect class="c-blue" x="18" y="18" width="60" height="62" rx="5"/><rect class="c-yellow" x="18" y="18" width="60" height="12" rx="5"/>' +
+  '<path class="c-fry" d="M30 44q-4-8 6-10 10-2 12 6 2 8-6 10-9 2-12-6z"/><path class="c-fry2" d="M50 52q-2-9 8-10 9 0 10 8 0 9-9 10-8 1-9-8z"/>' +
+  '<path class="c-fry" d="M32 66q0-6 8-6t8 6-8 6-8-6z"/>' + frost);
+add('barang', 'sosis', 'Sosis', SH +
+  '<rect class="c-red" x="16" y="18" width="64" height="62" rx="5"/><rect class="c-paper" x="16" y="18" width="64" height="12" rx="5"/>' +
+  '<rect class="c-rust" x="24" y="38" width="48" height="10" rx="5"/><rect class="c-rust" x="22" y="52" width="48" height="10" rx="5" transform="rotate(-4 46 57)"/>' +
+  '<rect class="c-rust" x="26" y="66" width="46" height="9" rx="4.5"/>' + frost);
+add('barang', 'bakso-beku', 'Bakso beku', SH +
+  '<rect class="c-glass" x="16" y="18" width="64" height="62" rx="8"/><rect class="c-teal" x="16" y="18" width="64" height="12" rx="6"/>' +
+  '<circle class="c-silver" cx="35" cy="46" r="10"/><circle class="c-silver" cx="58" cy="44" r="10"/><circle class="c-silver" cx="46" cy="64" r="10"/>' +
+  '<path class="d o5" d="M31 43q3-3 6 0M54 41q3-3 6 0M42 61q3-3 6 0"/>' + frost);
+add('barang', 'dimsum', 'Dimsum', SH +
+  '<rect class="c-tofu" x="14" y="52" width="68" height="28" rx="6"/><rect class="c-red" x="14" y="18" width="68" height="12" rx="5"/>' +
+  '<path class="c-paper" d="M22 56q4-18 14-18t14 18z"/><path class="c-paper" d="M46 56q4-18 14-18t14 18z"/>' +
+  '<path class="d" d="M27 54q3-8 6 0M51 54q3-8 6 0M63 54q3-8 6 0"/>' + frost);
+
 const egg = (x, y) =>
   `<g transform="translate(${x} ${y})"><path class="c-egg" d="M0-16C9-16 13-2 13 6c0 8-6 13-13 13S-13 14-13 6C-13-2-9-16 0-16z"/><ellipse class="n c-paper" cx="-4" cy="-3" rx="2.5" ry="5" transform="rotate(14 -4 -3)"/></g>`;
 add('barang', 'telur', 'Telur', SH + egg(26, 50) + egg(48, 46) + egg(70, 50) +

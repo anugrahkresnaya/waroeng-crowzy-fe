@@ -83,7 +83,8 @@ function planPayment(ctx: Ctx, c: Customer): void {
 
 function spawnCustomer(ctx: Ctx, type: CustomerType): void {
   const { state, content, rng } = ctx;
-  const pool: Array<[string, number]> = Object.entries(type.items);
+  // Nobody asks for frozen goods in a warung with no freezer.
+  const pool: Array<[string, number]> = Object.entries(type.items).filter(([id]) => state.freezer || !content.itemById[id]?.frozen);
   const distinct = rng.int(type.distinctItems[0], type.distinctItems[1]);
   const order: OrderLine[] = [];
   for (let i = 0; i < distinct && pool.length > 0; i++) {
@@ -388,6 +389,15 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
       const error = placeOrder(ctx, cmd);
       if (!error) spendPhone(ctx, b.phone.dataCosts.order);
       return error ? fail(error) : OK;
+    }
+    case 'buyFreezer': {
+      if (state.freezer) return fail('already_owned');
+      if (state.bank < content.market.freezerPrice) return fail('insufficient_funds');
+      state.bank -= content.market.freezerPrice;
+      state.freezer = true;
+      assignStorage(state, content);
+      ctx.emit({ type: 'freezer_bought', price: content.market.freezerPrice });
+      return OK;
     }
     case 'buyData': {
       const error = buyData(ctx, cmd);

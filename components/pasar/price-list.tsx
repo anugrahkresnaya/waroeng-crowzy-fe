@@ -101,6 +101,7 @@ export function GoodsList({ onOpen }: { onOpen: (key: string) => void }) {
                   </span>
                   <span className="min-w-0 flex-1 leading-tight">
                     <b className="text-sm">{loc(item.name)}</b>
+                    {item.frozen && <span className="ml-1.5 text-[10px] font-bold text-accent" data-testid={`frozen-${item.id}`}>❄ {t("pasar.frozenTag")}</span>}
                     <span className="block text-[11px] text-muted">
                       {t("pasar.pack", { n: pack })} · {t("pasar.sellsFor", { price: rb(item.price) })}
                     </span>

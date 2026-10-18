@@ -7,7 +7,7 @@ import { Game } from './game';
 import { isValidBlockPlan, type Content } from './schema';
 import type { GameState } from './types';
 
-export const SAVE_FORMAT = 7;
+export const SAVE_FORMAT = 8;
 
 const num = z.number();
 const pieces = z.record(z.string(), z.number().int().min(0));
@@ -57,7 +57,7 @@ const lot = z.object({
   qty: z.number().min(0),
   bought: num,
   unitCost: num,
-  stored: z.enum(['room', 'fridge']),
+  stored: z.enum(['room', 'fridge', 'freezer']),
 });
 
 const order = z.object({
@@ -104,6 +104,7 @@ const state = z.object({
   goodsCost: z.record(z.string(), num),
   menu: z.record(z.string(), z.object({ price: z.number().int().positive(), portion: z.enum(['small', 'normal', 'large']) })),
   display: z.record(z.string(), z.array(z.object({ qty: num, cookedAt: num, unitCost: num }))),
+  freezer: z.boolean(),
   phone: z.object({ battery: num, powerbank: num.nullable(), data: num }),
   qrisPending: z.array(z.object({ amount: num, fake: z.boolean() })),
   token: num,
@@ -115,7 +116,7 @@ const state = z.object({
   skill: z.record(z.string(), num),
   orders: z.array(order),
   nextOrderId: num,
-  lastSpoiled: z.array(z.object({ ingredient: z.string(), qty: num, value: num })),
+  lastSpoiled: z.array(z.object({ ingredient: z.string(), qty: num, value: num, good: z.boolean().optional() })),
   reputation: num,
   line: z.array(customer),
   nextCustomerId: num,
@@ -182,6 +183,12 @@ const MIGRATIONS: Record<number, (raw: Record<string, unknown>) => Record<string
       state: { ...state, phone: { battery: 100, powerbank: null, data: 1000 }, qrisPending: [], stats: { ...stats, qrisFake: 0, qrisRefused: 0 } },
     };
   },
+  // Format 7 had no freezer: none owned, and no frozen goods in stock.
+  7: (raw) => {
+    const state = raw.state as Record<string, unknown> | undefined;
+    if (!state || typeof state !== 'object') return null;
+    return { ...raw, state: { ...state, freezer: false } };
+  },
 };
 
 export type SaveParse =
@@ -232,6 +239,8 @@ export function reconcile(saved: GameState, content: Content): GameState {
     stock[item.id] = Number.isFinite(s.stock[item.id]) ? s.stock[item.id] : (b.start.goods[item.id] ?? 0);
     goodsCost[item.id] = Number.isFinite(s.goodsCost[item.id]) ? s.goodsCost[item.id] : (item.buyPrice ?? 0);
   }
+  // Frozen goods cannot be in stock without a freezer, and frozen stock never sits on a shelf.
+  if (!s.freezer) for (const item of goods) if (item.frozen) stock[item.id] = 0;
   s.stock = stock;
   s.goodsCost = goodsCost;
 
@@ -243,6 +252,7 @@ export function reconcile(saved: GameState, content: Content): GameState {
   s.menu = menu;
 
   s.pantry = s.pantry.filter((l) => l.ingredient in content.ingredientById && l.qty > 0);
+  if (!s.freezer) for (const l of s.pantry) if (l.stored === 'freezer') l.stored = 'room';
   s.orders = s.orders
     .filter((o) => o.supplier in content.supplierById)
     .map((o) => ({ ...o, lines: o.lines.filter((l) => l.key in content.productByKey) }))
@@ -251,7 +261,7 @@ export function reconcile(saved: GameState, content: Content): GameState {
     if (!content.itemById[id]?.batch) delete s.display[id];
     else s.display[id] = s.display[id].filter((b) => b.qty > 0);
   }
-  s.lastSpoiled = s.lastSpoiled.filter((x) => x.ingredient in content.ingredientById);
+  s.lastSpoiled = s.lastSpoiled.filter((x) => (x.good ? x.ingredient in content.itemById : x.ingredient in content.ingredientById));
 
   // Prices: keep what is known, start new products at their base price, drop products that are gone.
   const m = s.market;

@@ -47,10 +47,13 @@ export const itemSchema = z
     /** Good only: what one piece costs from the supplier, and how many pieces come in one pack. */
     buyPrice: positiveInt.optional(),
     pack: positiveInt.optional(),
+    /** Good only: it must be kept in the freezer, and each piece takes this many freezer slots. */
+    frozen: z.object({ slots: z.number().positive() }).optional(),
     ageRestricted: z.boolean().default(false),
   })
   .refine((i) => !(i.batch && i.cook), { message: 'a dish is cooked either in batches or to order' })
   .refine((i) => i.kind === 'dish' || (!i.batch && !i.cook), { message: 'only a dish can be cooked in batches' })
+  .refine((i) => i.kind === 'good' || !i.frozen, { message: 'only a good can be frozen' })
   .refine((i) => (i.kind === 'dish' ? !!i.recipe && Object.keys(i.recipe).length > 0 : !!i.buyPrice && !!i.pack), {
     message: 'a dish needs a recipe, a good needs buyPrice and pack',
   });
@@ -70,7 +73,12 @@ export const ingredientSchema = z.object({
   price: positiveInt,
   swing: z.enum(SWINGS),
   /** Days it stays usable after purchase, at room temperature or in the fridge. Null means it does not spoil there. */
-  life: z.object({ room: z.number().int().min(0).nullable(), fridge: z.number().int().min(0).nullable() }),
+  life: z.object({
+    room: z.number().int().min(0).nullable(),
+    fridge: z.number().int().min(0).nullable(),
+    /** Days in the freezer; null means it keeps. Missing means it cannot be frozen. */
+    freezer: z.number().int().min(0).nullable().optional(),
+  }),
 });
 
 export const supplierSchema = z.object({
@@ -127,6 +135,8 @@ export const marketSchema = z.object({
     /** Orders placed before this minute arrive tomorrow, later ones the day after. */
     cutoffMinute: z.number().int(),
     expressFee: z.number().int().min(0),
+    /** Extra delivery fee when an order holds frozen goods (cold transport). */
+    frozenFee: z.number().int().min(0),
     expressMinutes: positiveInt,
     windowStart: z.number().int(),
     windowEnd: z.number().int(),
@@ -138,6 +148,9 @@ export const marketSchema = z.object({
   }),
   /** How many sold units of fridge-friendly goods fit in the small fridge. */
   fridgeCapacity: z.number().min(0),
+  /** Freezer slots: a sold unit of an ingredient is one slot, and frozen goods take their own slots per piece. */
+  freezerCapacity: z.number().positive(),
+  freezerPrice: positiveInt,
   portion: z.object({
     small: z.object({ mul: z.number().positive(), rep: z.number() }),
     normal: z.object({ mul: z.number().positive(), rep: z.number() }),
@@ -297,6 +310,10 @@ export const balanceSchema = z.object({
     hours: z.array(positiveInt).min(1),
     /** Hours a closed fridge keeps its contents cold. A longer cut spoils what it holds. */
     fridgeHoldHours: positiveInt,
+    /** Hours a well-filled freezer keeps its contents, and a thinly filled one. "Well filled" is this share of its slots. */
+    freezerHoldHours: positiveInt,
+    freezerPartialHours: positiveInt,
+    freezerWellFilled: z.number().min(0).max(1),
     /** From this minute on, a cut means darkness. */
     darkFrom: z.number().int().min(0).max(1439),
     /** Minutes away from the counter to fetch ice or a lantern. */

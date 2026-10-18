@@ -156,7 +156,9 @@
       "cannot_verify": "Cannot check this payment",
       "can_verify": "The payment can be checked",
       "phone_dead": "The phone is dead",
-      "no_data": "No mobile data"
+      "no_data": "No mobile data",
+      "needs_freezer": "You need a freezer for frozen goods",
+      "freezer_full": "The freezer does not have room"
     },
     "blockDone": {
       "pagi": "Morning block done{{extra}}",
@@ -209,7 +211,9 @@
     "phoneLow": "Phone battery low: {{battery}}%",
     "dataLow": "Mobile data is almost gone: {{mb}} MB left",
     "dataBought": "Mobile data +{{mb}} MB (paid {{price}} cash)",
-    "powerbankBought": "Bought a powerbank: {{price}}"
+    "powerbankBought": "Bought a powerbank: {{price}}",
+    "freezerBought": "Bought a freezer: {{price}}",
+    "frozenLost": "{{pieces}} {{item}} had nowhere to go and melted"
   },
   "title": {
     "eyebrow": "OFFLINE · 1 PLAYER",
@@ -499,7 +503,15 @@
     "keeps": "Keeps",
     "today": "Today",
     "days": "{{n}} days left",
-    "goodsCost": "average cost {{price}} each"
+    "goodsCost": "average cost {{price}} each",
+    "freezer": "Freezer {{used}} / {{cap}} slots",
+    "freezerHold": "Keeps its cold {{hours}} hours in a power cut. A full day ({{full}} h) once it is at least {{pct}}% full.",
+    "noFreezer": "No freezer yet",
+    "freezerBuyHelp": "A freezer keeps chicken for about a month and holds ice. It is also the only place for frozen goods: ice cream, nuggets, sausages, meatballs and dim sum. A long power cut can ruin everything in it.",
+    "buyFreezer": "Buy a freezer · {{price}}",
+    "frozen": "Frozen",
+    "inFreezer": "in the freezer",
+    "pcs": "pcs"
   },
   "pasar": {
     "title": "Market",
@@ -599,7 +611,11 @@
       "market-operation": "A government market operation. Rice and cooking oil get cheaper, {{starts}}."
     },
     "noPhone": "The phone is dead. Charge it or use a powerbank.",
-    "noData": "Out of mobile data. Top up on the phone screen."
+    "noData": "Out of mobile data. Top up on the phone screen.",
+    "frozenTag": "Frozen",
+    "coldFee": "Cold transport",
+    "needsFreezer": "Frozen goods need a freezer. Buy one in the storeroom first.",
+    "freezerTight": "The freezer may not have room: what does not fit when it arrives melts."
   },
   "news": {
     "title": "News",
@@ -744,6 +760,7 @@
     "dataLow": "Mobile data is almost gone: {{mb}} MB",
     "buyData": "Buy {{mb}} MB · {{price}} cash",
     "phoneLow": "Phone battery low: {{pct}}%",
-    "buyPowerbank": "Buy a powerbank · {{price}}"
+    "buyPowerbank": "Buy a powerbank · {{price}}",
+    "freezer": "The freezer will not hold that long. Frozen goods and chicken may be ruined tonight."
   }
 }

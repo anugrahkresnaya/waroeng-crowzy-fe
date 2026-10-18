@@ -105,6 +105,41 @@
     "viewBox": "0 0 96 96"
   },
   {
+    "id": "es-krim",
+    "name": "Es krim stik",
+    "category": "barang",
+    "file": "barang/es-krim.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "nugget",
+    "name": "Nugget ayam",
+    "category": "barang",
+    "file": "barang/nugget.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "sosis",
+    "name": "Sosis",
+    "category": "barang",
+    "file": "barang/sosis.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "bakso-beku",
+    "name": "Bakso beku",
+    "category": "barang",
+    "file": "barang/bakso-beku.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
+    "id": "dimsum",
+    "name": "Dimsum",
+    "category": "barang",
+    "file": "barang/dimsum.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
     "id": "telur",
     "name": "Telur",
     "category": "barang",

@@ -12,7 +12,7 @@ test("the phone opens the market app with all 25 ingredients, filterable, each w
   await expect(page.locator('[data-testid^="product-"]')).toHaveCount(5);
   await page.getByRole("button", { name: "Semua" }).click();
   await page.getByTestId("tab-barang").click();
-  await expect(page.locator('[data-testid^="product-g-"]')).toHaveCount(9); // the nine resale goods
+  await expect(page.locator('[data-testid^="product-g-"]')).toHaveCount(14); // the nine resale goods and the five frozen ones
 });
 
 test("a product shows a 30-day chart you can read as a table, with what each supplier charges", async ({ page }) => {

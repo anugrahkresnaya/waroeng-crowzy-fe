@@ -187,6 +187,7 @@ export async function stateOf(page: Page) {
       burners: Array<{ item: string } | null>;
       preOpenUsed: number;
       lantern: boolean;
+      freezer: boolean;
       token: number;
       phone: { battery: number; powerbank: number | null; data: number };
       qrisPending: Array<{ amount: number; fake: boolean }>;
