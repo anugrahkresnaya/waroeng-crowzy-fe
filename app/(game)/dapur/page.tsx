@@ -6,7 +6,7 @@ import { TopBar } from "@/components/top-bar";
 import { Button, Card, Meter, Pill } from "@/components/ui";
 import { WarungNav } from "@/components/warung-nav";
 import {
-  absoluteMinute, batchesPossible, content, costPerPortion, dishNeeds, displayPortions, type CommandError, type Item, type Phase,
+  absoluteMinute, batchesPossible, content, costPerPortion, dishNeeds, displayPortions, gasPrice, gasShort, gasTanks, type CommandError, type Item, type Phase,
 } from "@/engine";
 import { rp } from "@/lib/format";
 import { useGame } from "@/lib/game-store";
@@ -36,9 +36,20 @@ export default function DapurPage() {
     if (state.phase === "idle" && item.batch!.minutes > left) return "no_time";
     if (state.phase === "open" && state.busyUntil > 0) return "busy";
     if (state.phase === "open" && !state.shelfReady) return "shelves_not_ready";
+    if (gasShort(state, content, item, item.batch!.portions)) return "out_of_gas";
     if (batchesPossible(state, content, item) < 1) return "missing_ingredients";
     return null;
   };
+  const tanks = gasTanks(state, content);
+  const nearby = gasPrice(state, content);
+  const gasWhy = (): CommandError | null => {
+    if (!canCook) return "wrong_phase";
+    if (state.phase === "open" && state.busyUntil > 0) return "busy";
+    if (state.phase === "idle" && b.gas.nearbyMinutes > left) return "no_time";
+    if (state.bank < nearby) return "insufficient_funds";
+    return null;
+  };
+  const gasBlocked = gasWhy();
   const freshLeft = (item: Item) => {
     const batches = state.display[item.id] ?? [];
     if (batches.length === 0) return 0;
@@ -67,6 +78,20 @@ export default function DapurPage() {
           </div>
         )}
         {!canCook && <p className="px-1 text-xs text-muted">{t("kitchen.closed")}</p>}
+
+        <Card className="p-3" data-testid="gas-card">
+          <h2 className="font-display text-base font-bold">{t("kitchen.gas.title")}</h2>
+          <Meter
+            label={tanks > 0 ? t("kitchen.gas.tanks", { tanks: (Math.round(tanks * 10) / 10).toString() }) : t("kitchen.gas.empty")}
+            pct={tanks * 100}
+            tone={tanks < 0.15 ? "bg-bad" : "bg-accent"}
+          />
+          <p className="mt-1.5 text-[11px] text-muted">{t("kitchen.gas.help", { minutes: b.gas.nearbyMinutes })}</p>
+          <Button className="mt-2 w-full py-2" variant="soft" disabled={gasBlocked !== null} data-testid="buy-gas" onClick={() => send({ type: "buyGas" })}>
+            {t("kitchen.gas.buy", { price: rp(nearby) })}
+          </Button>
+          {gasBlocked && canCook && <p className="mt-1 text-center text-[11px] text-muted">{t(`kitchen.gas.why.${gasBlocked}`)}</p>}
+        </Card>
 
         <ul className="flex flex-col gap-3">
           {batchDishes.map((item) => {

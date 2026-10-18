@@ -76,3 +76,20 @@ test("practice shows: after enough perfect plates the green zone gets wider", as
   await advanceMinutes(page, 12); // two minutes later than the normal window allows
   await expect(page.getByTestId("burner-0")).toHaveAttribute("data-zone", "pas");
 });
+
+test("with the gas gone the stove refuses, and a tank bought at the stove gets it going again", async ({ page }) => {
+  await counterWith(page, [{ itemId: "indomie-goreng", qty: 1 }]);
+  await mutateGame(page, "state.pantry = state.pantry.filter((l) => l.ingredient !== 'lpg');");
+  await expect(page.getByTestId("stove-gas")).toContainText("Gas habis");
+  await page.getByTestId("item-indomie-goreng").click();
+  await expect(page.getByText("Gas habis, beli tabung di kompor")).toBeVisible();
+  expect((await stateOf(page)).burners).toEqual([null, null]);
+
+  const before = (await stateOf(page)).bank;
+  await page.getByTestId("buy-gas-stove").click();
+  await expect(page.getByTestId("stove-gas")).toContainText("1 tabung");
+  expect((await stateOf(page)).bank).toBeLessThan(before);
+  await advanceMinutes(page, 15); // fetching the tank keeps you from the counter
+  await page.getByTestId("item-indomie-goreng").click();
+  expect((await stateOf(page)).burners[0]).not.toBeNull();
+});

@@ -158,6 +158,10 @@
     "giveRepMax": 1.5
   },
   "burners": 2,
+  "gas": {
+    "nearbyMarkup": 1.3,
+    "nearbyMinutes": 15
+  },
   "cooking": {
     "rep": {
       "pas": 0.15,

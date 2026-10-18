@@ -47,7 +47,7 @@ describe("translations", () => {
       ...[
         "wrong_phase", "busy", "shelves_not_ready", "shelves_ready", "no_customer", "wrong_stage", "wrong_method",
         "unknown_item", "out_of_stock", "not_in_tray", "not_in_order", "already_checked", "invalid_pieces",
-        "not_in_drawer", "no_time", "invalid_amount",
+        "not_in_drawer", "no_time", "invalid_amount", "out_of_gas",
       ].map((e) => `toast.error.${e}`),
       ...[0, 1, 2, 3, 4, 5, 6].map((n) => `weekdayShort.${n}`),
       ...["pagi", "siang", "sore", "malam"].flatMap((b) => [`block.${b}`, `toast.blockDone.${b}`]),

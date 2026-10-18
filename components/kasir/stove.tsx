@@ -2,13 +2,17 @@
 
 import { useTranslation } from "react-i18next";
 import { Art } from "@/components/art";
-import { autoMinutes, content, justRight, type Burner, type Quality } from "@/engine";
+import { autoMinutes, content, gasPrice, gasTanks, justRight, type Burner, type Quality } from "@/engine";
+import { rp } from "@/lib/format";
 import { useCounterUi } from "@/lib/counter-ui-store";
 import { useGame } from "@/lib/game-store";
 import { useLocalize } from "@/lib/use-localize";
 
 /** Minutes shown past the end of the just-right window, so the burnt zone has room. */
 const BURNT_ROOM = 6;
+
+/** Below this many tanks the stove offers to buy another one. */
+const LOW_GAS = 0.1;
 
 const ZONE_TONE: Record<Exclude<Quality, "biasa">, string> = { kurang: "text-warn", pas: "text-good", gosong: "text-bad" };
 
@@ -21,6 +25,10 @@ export function Stove() {
   const auto = useCounterUi((s) => s.auto);
   const setAuto = useCounterUi((s) => s.setAuto);
   if (!state) return null;
+  const tanks = gasTanks(state, content);
+  const price = gasPrice(state, content);
+  const low = tanks < LOW_GAS;
+  const canBuy = state.busyUntil === 0 && state.bank >= price;
 
   return (
     <section className="mb-2 rounded-xl border border-line bg-panel p-2" aria-label={t("stove.title")} data-testid="stove">
@@ -47,6 +55,21 @@ export function Stove() {
         ))}
       </div>
       {state.burners.every((b) => !b) && <p className="mt-1.5 text-[11px] text-muted">{t("stove.hint")}</p>}
+      <div className="mt-1.5 flex items-center gap-2" data-testid="stove-gas">
+        <span className={`text-[11px] font-bold ${low ? "text-bad" : "text-muted"}`}>
+          {tanks > 0 ? t("stove.gas", { tanks: (Math.round(tanks * 10) / 10).toString() }) : t("stove.gasEmpty")}
+        </span>
+        {low && (
+          <button
+            onClick={() => send({ type: "buyGas" })}
+            disabled={!canBuy}
+            data-testid="buy-gas-stove"
+            className="ml-auto rounded-full border-2 border-ink bg-panel px-2.5 py-0.5 text-[11px] font-bold disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {t("stove.buyGas", { price: rp(price), minutes: content.balance.gas.nearbyMinutes })}
+          </button>
+        )}
+      </div>
     </section>
   );
 }

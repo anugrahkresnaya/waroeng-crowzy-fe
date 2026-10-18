@@ -3,6 +3,7 @@ import { dayPart, weekday } from './clock';
 import {
   advanceMarketDay, assignStorage, deliverDue, pasarTrip, placeOrder, portionOf, portionsLeft, sellPrice, spoilOvernight, sellOut,
 } from './market';
+import { buyGas } from './gas';
 import { dropBurners, plate, startCook, tickBurners, wasteCooked } from './cooking';
 import { clearDisplay, cookBatch, handleLeftover, sweepDisplay } from './kitchen';
 import { freshStats } from './state';
@@ -375,6 +376,10 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
     }
     case 'placeOrder': {
       const error = placeOrder(ctx, cmd);
+      return error ? fail(error) : OK;
+    }
+    case 'buyGas': {
+      const error = buyGas(ctx);
       return error ? fail(error) : OK;
     }
     case 'pasarTrip': {

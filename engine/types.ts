@@ -253,6 +253,7 @@ export type Command =
   | { type: 'cookBatch'; item: string; batches: number }
   | { type: 'startCook'; item: string; auto: boolean }
   | { type: 'plate'; burner: number }
+  | { type: 'buyGas' }
   | { type: 'handleLeftover'; item: string; choice: LeftoverChoice }
   | { type: 'placeOrder'; supplier: string; lines: Array<{ key: string; qty: number }>; express: boolean }
   | { type: 'pasarTrip'; lines: Array<{ key: string; qty: number }> }
@@ -290,6 +291,7 @@ export type CommandError =
   | 'wrong_method'
   | 'unknown_item'
   | 'out_of_stock'
+  | 'out_of_gas'
   | 'not_in_tray'
   | 'not_in_order'
   | 'already_checked'
@@ -346,6 +348,7 @@ export type GameEvent =
   | { type: 'cooked'; item: string; portions: number }
   | { type: 'plated'; item: string; quality: Quality }
   | { type: 'burner_wasted'; item: string }
+  | { type: 'gas_bought'; price: number }
   | { type: 'went_stale'; item: string; portions: number }
   | { type: 'leftover_handled'; item: string; choice: LeftoverChoice; portions: number }
   | { type: 'news'; event: string }

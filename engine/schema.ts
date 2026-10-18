@@ -236,6 +236,8 @@ export const balanceSchema = z.object({
   }),
   /** Burners on the stove: how many dishes can be cooked at once. */
   burners: positiveInt,
+  /** Buying a tank from a neighbour when the stove runs dry: price multiplier on the market price, and the minutes it takes. */
+  gas: z.object({ nearbyMarkup: z.number().min(1), nearbyMinutes: positiveInt }),
   cooking: z.object({
     /** Reputation per cooked portion by how it came out. */
     rep: z.object({ pas: z.number(), biasa: z.number(), kurang: z.number(), gosong: z.number() }),

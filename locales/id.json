@@ -135,7 +135,8 @@
       "nothing_to_cook": "Kompor kosong",
       "no_such_burner": "Kompor tidak ada",
       "already_cooked": "Sudah dimasak",
-      "auto_cooking": "Masak otomatis, tunggu selesai"
+      "auto_cooking": "Masak otomatis, tunggu selesai",
+      "out_of_gas": "Gas habis, beli tabung di kompor"
     },
     "blockDone": {
       "pagi": "Blok pagi selesai{{extra}}",
@@ -164,7 +165,8 @@
       "kurang": "{{item}} masih mentah",
       "gosong": "{{item}} gosong"
     },
-    "burnerWasted": "{{item}} di kompor terbuang"
+    "burnerWasted": "{{item}} di kompor terbuang",
+    "gasBought": "Beli tabung gas: {{price}}"
   },
   "title": {
     "eyebrow": "OFFLINE · 1 PEMAIN",
@@ -579,13 +581,27 @@
       "missing_ingredients": "Bahan kurang",
       "busy": "Sedang memasak",
       "shelves_not_ready": "Isi rak dulu",
-      "wrong_phase": "Belum bisa sekarang"
+      "wrong_phase": "Belum bisa sekarang",
+      "out_of_gas": "Gas habis"
     },
     "needs": "Bahan per adonan",
     "orderDishes": "Dimasak saat dipesan",
     "orderDishesHelp": "Hidangan ini dibuat langsung dari gudang ketika pelanggan memesan.",
     "batchSale": "Habis di etalase = habis terjual. Jangan sampai pelanggan pulang.",
-    "prepareNote": "Menyiapkan rak butuh {{minutes}} menit dari waktu ini."
+    "prepareNote": "Menyiapkan rak butuh {{minutes}} menit dari waktu ini.",
+    "gas": {
+      "title": "Gas",
+      "tanks": "Sisa {{tanks}} tabung",
+      "empty": "Gas habis",
+      "help": "Setiap masakan memakai LPG. Tabung dari tetangga lebih mahal dari pasar dan makan waktu {{minutes}} menit.",
+      "buy": "Beli tabung di sebelah · {{price}}",
+      "why": {
+        "wrong_phase": "Belum bisa sekarang",
+        "busy": "Sedang sibuk",
+        "no_time": "Waktu sebelum buka tidak cukup",
+        "insufficient_funds": "Saldo bank tidak cukup"
+      }
+    }
   },
   "leftovers": {
     "title": "Sisa di etalase",
@@ -620,6 +636,9 @@
       "kurang": "Masih mentah",
       "pas": "Pas matang",
       "gosong": "Gosong"
-    }
+    },
+    "gas": "Gas: {{tanks}} tabung",
+    "gasEmpty": "Gas habis",
+    "buyGas": "Beli tabung · {{price}} · {{minutes}} mnt"
   }
 }

@@ -63,6 +63,12 @@ Framework-free, deterministic cashier-counter simulation. ESLint (`eslint.config
 - `state.skill[item]` counts perfect plates; every `practicePerMinute` of them widens the window by a minute, up to `maxPractice`.
 - The UI is `components/kasir/stove.tsx` inside the ordering panel. The clock runs 2 game minutes per second, so the bar moves in 2-minute steps. Browser tests pause the clock and use `advanceMinutes` from `e2e/helpers.ts`. `quietContent` strips `cook` too, so scenario tests need no stove. Save format 4.
 
+## Gas (`engine/gas.ts`)
+
+- LPG is a pantry ingredient (`lpg`, 1 tank = 1000 flames) that dishes burn per portion. `gasShort` makes `startCook` and `cookBatch` fail with `out_of_gas` (not `out_of_stock` / `missing_ingredients`) when gas is the lack.
+- `buyGas` buys one tank next door: `balance.gas.nearbyMarkup` times the market price, paid from the bank, in the pantry at once. It costs `nearbyMinutes` of pre-open time, or blocks the counter (`busyUntil`) while open. No new saved state.
+- UI: a gas card on `/dapur`, and a gas line with a buy button in the stove panel when below 0.1 tank. The live counter has no link to `/dapur`, so anything needed mid-service must live on the counter itself.
+
 ## Gotchas
 
 - This is not the Next.js in your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing Next code (see AGENTS.md above).

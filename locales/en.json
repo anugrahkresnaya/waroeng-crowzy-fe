@@ -135,7 +135,8 @@
       "nothing_to_cook": "The burner is empty",
       "no_such_burner": "No such burner",
       "already_cooked": "Already cooked",
-      "auto_cooking": "Auto-cooking, wait for it"
+      "auto_cooking": "Auto-cooking, wait for it",
+      "out_of_gas": "Out of gas, buy a tank at the stove"
     },
     "blockDone": {
       "pagi": "Morning block done{{extra}}",
@@ -164,7 +165,8 @@
       "kurang": "{{item}} is undercooked",
       "gosong": "{{item}} is burnt"
     },
-    "burnerWasted": "{{item}} on the stove was wasted"
+    "burnerWasted": "{{item}} on the stove was wasted",
+    "gasBought": "Bought a tank of gas: {{price}}"
   },
   "title": {
     "eyebrow": "OFFLINE · 1 PLAYER",
@@ -579,13 +581,27 @@
       "missing_ingredients": "Missing ingredients",
       "busy": "Already cooking",
       "shelves_not_ready": "Stock the shelves first",
-      "wrong_phase": "Not possible right now"
+      "wrong_phase": "Not possible right now",
+      "out_of_gas": "Out of gas"
     },
     "needs": "Ingredients per batch",
     "orderDishes": "Cooked to order",
     "orderDishesHelp": "These are made from the storeroom when a customer orders.",
     "batchSale": "An empty display means lost sales. Do not send customers home.",
-    "prepareNote": "Preparing the shelves takes {{minutes}} of these minutes."
+    "prepareNote": "Preparing the shelves takes {{minutes}} of these minutes.",
+    "gas": {
+      "title": "Gas",
+      "tanks": "{{tanks}} tanks left",
+      "empty": "Out of gas",
+      "help": "Every dish burns some LPG. A tank from next door costs more than the market and takes {{minutes}} minutes.",
+      "buy": "Buy a tank next door · {{price}}",
+      "why": {
+        "wrong_phase": "Not possible right now",
+        "busy": "Already busy",
+        "no_time": "Not enough pre-open time",
+        "insufficient_funds": "Not enough in the bank"
+      }
+    }
   },
   "leftovers": {
     "title": "Left on the display",
@@ -620,6 +636,9 @@
       "kurang": "Undercooked",
       "pas": "Just right",
       "gosong": "Burnt"
-    }
+    },
+    "gas": "Gas: {{tanks}} tanks",
+    "gasEmpty": "Out of gas",
+    "buyGas": "Buy a tank · {{price}} · {{minutes}} min"
   }
 }
