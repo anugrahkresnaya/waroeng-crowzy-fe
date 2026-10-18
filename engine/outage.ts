@@ -16,11 +16,17 @@ const ICE = 'es-batu';
 /** The minute a cut ends, never past midnight. */
 export const outageEnd = (o: Outage): number => Math.min(1440, o.from + o.hours * 60);
 
-/** True while the power is out right now. */
-export function powerOff(state: GameState): boolean {
+/** True while a PLN cut is on right now. */
+export function plnOff(state: GameState): boolean {
   const o = state.outage;
   return !!o && o.day === state.day && state.minute >= o.from && state.minute < outageEnd(o);
 }
+
+/** True when the prepaid token has run out: the player's own doing. */
+export const tokenEmpty = (state: GameState): boolean => state.token <= 0;
+
+/** True while the power is out right now, from a PLN cut or an empty token. */
+export const powerOff = (state: GameState): boolean => plnOff(state) || tokenEmpty(state);
 
 /** The cut that is today and has not ended, so ice can still help. */
 export function outageToday(state: GameState): Outage | null {
@@ -48,6 +54,9 @@ export function fridgeFailed(state: GameState, content: Content, day: number): b
   return o.hours > c.fridgeHoldHours + (o.ice ? c.ice.holdHours : 0);
 }
 
+/** True if the fridge sat without power too long today because the token was empty. */
+export const tokenFridgeFailed = (state: GameState, content: Content): boolean => state.tokenOffMinutes >= content.balance.outage.fridgeHoldHours * 60;
+
 /** Overnight: the old cut is over, and a new one may be coming (today without warning, or tomorrow with it). */
 export function rollOutage(ctx: OutageCtx): void {
   const { state, content, rng } = ctx;
@@ -67,6 +76,47 @@ export function tickPower(ctx: Pick<OutageCtx, 'state' | 'emit'>): void {
   if (!o || o.day !== ctx.state.day) return;
   if (ctx.state.minute === o.from) ctx.emit({ type: 'power_out', hours: o.hours });
   else if (ctx.state.minute === outageEnd(o)) ctx.emit({ type: 'power_back' });
+}
+
+/** Takes `amount` off the token and tells the player when it runs low or out. */
+function burnToken(ctx: Pick<OutageCtx, 'state' | 'content' | 'emit'>, amount: number): void {
+  const { state, content } = ctx;
+  if (amount <= 0 || state.token <= 0) return;
+  const before = state.token;
+  state.token = Math.max(0, state.token - amount);
+  if (state.token <= 0) ctx.emit({ type: 'token_out' });
+  else if (before >= content.balance.token.lowMark && state.token < content.balance.token.lowMark) ctx.emit({ type: 'token_low', token: state.token });
+}
+
+/** Every open minute: the shop uses power, unless a PLN cut has it off, and an empty token keeps the fridge warm. */
+export function tickToken(ctx: Pick<OutageCtx, 'state' | 'content' | 'emit'>): void {
+  const { state, content } = ctx;
+  if (plnOff(state)) return;
+  if (tokenEmpty(state)) state.tokenOffMinutes++;
+  else burnToken(ctx, content.balance.token.openPerMinute);
+}
+
+/** Bedtime: an empty token means the fridge spent the night warm. Call before the overnight spoilage. */
+export function tokenOvernight(state: GameState, content: Content): void {
+  if (tokenEmpty(state)) state.tokenOffMinutes += content.balance.token.overnightMinutes;
+}
+
+/** After the overnight spoilage: the fridge and lights burned a little credit, and a new day starts with a clean count. */
+export function tokenNewDay(ctx: Pick<OutageCtx, 'state' | 'content' | 'emit'>): void {
+  ctx.state.tokenOffMinutes = 0;
+  burnToken(ctx, ctx.content.balance.token.perDay);
+}
+
+/** Tops the token up from the bank with a pack, for a fee. Power is back at once. */
+export function buyToken(ctx: OutageCtx, cmd: { amount: number }): CommandError | null {
+  const { state, content } = ctx;
+  const t = content.balance.token;
+  if (!t.packs.includes(cmd.amount)) return 'invalid_amount';
+  if (state.bank < cmd.amount + t.fee) return 'insufficient_funds';
+  state.bank -= cmd.amount + t.fee;
+  state.token += cmd.amount;
+  ctx.emit({ type: 'token_bought', amount: cmd.amount, fee: t.fee });
+  return null;
 }
 
 /** Time away for an errand: pre-open minutes before opening, a busy counter while open, free otherwise. */
@@ -123,5 +173,5 @@ export function buyLantern(ctx: OutageCtx): CommandError | null {
 
 /** What a closed fridge would lose, for the overnight spoilage: lots stored in the fridge age like room-temperature stock. */
 export function fridgeSpoilsAsRoom(state: GameState, content: Content): boolean {
-  return fridgeFailed(state, content, state.day - 1);
+  return fridgeFailed(state, content, state.day - 1) || tokenFridgeFailed(state, content);
 }

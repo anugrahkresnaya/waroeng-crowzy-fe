@@ -196,6 +196,11 @@ export interface Outage {
   ice: boolean;
 }
 
+/** A recurring bill the player owes: the day it is due. */
+export interface Bill {
+  dueDay: number;
+}
+
 export interface GameState {
   /** Bump when the shape changes, then add a migration. */
   version: 1;
@@ -234,6 +239,12 @@ export interface GameState {
   menu: Record<string, MenuEntry>;
   /** Cooked portions on the display, by batch dish id, oldest first. */
   display: Record<string, DisplayBatch[]>;
+  /** Prepaid electricity credit in rupiah. At zero the power is out until it is topped up. */
+  token: number;
+  /** Minutes today the token was empty while the shop was open (plus the night, if it was empty at bedtime). */
+  tokenOffMinutes: number;
+  /** Recurring bills by id. */
+  bills: Record<string, Bill>;
   /** The power cut that is coming or happening, if any. */
   outage: Outage | null;
   /** Whether the player owns a lantern. */
@@ -269,6 +280,8 @@ export type Command =
   | { type: 'buyGas' }
   | { type: 'buyIce' }
   | { type: 'buyLantern' }
+  | { type: 'buyToken'; amount: number }
+  | { type: 'payBill'; id: string }
   | { type: 'handleLeftover'; item: string; choice: LeftoverChoice }
   | { type: 'placeOrder'; supplier: string; lines: Array<{ key: string; qty: number }>; express: boolean }
   | { type: 'pasarTrip'; lines: Array<{ key: string; qty: number }> }
@@ -310,6 +323,8 @@ export type CommandError =
   | 'no_ice'
   | 'no_outage'
   | 'already_owned'
+  | 'unknown_bill'
+  | 'not_due_yet'
   | 'not_in_tray'
   | 'not_in_order'
   | 'already_checked'
@@ -370,6 +385,12 @@ export type GameEvent =
   | { type: 'outage_notice'; from: number; hours: number }
   | { type: 'power_out'; hours: number }
   | { type: 'power_back' }
+  | { type: 'token_low'; token: number }
+  | { type: 'token_out' }
+  | { type: 'token_bought'; amount: number; fee: number }
+  | { type: 'bill_notice'; id: string; dueDay: number; inDays: number }
+  | { type: 'bill_paid'; id: string; total: number }
+  | { type: 'bill_overdue'; id: string }
   | { type: 'ice_bought'; price: number }
   | { type: 'lantern_bought'; price: number }
   | { type: 'went_stale'; item: string; portions: number }

@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { mutateGame, startGame, stateOf } from "./helpers";
+import { mutateGame, openApp, startGame, stateOf } from "./helpers";
 
 test("a power cut: the notice, no cold drinks until ice is bought, and a lantern", async ({ page }) => {
   await startGame(page);
@@ -34,4 +34,51 @@ test("a notice the day before shows tomorrow's cut", async ({ page }) => {
   await expect(banner).toContainText("besok listrik padam");
   await expect(page.getByTestId("buy-ice")).toHaveCount(0); // ice only helps on the day itself
   await expect(page.getByTestId("buy-lantern")).toBeVisible();
+});
+
+test("a low electricity token warns, and a top-up from the banner fixes it", async ({ page }) => {
+  await startGame(page);
+  await expect(page.getByTestId("token-alert")).toHaveCount(0);
+  await mutateGame(page, "state.token = 8000;");
+  await expect(page.getByTestId("token-alert")).toContainText("menipis");
+  const before = await stateOf(page);
+  await page.getByTestId("buy-token").click();
+  await expect(page.getByTestId("token-alert")).toHaveCount(0);
+  const after = await stateOf(page);
+  expect(after.token).toBe(before.token + 50000);
+  expect(after.bank).toBe(before.bank - 52500);
+});
+
+test("an empty token turns the power off, and cold drinks stop until it is topped up", async ({ page }) => {
+  await startGame(page);
+  await mutateGame(page, "state.token = 0;");
+  const banner = page.getByTestId("outage-banner");
+  await expect(banner).toHaveAttribute("data-power", "off");
+  await expect(banner).toContainText("Token listrik habis");
+  await page.getByRole("link", { name: "Dapur" }).first().click();
+  await page.waitForURL(/\/dapur$/);
+  await expect(page.getByTestId("cook-es-teh")).toBeDisabled();
+  await page.getByTestId("buy-token").click();
+  await expect(banner).toHaveCount(0);
+  await expect(page.getByTestId("cook-es-teh")).toBeEnabled();
+});
+
+test("the bank app tops up the token and pays the rent once it is near", async ({ page }) => {
+  await startGame(page);
+  await openApp(page, "bank");
+  await expect(page.getByTestId("token-days")).toContainText("hari buka");
+  await expect(page.getByTestId("pay-kontrakan")).toBeDisabled(); // due in two weeks
+
+  const start = await stateOf(page);
+  await page.getByTestId("token-20000").click();
+  expect((await stateOf(page)).token).toBe(start.token + 20000);
+
+  await mutateGame(page, "state.bills.kontrakan.dueDay = state.day + 1;");
+  await expect(page.getByTestId("bill-kontrakan")).toContainText("Jatuh tempo 1 hari lagi");
+  const before = await stateOf(page);
+  await page.getByTestId("pay-kontrakan").click();
+  const after = await stateOf(page);
+  expect(after.bank).toBe(before.bank - 600000);
+  expect(after.bills.kontrakan.dueDay).toBe(before.bills.kontrakan.dueDay + 30);
+  await expect(page.getByTestId("pay-kontrakan")).toBeDisabled();
 });

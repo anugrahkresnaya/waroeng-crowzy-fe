@@ -89,11 +89,23 @@ export function sleepThrough(game: Game, options: { freeTime?: string[]; open?: 
 export function playAnyDay(game: Game, options: BotOptions = { actionsPerTick: 4 }): void {
   bankTheBigNotes(game);
   restock(game);
+  payUp(game);
   if (game.state.phase === 'dayoff') {
     while (game.state.phase === 'dayoff') game.dispatch({ type: 'runBlock' });
     return;
   }
   playDay(game, options);
+}
+
+/** Keeps the lights on and pays what is due, the way a careful player would. */
+export function payUp(game: Game): void {
+  const { state, content } = game;
+  // A day of open hours burns about this much; top up before it could run dry.
+  const need = content.balance.token.openPerMinute * (content.balance.closeMinute - content.balance.openMinute) + content.balance.token.perDay;
+  if (state.token < need) game.dispatch({ type: 'buyToken', amount: content.balance.token.packs[1] });
+  for (const bill of content.balance.bills) {
+    if (state.bank >= bill.amount && state.day >= state.bills[bill.id].dueDay - bill.noticeDays) game.dispatch({ type: 'payBill', id: bill.id });
+  }
 }
 
 /** Banks the big notes the till does not need, keeping a float of 20.000 notes for change. */

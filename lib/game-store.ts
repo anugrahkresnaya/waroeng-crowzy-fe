@@ -42,6 +42,7 @@ interface GameStore {
 
 let toastId = 0;
 
+const billName = (id: string) => content.balance.bills.find((b) => b.id === id)?.name[i18n.language === "en" ? "en" : "id"] ?? id;
 const itemName = (id: string) => content.itemById[id]?.name[i18n.language === "en" ? "en" : "id"] ?? id;
 
 function toastFor(event: GameEvent): Omit<Toast, "id"> | null {
@@ -86,6 +87,21 @@ function toastFor(event: GameEvent): Omit<Toast, "id"> | null {
       return { key: "iceBought", vars: { price: rp(event.price) }, tone: "good" };
     case "lantern_bought":
       return { key: "lanternBought", vars: { price: rp(event.price) }, tone: "good" };
+    case "token_low":
+      return { key: "tokenLow", vars: { token: rp(event.token) }, tone: "bad" };
+    case "token_out":
+      return { key: "tokenOut", tone: "bad" };
+    case "token_bought":
+      return { key: "tokenBought", vars: { amount: rp(event.amount), fee: rp(event.fee) }, tone: "good" };
+    case "bill_notice": {
+      const n = event.inDays;
+      const when = n <= 0 ? i18n.t("toast.when.today") : n === 1 ? i18n.t("toast.when.tomorrow") : i18n.t("toast.when.soon", { n });
+      return { key: "billNotice", vars: { bill: billName(event.id), when }, tone: "info" };
+    }
+    case "bill_paid":
+      return { key: "billPaid", vars: { bill: billName(event.id), total: rp(event.total) }, tone: "good" };
+    case "bill_overdue":
+      return { key: "billOverdue", vars: { bill: billName(event.id) }, tone: "bad" };
     case "gas_bought":
       return { key: "gasBought", vars: { price: rp(event.price) }, tone: "good" };
     case "burner_wasted":

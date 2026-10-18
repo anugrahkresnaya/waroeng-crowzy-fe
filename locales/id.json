@@ -139,7 +139,9 @@
       "out_of_gas": "Gas habis, beli tabung di kompor",
       "no_ice": "Listrik padam, es batu tidak ada. Beli dulu",
       "no_outage": "Hari ini listrik tidak padam",
-      "already_owned": "Sudah punya"
+      "already_owned": "Sudah punya",
+      "unknown_bill": "Tagihan tidak dikenal",
+      "not_due_yet": "Belum waktunya bayar"
     },
     "blockDone": {
       "pagi": "Blok pagi selesai{{extra}}",
@@ -174,7 +176,18 @@
     "powerOut": "Listrik padam",
     "powerBack": "Listrik menyala lagi",
     "iceBought": "Beli es batu: {{price}}",
-    "lanternBought": "Beli lentera: {{price}}"
+    "lanternBought": "Beli lentera: {{price}}",
+    "tokenLow": "Token listrik menipis: sisa {{token}}",
+    "tokenOut": "Token listrik habis. Listrik mati",
+    "tokenBought": "Token diisi: {{amount}} (admin {{fee}})",
+    "billNotice": "{{bill}} jatuh tempo {{when}}",
+    "billPaid": "Bayar {{bill}}: {{total}}",
+    "billOverdue": "{{bill}} telat dibayar. Langganan mulai membicarakan",
+    "when": {
+      "today": "hari ini",
+      "tomorrow": "besok",
+      "soon": "{{n}} hari lagi"
+    }
   },
   "title": {
     "eyebrow": "OFFLINE · 1 PEMAIN",
@@ -570,7 +583,25 @@
     "less": "Kurangi {{amount}}",
     "more": "Tambah {{amount}}",
     "withdraw": "Tarik tunai",
-    "withdrawHelp": "Mesin hanya mengeluarkan uang pecahan besar, jadi ini tidak menambah receh. Untuk receh, tukar uang sebelum buka."
+    "withdrawHelp": "Mesin hanya mengeluarkan uang pecahan besar, jadi ini tidak menambah receh. Untuk receh, tukar uang sebelum buka.",
+    "token": {
+      "title": "Token listrik",
+      "left": "Sisa pulsa listrik",
+      "days": "cukup sekitar {{n}} hari buka",
+      "empty": "Habis: listrik mati",
+      "help": "Jam buka memakai pulsa listrik, dan kulkas serta lampu memakai sedikit tiap malam. Kalau nol, listrik mati dan kulkas menghangat.",
+      "buy": "Isi {{amount}}",
+      "fee": "Biaya admin {{fee}} per isi ulang"
+    },
+    "bills": {
+      "title": "Tagihan",
+      "due": "Jatuh tempo {{n}} hari lagi",
+      "dueToday": "Jatuh tempo hari ini",
+      "late": "Telat {{n}} hari",
+      "overdue": "Telat: denda {{fee}} dan reputasi turun tiap malam",
+      "pay": "Bayar {{total}}",
+      "early": "Bisa dibayar mulai {{n}} hari sebelum jatuh tempo"
+    }
   },
   "kitchen": {
     "title": "Dapur",
@@ -664,6 +695,9 @@
       "busy": "Sedang sibuk",
       "no_time": "Waktu sebelum buka tidak cukup",
       "insufficient_funds": "Saldo bank tidak cukup"
-    }
+    },
+    "tokenEmpty": "Token listrik habis. Listrik mati",
+    "tokenLow": "Token listrik menipis: sisa {{token}}",
+    "buyToken": "Isi {{amount}} · admin {{fee}}"
   }
 }

@@ -7,7 +7,7 @@ import { Game } from './game';
 import { isValidBlockPlan, type Content } from './schema';
 import type { GameState } from './types';
 
-export const SAVE_FORMAT = 5;
+export const SAVE_FORMAT = 6;
 
 const num = z.number();
 const pieces = z.record(z.string(), z.number().int().min(0));
@@ -104,6 +104,9 @@ const state = z.object({
   goodsCost: z.record(z.string(), num),
   menu: z.record(z.string(), z.object({ price: z.number().int().positive(), portion: z.enum(['small', 'normal', 'large']) })),
   display: z.record(z.string(), z.array(z.object({ qty: num, cookedAt: num, unitCost: num }))),
+  token: num,
+  tokenOffMinutes: num,
+  bills: z.record(z.string(), z.object({ dueDay: num })),
   outage: z.object({ day: num, from: num, hours: num, known: z.boolean(), ice: z.boolean() }).nullable(),
   lantern: z.boolean(),
   burners: z.array(z.object({ item: z.string(), customerId: num, startedAt: num, auto: z.boolean(), cost: num }).nullable()),
@@ -160,6 +163,12 @@ const MIGRATIONS: Record<number, (raw: Record<string, unknown>) => Record<string
     const state = raw.state as Record<string, unknown> | undefined;
     if (!state || typeof state !== 'object') return null;
     return { ...raw, state: { ...state, outage: null, lantern: false } };
+  },
+  // Format 5 had no electricity token or bills. The token starts at a fixed figure; reconcile adds the bills.
+  5: (raw) => {
+    const state = raw.state as Record<string, unknown> | undefined;
+    if (!state || typeof state !== 'object') return null;
+    return { ...raw, state: { ...state, token: 60000, tokenOffMinutes: 0, bills: {} } };
   },
 };
 
@@ -283,6 +292,12 @@ export function reconcile(saved: GameState, content: Content): GameState {
   const hours = Math.ceil((b.closeMinute - b.openMinute) / 60);
   s.stats.salesByHour = Array.from({ length: hours }, (_, i) => s.stats.salesByHour[i] ?? 0);
   for (const id of Object.keys(s.stats.itemsSold)) if (!(id in content.itemById)) delete s.stats.itemsSold[id];
+
+  // Bills: keep the ones still in the content, start new ones from today.
+  const bills: GameState['bills'] = {};
+  for (const def of b.bills) bills[def.id] = Number.isFinite(s.bills[def.id]?.dueDay) ? s.bills[def.id] : { dueDay: s.day + def.firstDue };
+  s.bills = bills;
+  if (!Number.isFinite(s.token) || s.token < 0) s.token = b.token.start;
 
   s.mood = Math.min(100, Math.max(0, s.mood));
   s.hunger = Math.min(100, Math.max(0, s.hunger));

@@ -4,8 +4,9 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AppHeader } from "@/components/app-header";
 import { Art } from "@/components/art";
-import { Button, Card } from "@/components/ui";
-import { total, type Phase, type Pieces } from "@/engine";
+import { Button, Card, Meter } from "@/components/ui";
+import { useLocalize } from "@/lib/use-localize";
+import { billTotal, content, daysLate, isOverdue, payable, total, type Phase, type Pieces } from "@/engine";
 import { rp } from "@/lib/format";
 import { useGame } from "@/lib/game-store";
 import { useGuard } from "@/lib/use-guard";
@@ -19,6 +20,7 @@ const pieceArt = (d: number) => (d >= 1000 ? `uang-${d}` : `koin-${d}`);
 export default function BankPage() {
   const { t } = useTranslation();
   const ready = useGuard(ANY);
+  const loc = useLocalize();
   const state = useGame((s) => s.state);
   const send = useGame((s) => s.send);
   const [pick, setPick] = useState<Pieces>({});
@@ -32,6 +34,10 @@ export default function BankPage() {
       if (n === 0) delete next[d];
       return next;
     });
+
+  const tk = content.balance.token;
+  const perOpenDay = tk.openPerMinute * (content.balance.closeMinute - content.balance.openMinute) + tk.perDay;
+  const tokenDays = Math.floor(state.token / perOpenDay);
 
   return (
     <>
@@ -93,6 +99,52 @@ export default function BankPage() {
               </Button>
             ))}
           </div>
+        </Card>
+        <Card className="flex flex-col gap-2 p-3" data-testid="token-card">
+          <b className="font-display text-lg">{t("bankApp.token.title")}</b>
+          <Meter
+            label={state.token > 0 ? `${t("bankApp.token.left")}: ${rp(state.token)}` : t("bankApp.token.empty")}
+            pct={(state.token / (tk.packs[tk.packs.length - 1] * 2)) * 100}
+            tone={state.token < tk.lowMark ? "bg-bad" : "bg-accent"}
+          />
+          <p className="text-[11px] text-muted" data-testid="token-days">
+            {state.token > 0 ? t("bankApp.token.days", { n: tokenDays }) : t("bankApp.token.empty")}
+          </p>
+          <p className="text-[11px] text-muted">{t("bankApp.token.help")}</p>
+          <div className="flex gap-2">
+            {tk.packs.map((a) => (
+              <Button key={a} variant="ghost" className="flex-1 px-2!" disabled={state.bank < a + tk.fee} data-testid={`token-${a}`} onClick={() => send({ type: "buyToken", amount: a })}>
+                {rp(a)}
+              </Button>
+            ))}
+          </div>
+          <p className="text-[10px] text-muted">{t("bankApp.token.fee", { fee: rp(tk.fee) })}</p>
+        </Card>
+
+        <Card className="flex flex-col gap-2 p-3" data-testid="bills-card">
+          <b className="font-display text-lg">{t("bankApp.bills.title")}</b>
+          {content.balance.bills.map((def) => {
+            const late = daysLate(state, def.id);
+            const overdue = isOverdue(state, content, def.id);
+            const can = payable(state, content, def.id);
+            const sum = billTotal(state, content, def.id);
+            return (
+              <div key={def.id} className="rounded-lg bg-bg p-2" data-testid={`bill-${def.id}`}>
+                <div className="flex items-baseline justify-between">
+                  <b className="text-sm">{loc(def.name)}</b>
+                  <span className="font-mono text-sm tabular-nums">{rp(sum)}</span>
+                </div>
+                <p className={`text-[11px] ${late > 0 ? "font-bold text-bad" : "text-muted"}`}>
+                  {late < 0 ? t("bankApp.bills.due", { n: -late }) : late === 0 ? t("bankApp.bills.dueToday") : t("bankApp.bills.late", { n: late })}
+                </p>
+                {overdue && <p className="text-[11px] text-bad">{t("bankApp.bills.overdue", { fee: rp(def.lateFee) })}</p>}
+                {!can && <p className="text-[11px] text-muted">{t("bankApp.bills.early", { n: def.noticeDays })}</p>}
+                <Button className="mt-1.5 w-full py-2" disabled={!can || state.bank < sum} data-testid={`pay-${def.id}`} onClick={() => send({ type: "payBill", id: def.id })}>
+                  {t("bankApp.bills.pay", { total: rp(sum) })}
+                </Button>
+              </div>
+            );
+          })}
         </Card>
       </div>
     </>

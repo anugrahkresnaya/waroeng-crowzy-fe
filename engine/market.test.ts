@@ -510,6 +510,7 @@ describe('spoilage and the small fridge', () => {
     });
     emptyPantry(g);
     lot(g, ingredient, qty, 40, 0);
+    g.state.token = 1e9; // a month of nights must not run the electricity out
     const kept: boolean[] = [];
     for (let i = 0; i < nights; i++) {
       passDay(g);

@@ -4,7 +4,8 @@ import {
   advanceMarketDay, assignStorage, deliverDue, pasarTrip, placeOrder, portionOf, portionsLeft, sellPrice, spoilOvernight, sellOut,
 } from './market';
 import { buyGas } from './gas';
-import { arrivalMul, buyIce, buyLantern, rollOutage, tickPower } from './outage';
+import { payBill, tickBills } from './bills';
+import { arrivalMul, buyIce, buyLantern, buyToken, rollOutage, tickPower, tickToken, tokenNewDay, tokenOvernight } from './outage';
 import { dropBurners, plate, startCook, tickBurners, wasteCooked } from './cooking';
 import { clearDisplay, cookBatch, handleLeftover, sweepDisplay } from './kitchen';
 import { freshStats } from './state';
@@ -357,9 +358,12 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
       advanceMarketDay(ctx);
       deliverDue(ctx);
       assignStorage(state, content);
+      tokenOvernight(state, content);
       spoilOvernight(ctx);
       assignStorage(state, content);
+      tokenNewDay(ctx);
       rollOutage(ctx);
+      tickBills(ctx);
       ctx.emit({ type: 'new_day', day: state.day });
       return OK;
     }
@@ -378,6 +382,14 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
     }
     case 'placeOrder': {
       const error = placeOrder(ctx, cmd);
+      return error ? fail(error) : OK;
+    }
+    case 'buyToken': {
+      const error = buyToken(ctx, cmd);
+      return error ? fail(error) : OK;
+    }
+    case 'payBill': {
+      const error = payBill(ctx, cmd);
       return error ? fail(error) : OK;
     }
     case 'buyIce': {
@@ -570,6 +582,7 @@ export function advance(ctx: Ctx): void {
   state.tick++;
   state.minute++;
   tickPower(ctx);
+  tickToken(ctx);
   deliverDue(ctx);
   sweepDisplay(ctx);
   tickBurners(ctx);

@@ -236,6 +236,32 @@ export const balanceSchema = z.object({
   }),
   /** Burners on the stove: how many dishes can be cooked at once. */
   burners: positiveInt,
+  /** The prepaid electricity token: credit in rupiah, burned per open minute and per night, topped up in packs for a fee. */
+  token: z.object({
+    start: z.number().int().min(0),
+    openPerMinute: z.number().min(0),
+    perDay: z.number().min(0),
+    /** Below this the player is warned. */
+    lowMark: z.number().int().min(0),
+    fee: z.number().int().min(0),
+    packs: z.array(positiveInt).min(1),
+    /** Minutes the fridge counts as warm when the token is empty at bedtime. */
+    overnightMinutes: positiveInt,
+  }),
+  /** Recurring bills: first due after `firstDue` days, then every `everyDays`. Late past `grace` days they cost a fee and reputation each night. */
+  bills: z.array(
+    z.object({
+      id: z.string().min(1),
+      name: localized,
+      amount: positiveInt,
+      everyDays: positiveInt,
+      firstDue: positiveInt,
+      noticeDays: z.number().int().min(0),
+      grace: z.number().int().min(0),
+      lateFee: z.number().int().min(0),
+      rep: z.number().max(0),
+    }),
+  ),
   /** Power cuts: when they start, how long, what a closed fridge survives, and what ice and a lantern do about it. */
   outage: z.object({
     fromDay: z.number().int().min(0),

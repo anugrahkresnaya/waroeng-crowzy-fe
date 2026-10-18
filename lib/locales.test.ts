@@ -47,7 +47,7 @@ describe("translations", () => {
       ...[
         "wrong_phase", "busy", "shelves_not_ready", "shelves_ready", "no_customer", "wrong_stage", "wrong_method",
         "unknown_item", "out_of_stock", "not_in_tray", "not_in_order", "already_checked", "invalid_pieces",
-        "not_in_drawer", "no_time", "invalid_amount", "out_of_gas", "no_ice", "no_outage", "already_owned",
+        "not_in_drawer", "no_time", "invalid_amount", "out_of_gas", "no_ice", "no_outage", "already_owned", "unknown_bill", "not_due_yet",
       ].map((e) => `toast.error.${e}`),
       ...[0, 1, 2, 3, 4, 5, 6].map((n) => `weekdayShort.${n}`),
       ...["pagi", "siang", "sore", "malam"].flatMap((b) => [`block.${b}`, `toast.blockDone.${b}`]),
@@ -58,6 +58,7 @@ describe("translations", () => {
       ...["small", "normal", "large"].map((p) => `menu.portions.${p}`),
       ...["bahan", "barang", "pesanan"].map((x) => `storage.tabs.${x}`),
       ...["insufficient_funds", "below_minimum", "empty_order", "unknown_supplier", "unknown_product", "invalid_quantity", "no_pasar_trip", "not_a_dish", "invalid_price"].map((e) => `toast.error.${e}`),
+      ...["today", "tomorrow", "soon"].map((w) => `toast.when.${w}`),
       ...["no_time", "busy", "wrong_phase", "insufficient_funds"].map((e) => `outage.why.${e}`),
       ...["auto", "light", "dark"].map((th) => `title.theme_${th}`),
       ...[1, 2, 3, 4].flatMap((n) => [`chapters.${n}.name`, `chapters.${n}.desc`]),

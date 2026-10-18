@@ -187,6 +187,8 @@ export async function stateOf(page: Page) {
       burners: Array<{ item: string } | null>;
       preOpenUsed: number;
       lantern: boolean;
+      token: number;
+      bills: Record<string, { dueDay: number }>;
     };
   });
 }

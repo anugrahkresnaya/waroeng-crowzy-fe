@@ -113,6 +113,22 @@ describe('reading what storage returns', () => {
     }
   });
 
+  it('carries a format 5 save (before the token and bills) forward, and reconcile adds the bills', () => {
+    const save = good() as unknown as { state: { token?: unknown; tokenOffMinutes?: unknown; bills?: unknown } };
+    delete save.state.token;
+    delete save.state.tokenOffMinutes;
+    delete save.state.bills;
+    const parsed = parseSave({ ...save, format: 5 });
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) {
+      expect(parsed.save.state.bills).toEqual({});
+      expect(parsed.save.state.token).toBeGreaterThan(0);
+      const fixed = reconcile(parsed.save.state as never, content);
+      expect(Object.keys(fixed.bills)).toEqual(content.balance.bills.map((b) => b.id));
+      expect(fixed.bills[content.balance.bills[0].id].dueDay).toBe(fixed.day + content.balance.bills[0].firstDue);
+    }
+  });
+
   it('says a format 1 save (before the market) is outdated', () => {
     expect(parseSave({ ...good(), format: 1 })).toEqual({ ok: false, reason: 'outdated' });
   });

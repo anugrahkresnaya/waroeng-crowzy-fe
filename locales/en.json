@@ -139,7 +139,9 @@
       "out_of_gas": "Out of gas, buy a tank at the stove",
       "no_ice": "No ice during the outage. Buy some first",
       "no_outage": "There is no power cut today",
-      "already_owned": "You already have that"
+      "already_owned": "You already have that",
+      "unknown_bill": "Unknown bill",
+      "not_due_yet": "Not due yet"
     },
     "blockDone": {
       "pagi": "Morning block done{{extra}}",
@@ -174,7 +176,18 @@
     "powerOut": "The power is out",
     "powerBack": "The power is back",
     "iceBought": "Bought ice: {{price}}",
-    "lanternBought": "Bought a lantern: {{price}}"
+    "lanternBought": "Bought a lantern: {{price}}",
+    "tokenLow": "Electricity token is low: {{token}} left",
+    "tokenOut": "The electricity token ran out. Power is off",
+    "tokenBought": "Token topped up: {{amount}} (fee {{fee}})",
+    "billNotice": "{{bill}} is due {{when}}",
+    "billPaid": "Paid {{bill}}: {{total}}",
+    "billOverdue": "{{bill}} is overdue. Regulars are talking",
+    "when": {
+      "today": "today",
+      "tomorrow": "tomorrow",
+      "soon": "in {{n}} days"
+    }
   },
   "title": {
     "eyebrow": "OFFLINE · 1 PLAYER",
@@ -570,7 +583,25 @@
     "less": "Less {{amount}}",
     "more": "More {{amount}}",
     "withdraw": "Withdraw cash",
-    "withdrawHelp": "The machine only pays out big notes, so this does not add small change. For small change, exchange cash before opening."
+    "withdrawHelp": "The machine only pays out big notes, so this does not add small change. For small change, exchange cash before opening.",
+    "token": {
+      "title": "Electricity token",
+      "left": "Credit left",
+      "days": "about {{n}} days of opening",
+      "empty": "Empty: the power is off",
+      "help": "Open hours burn credit, and the fridge and lights use some every night. At zero the power goes out and the fridge warms up.",
+      "buy": "Top up {{amount}}",
+      "fee": "Admin fee {{fee}} per top-up"
+    },
+    "bills": {
+      "title": "Bills",
+      "due": "Due in {{n}} days",
+      "dueToday": "Due today",
+      "late": "{{n}} days late",
+      "overdue": "Overdue: late fee {{fee}} and reputation drops every night",
+      "pay": "Pay {{total}}",
+      "early": "You can pay from {{n}} days before the due date"
+    }
   },
   "kitchen": {
     "title": "Kitchen",
@@ -664,6 +695,9 @@
       "busy": "Already busy",
       "no_time": "Not enough pre-open time",
       "insufficient_funds": "Not enough in the bank"
-    }
+    },
+    "tokenEmpty": "The electricity token ran out. Power is off",
+    "tokenLow": "Electricity token is low: {{token}}",
+    "buyToken": "Top up {{amount}} · fee {{fee}}"
   }
 }

@@ -158,6 +158,28 @@
     "giveRepMax": 1.5
   },
   "burners": 2,
+  "token": {
+    "start": 60000,
+    "openPerMinute": 10,
+    "perDay": 3000,
+    "lowMark": 15000,
+    "fee": 2500,
+    "packs": [20000, 50000, 100000],
+    "overnightMinutes": 480
+  },
+  "bills": [
+    {
+      "id": "kontrakan",
+      "name": { "id": "Kontrakan", "en": "Rent" },
+      "amount": 600000,
+      "everyDays": 30,
+      "firstDue": 14,
+      "noticeDays": 3,
+      "grace": 3,
+      "lateFee": 50000,
+      "rep": -2
+    }
+  ],
   "outage": {
     "fromDay": 5,
     "chancePerDay": 0.06,
