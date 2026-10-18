@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 @AGENTS.md
 
-Next.js 16.4 + React 19.3 + Tailwind 4 app for Warung Hidup (npm). It is the future `apps/web` from `../docs/PRD.md`. The code is still the create-next-app starter (`app/page.tsx`, `app/layout.tsx`).
+Next.js 16.4 + React 19.3 + Tailwind 4 app for Warung Hidup (npm). It is the future `apps/web` from `../docs/PRD.md`. Phases 1 and 2 are built (counter, market and menu) and phase 3 is partly built (batch kitchen and the cooking mini game); see the sections below.
 
 ## Commands
 
