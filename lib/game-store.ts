@@ -116,6 +116,12 @@ function toastFor(event: GameEvent): Omit<Toast, "id"> | null {
       return { key: "dataBought", vars: { mb: event.mb, price: rp(event.price) }, tone: "good" };
     case "powerbank_bought":
       return { key: "powerbankBought", vars: { price: rp(event.price) }, tone: "good" };
+    case "titipan_taken":
+      return { key: "titipanTaken", vars: { qty: event.qty, item: itemName(event.item) }, tone: "info" };
+    case "titipan_settled":
+      return { key: "titipanSettled", vars: { sold: event.sold, returned: event.returned, paid: rp(event.paid) }, tone: event.owed > 0 ? "bad" : "good" };
+    case "titipan_paid":
+      return { key: "titipanPaid", vars: { amount: rp(event.amount) }, tone: "good" };
     case "freezer_bought":
       return { key: "freezerBought", vars: { price: rp(event.price) }, tone: "good" };
     case "frozen_lost":

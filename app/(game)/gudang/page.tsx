@@ -43,7 +43,7 @@ export default function GudangPage() {
     })
     .filter((g) => g.units > 0);
   const cannotMake = content.items.filter((i) => i.kind === "dish" && (i.batch ? displayPortions(state, i.id) === 0 && batchesPossible(state, content, i) === 0 : portionsLeft(state, content, i.id) === 0));
-  const goods = content.items.filter((i) => i.kind === "good");
+  const goods = content.items.filter((i) => i.kind === "good" && !i.consign);
 
   return (
     <>

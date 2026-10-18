@@ -5,6 +5,7 @@ import {
 } from './market';
 import { buyGas } from './gas';
 import { payBill, tickBills } from './bills';
+import { payNeighbor, settleTitipan, takeTitipan } from './titipan';
 import { buyData, buyPowerbank, phoneGate, phoneNight, qrisCheck, tickPhone, spendPhone } from './phone';
 import { arrivalMul, buyIce, buyLantern, buyToken, rollOutage, tickPower, tickToken, tokenNewDay, tokenOvernight } from './outage';
 import { dropBurners, plate, startCook, tickBurners, wasteCooked } from './cooking';
@@ -84,7 +85,7 @@ function planPayment(ctx: Ctx, c: Customer): void {
 function spawnCustomer(ctx: Ctx, type: CustomerType): void {
   const { state, content, rng } = ctx;
   // Nobody asks for frozen goods in a warung with no freezer.
-  const pool: Array<[string, number]> = Object.entries(type.items).filter(([id]) => state.freezer || !content.itemById[id]?.frozen);
+  const pool: Array<[string, number]> = Object.entries(type.items).filter(([id]) => (state.freezer || !content.itemById[id]?.frozen) && (!content.itemById[id]?.consign || (state.stock[id] ?? 0) > 0));
   const distinct = rng.int(type.distinctItems[0], type.distinctItems[1]);
   const order: OrderLine[] = [];
   for (let i = 0; i < distinct && pool.length > 0; i++) {
@@ -229,6 +230,7 @@ function closeDay(ctx: Ctx): void {
     state.stats.leftAtClose++;
     walkAway(ctx, c, 'closing');
   }
+  settleTitipan(ctx);
   state.phase = 'ended';
   state.busyUntil = 0;
   ctx.emit({ type: 'closed' });
@@ -388,6 +390,14 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
       if (gate) return fail(gate);
       const error = placeOrder(ctx, cmd);
       if (!error) spendPhone(ctx, b.phone.dataCosts.order);
+      return error ? fail(error) : OK;
+    }
+    case 'takeTitipan': {
+      const error = takeTitipan(ctx, cmd);
+      return error ? fail(error) : OK;
+    }
+    case 'payNeighbor': {
+      const error = payNeighbor(ctx);
       return error ? fail(error) : OK;
     }
     case 'buyFreezer': {

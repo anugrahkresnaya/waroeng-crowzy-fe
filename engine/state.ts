@@ -32,6 +32,9 @@ export function freshStats(content: Content): Stats {
     exchangeFees: 0,
     qrisFake: 0,
     qrisRefused: 0,
+    titipanSold: 0,
+    titipanReturned: 0,
+    titipanPaid: 0,
     salesByHour: new Array(Math.ceil((closeMinute - openMinute) / 60)).fill(0),
     moods: { happy: 0, neutral: 0, annoyed: 0 },
   };
@@ -68,6 +71,7 @@ export function createInitialState(content: Content, seed: number, day = 0): Gam
     goodsCost: {},
     menu: Object.fromEntries(content.items.filter((i) => i.kind === 'dish').map((i) => [i.id, { price: i.price, portion: 'normal' as const }])),
     display: {},
+    titipan: { taken: {}, owed: 0, relation: 0 },
     freezer: false,
     phone: { battery: content.balance.phone.start.battery, powerbank: null, data: content.balance.phone.start.data },
     qrisPending: [],

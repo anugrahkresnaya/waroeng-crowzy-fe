@@ -6,7 +6,7 @@ export function parseContent(raw: unknown): Content {
   const products: Product[] = [
     ...parsed.ingredients.map((i): Product => ({ key: i.id, kind: 'ingredient', id: i.id, category: i.category, base: i.price, swing: i.swing })),
     ...parsed.items
-      .filter((i) => i.kind === 'good')
+      .filter((i) => i.kind === 'good' && !i.consign)
       .map((i): Product => ({ key: goodKey(i.id), kind: 'good', id: i.id, category: 'goods', base: (i.buyPrice ?? 0) * (i.pack ?? 1), swing: 'low' })),
   ];
   return {

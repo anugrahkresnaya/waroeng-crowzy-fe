@@ -17,6 +17,7 @@ export function WarungNav() {
     { href: "/dapur", label: t("nav.kitchen"), match: ["/dapur"] },
     { href: "/menu", label: t("nav.menu"), match: ["/menu"] },
     { href: "/gudang", label: t("nav.storage"), match: ["/gudang"] },
+    { href: "/titipan", label: t("nav.titipan"), match: ["/titipan"] },
   ];
   return (
     <nav className="scroll-thin flex shrink-0 gap-1.5 overflow-x-auto border-b border-line bg-panel px-3 py-1.5" aria-label={t("nav.label")}>

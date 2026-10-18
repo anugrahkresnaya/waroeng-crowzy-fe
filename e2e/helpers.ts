@@ -188,6 +188,7 @@ export async function stateOf(page: Page) {
       preOpenUsed: number;
       lantern: boolean;
       freezer: boolean;
+      titipan: { taken: Record<string, number>; owed: number; relation: number };
       token: number;
       phone: { battery: number; powerbank: number | null; data: number };
       qrisPending: Array<{ amount: number; fake: boolean }>;

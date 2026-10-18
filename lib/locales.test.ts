@@ -47,7 +47,7 @@ describe("translations", () => {
       ...[
         "wrong_phase", "busy", "shelves_not_ready", "shelves_ready", "no_customer", "wrong_stage", "wrong_method",
         "unknown_item", "out_of_stock", "not_in_tray", "not_in_order", "already_checked", "invalid_pieces",
-        "not_in_drawer", "no_time", "invalid_amount", "out_of_gas", "no_ice", "no_outage", "already_owned", "unknown_bill", "not_due_yet", "cannot_verify", "can_verify", "phone_dead", "no_data", "needs_freezer", "freezer_full",
+        "not_in_drawer", "no_time", "invalid_amount", "out_of_gas", "no_ice", "no_outage", "already_owned", "unknown_bill", "not_due_yet", "cannot_verify", "can_verify", "phone_dead", "no_data", "needs_freezer", "freezer_full", "not_unlocked", "owes_neighbor", "not_consigned", "titipan_full", "nothing_owed",
       ].map((e) => `toast.error.${e}`),
       ...[0, 1, 2, 3, 4, 5, 6].map((n) => `weekdayShort.${n}`),
       ...["pagi", "siang", "sore", "malam"].flatMap((b) => [`block.${b}`, `toast.blockDone.${b}`]),
@@ -60,6 +60,7 @@ describe("translations", () => {
       ...["insufficient_funds", "below_minimum", "empty_order", "unknown_supplier", "unknown_product", "invalid_quantity", "no_pasar_trip", "not_a_dish", "invalid_price"].map((e) => `toast.error.${e}`),
       ...["signal", "data", "battery"].map((r) => `qris.reason.${r}`),
       ...["good", "slow", "down"].map((x) => `phone.signal.${x}`),
+      ...["not_unlocked", "wrong_phase", "owes_neighbor", "no_time", "titipan_full"].map((e) => `titipan.why.${e}`),
       ...["today", "tomorrow", "soon"].map((w) => `toast.when.${w}`),
       ...["no_time", "busy", "wrong_phase", "insufficient_funds"].map((e) => `outage.why.${e}`),
       ...["auto", "light", "dark"].map((th) => `title.theme_${th}`),

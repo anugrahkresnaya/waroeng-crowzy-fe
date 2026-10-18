@@ -158,6 +158,18 @@
     "giveRepMax": 1.5
   },
   "burners": 2,
+  "titipan": {
+    "unlockDay": 10,
+    "minutes": 5,
+    "levels": [
+      { "relation": 0, "max": 10, "costMul": 1 },
+      { "relation": 10, "max": 20, "costMul": 1 },
+      { "relation": 30, "max": 30, "costMul": 0.95 }
+    ],
+    "happyShare": 0.5,
+    "unhappyShare": 0.2,
+    "unhappyMinTaken": 5
+  },
   "phone": {
     "start": { "battery": 100, "data": 1000 },
     "drainPerMinute": 0.2,

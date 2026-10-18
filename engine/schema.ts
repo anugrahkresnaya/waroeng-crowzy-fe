@@ -49,11 +49,14 @@ export const itemSchema = z
     pack: positiveInt.optional(),
     /** Good only: it must be kept in the freezer, and each piece takes this many freezer slots. */
     frozen: z.object({ slots: z.number().positive() }).optional(),
+    /** Good only: taken on consignment (titipan). Never bought on the market; `buyPrice` is what the neighbour is owed for each one sold. */
+    consign: z.boolean().optional(),
     ageRestricted: z.boolean().default(false),
   })
   .refine((i) => !(i.batch && i.cook), { message: 'a dish is cooked either in batches or to order' })
   .refine((i) => i.kind === 'dish' || (!i.batch && !i.cook), { message: 'only a dish can be cooked in batches' })
   .refine((i) => i.kind === 'good' || !i.frozen, { message: 'only a good can be frozen' })
+  .refine((i) => i.kind === 'good' || !i.consign, { message: 'only a good can be consigned' })
   .refine((i) => (i.kind === 'dish' ? !!i.recipe && Object.keys(i.recipe).length > 0 : !!i.buyPrice && !!i.pack), {
     message: 'a dish needs a recipe, a good needs buyPrice and pack',
   });
@@ -249,6 +252,18 @@ export const balanceSchema = z.object({
   }),
   /** Burners on the stove: how many dishes can be cooked at once. */
   burners: positiveInt,
+  /** Goods taken on consignment from a neighbour: they unlock from this day (a stand-in for the story), and the neighbour's trust is earned by selling what was taken. */
+  titipan: z.object({
+    unlockDay: z.number().int().min(0),
+    /** Pre-open minutes each pickup takes. */
+    minutes: positiveInt,
+    /** By relation points: the most of each item you can take, and what the neighbour charges compared with the listed cost. */
+    levels: z.array(z.object({ relation: z.number().min(0), max: positiveInt, costMul: z.number().positive() })).min(1),
+    /** A day with at least this share of the pickup sold pleases the neighbour; under `unhappyShare` (of at least `unhappyMinTaken` pieces) does not. */
+    happyShare: z.number().min(0).max(1),
+    unhappyShare: z.number().min(0).max(1),
+    unhappyMinTaken: positiveInt,
+  }),
   /** The phone: battery that only drains without power, data for apps and QRIS checks, and QRIS signal during a PLN cut. */
   phone: z.object({
     start: z.object({ battery: z.number().min(0).max(100), data: z.number().min(0) }),

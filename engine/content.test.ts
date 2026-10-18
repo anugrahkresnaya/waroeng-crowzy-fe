@@ -87,8 +87,9 @@ describe('market content', () => {
   });
 
   it('makes a market product of every ingredient and every resale good', () => {
-    const goods = content.items.filter((i) => i.kind === 'good');
+    const goods = content.items.filter((i) => i.kind === 'good' && !i.consign); // consigned goods are never bought on the market
     expect(content.products).toHaveLength(25 + goods.length);
+    expect(content.productByKey['g-kue-basah']).toBeUndefined();
     expect(content.productByKey['g-rokok'].base).toBe(18000 * 10);
     expect(content.productByKey['beras'].kind).toBe('ingredient');
   });

@@ -351,5 +351,33 @@
   "frozen": {
    "slots": 1
   }
+ },
+ {
+  "id": "kue-basah",
+  "art": "kue-basah",
+  "name": {
+   "id": "Kue basah",
+   "en": "Wet cakes"
+  },
+  "category": "makanan",
+  "kind": "good",
+  "price": 2000,
+  "buyPrice": 1400,
+  "pack": 1,
+  "consign": true
+ },
+ {
+  "id": "nasi-titipan",
+  "art": "nasi-bungkus",
+  "name": {
+   "id": "Nasi bungkus titipan",
+   "en": "Consigned rice parcel"
+  },
+  "category": "makanan",
+  "kind": "good",
+  "price": 10000,
+  "buyPrice": 7500,
+  "pack": 1,
+  "consign": true
  }
 ]

@@ -136,6 +136,12 @@ const egg = (x, y) =>
 add('barang', 'telur', 'Telur', SH + egg(26, 50) + egg(48, 46) + egg(70, 50) +
   '<rect class="c-card" x="10" y="58" width="76" height="22" rx="7"/><path class="d" d="M34 60v18M62 60v18"/>');
 
+/* Titipan: wet cakes from the neighbour. */
+add('barang', 'kue-basah', 'Kue basah', SH +
+  '<ellipse class="c-paper" cx="48" cy="68" rx="38" ry="13"/>' +
+  '<path class="c-pink" d="M18 64l12-26h22l-8 26z"/><path class="c-green" d="M46 66l10-30h20l8 30z"/><path class="c-yellow" d="M30 38h22l2-10H34z"/>' +
+  '<path class="d" d="M22 56h22M52 54h26"/><circle class="n c-red" cx="42" cy="32" r="3"/>');
+
 add('barang', 'kantong-plastik', 'Kantong plastik', SH +
   '<path class="d" d="M34 34Q34 14 48 14T62 34"/><path class="c-glass" d="M24 34h48l6 50H18z"/>' +
   '<rect class="c-red" x="30" y="46" width="18" height="14" rx="2"/><rect class="c-yellow" x="48" y="52" width="16" height="12" rx="2"/><path class="n c-paper" d="M27 40h5l-2 36h-4z"/>');

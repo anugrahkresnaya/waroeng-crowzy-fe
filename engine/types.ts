@@ -184,6 +184,10 @@ export interface Stats {
   qrisFake: number;
   /** QRIS payments refused today because they could not be checked. */
   qrisRefused: number;
+  /** Consigned pieces sold and returned today, and what the neighbour was paid at closing. */
+  titipanSold: number;
+  titipanReturned: number;
+  titipanPaid: number;
   /** Reputation gained today by giving food away. */
   givenRep: number;
   /** Rupiah paid as fee when exchanging big notes for small ones. */
@@ -218,6 +222,13 @@ export interface Phone {
 export interface PendingQris {
   amount: number;
   fake: boolean;
+}
+
+/** Goods on consignment: what was taken today, what the neighbour is still owed, and how much they trust the player. */
+export interface TitipanState {
+  taken: Record<string, number>;
+  owed: number;
+  relation: number;
 }
 
 export interface GameState {
@@ -261,6 +272,7 @@ export interface GameState {
   phone: Phone;
   /** QRIS payments accepted on trust, settled when the phone can check them again. */
   qrisPending: PendingQris[];
+  titipan: TitipanState;
   /** Whether the player owns a freezer. */
   freezer: boolean;
   /** Prepaid electricity credit in rupiah. At zero the power is out until it is topped up. */
@@ -304,6 +316,8 @@ export type Command =
   | { type: 'buyGas' }
   | { type: 'buyIce' }
   | { type: 'buyLantern' }
+  | { type: 'takeTitipan'; item: string; qty: number }
+  | { type: 'payNeighbor' }
   | { type: 'buyFreezer' }
   | { type: 'buyToken'; amount: number }
   | { type: 'trustQris' }
@@ -353,6 +367,11 @@ export type CommandError =
   | 'no_outage'
   | 'already_owned'
   | 'unknown_bill'
+  | 'not_unlocked'
+  | 'owes_neighbor'
+  | 'not_consigned'
+  | 'titipan_full'
+  | 'nothing_owed'
   | 'needs_freezer'
   | 'freezer_full'
   | 'cannot_verify'
@@ -426,6 +445,9 @@ export type GameEvent =
   | { type: 'data_low'; mb: number }
   | { type: 'data_bought'; mb: number; price: number }
   | { type: 'powerbank_bought'; price: number }
+  | { type: 'titipan_taken'; item: string; qty: number }
+  | { type: 'titipan_settled'; sold: number; returned: number; paid: number; owed: number; relation: number }
+  | { type: 'titipan_paid'; amount: number }
   | { type: 'freezer_bought'; price: number }
   | { type: 'frozen_lost'; item: string; pieces: number }
   | { type: 'token_low'; token: number }
@@ -468,6 +490,9 @@ export interface DaySummary {
   stockoutDeclines: number;
   underageSales: number;
   exchangeFees: number;
+  titipanSold: number;
+  titipanReturned: number;
+  titipanPaid: number;
   qrisFake: number;
   qrisRefused: number;
   /** QRIS taken on trust that is still waiting to be checked. */

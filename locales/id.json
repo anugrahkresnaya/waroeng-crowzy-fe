@@ -158,7 +158,12 @@
       "phone_dead": "HP mati",
       "no_data": "Paket data habis",
       "needs_freezer": "Barang beku butuh freezer",
-      "freezer_full": "Freezer tidak muat"
+      "freezer_full": "Freezer tidak muat",
+      "not_unlocked": "Tetangga belum menawarkan titipan",
+      "owes_neighbor": "Bayar tetangga dulu",
+      "not_consigned": "Itu bukan barang titipan",
+      "titipan_full": "Hari ini tidak bisa ambil lagi",
+      "nothing_owed": "Tidak ada utang"
     },
     "blockDone": {
       "pagi": "Blok pagi selesai{{extra}}",
@@ -213,7 +218,10 @@
     "dataBought": "Paket data +{{mb}} MB (bayar tunai {{price}})",
     "powerbankBought": "Beli powerbank: {{price}}",
     "freezerBought": "Beli freezer: {{price}}",
-    "frozenLost": "{{pieces}} {{item}} tidak kebagian tempat dan mencair"
+    "frozenLost": "{{pieces}} {{item}} tidak kebagian tempat dan mencair",
+    "titipanTaken": "Ambil {{qty}} {{item}} dari tetangga",
+    "titipanSettled": "Titipan: laku {{sold}}, balik {{returned}}, bayar {{paid}}",
+    "titipanPaid": "Bayar tetangga {{amount}}"
   },
   "title": {
     "eyebrow": "OFFLINE · 1 PEMAIN",
@@ -322,7 +330,10 @@
     "cookingLine": "Pas {{pas}} · Otomatis {{biasa}} · Mentah {{kurang}} · Gosong {{gosong}}",
     "qrisPending": "QRIS yang dipercaya, belum dicek: {{amount}}",
     "qrisFake": "Pembayaran palsu ketahuan: {{amount}}",
-    "qrisRefused": "QRIS ditolak: {{n}}"
+    "qrisRefused": "QRIS ditolak: {{n}}",
+    "titipan": "Titipan",
+    "titipanLine": "Laku {{sold}}, dikembalikan {{returned}}, bayar tetangga {{paid}}",
+    "titipanOwed": "Masih utang ke tetangga: {{amount}}"
   },
   "phone": {
     "eyebrow": "PONSEL",
@@ -461,7 +472,8 @@
     "counter": "Kasir",
     "menu": "Menu",
     "storage": "Gudang",
-    "kitchen": "Dapur"
+    "kitchen": "Dapur",
+    "titipan": "Titipan"
   },
   "menu": {
     "title": "Menu & harga",
@@ -762,5 +774,31 @@
     "phoneLow": "Baterai HP tinggal {{pct}}%",
     "buyPowerbank": "Beli powerbank · {{price}}",
     "freezer": "Freezer tidak akan tahan selama itu. Barang beku dan ayam bisa rusak malam ini."
+  },
+  "titipan": {
+    "title": "Titipan",
+    "help": "Tetangga menitipkan kue basah dan nasi bungkus untuk kamu jual. Kamu hanya bayar yang laku, sisanya dikembalikan saat tutup. Untungnya lebih tipis, tapi tidak mungkin rugi.",
+    "locked": "Tetangga akan menawarkan titipan mulai hari ke-{{day}}.",
+    "trust": "Kepercayaan tetangga",
+    "level": "Tingkat {{n}}",
+    "trustMax": "Kepercayaan penuh",
+    "trustNext": "Kepercayaan {{have}} / {{need}} untuk tingkat berikutnya",
+    "perks": "Bisa ambil sampai {{max}} tiap barang. Harga {{pct}}% lebih murah dari standar.",
+    "trustHelp": "Hari saat minimal setengah barang yang diambil laku menambah kepercayaan. Ambil banyak tapi hampir tidak laku menguranginya.",
+    "owed": "Kamu masih utang {{amount}} ke tetangga",
+    "owedHelp": "Saldo bank tidak cukup saat tutup. Bayar dulu sebelum ambil lagi.",
+    "pay": "Bayar {{amount}}",
+    "onlyBeforeOpen": "Titipan hanya bisa diambil sebelum buka. Yang tidak laku dikembalikan saat tutup.",
+    "terms": "Bayar {{cost}}, jual {{price}}, untung {{margin}}",
+    "today": "Diambil hari ini",
+    "take": "Ambil {{n}}",
+    "minutes": "Tiap pengambilan memakan {{minutes}} menit dari waktu sebelum buka.",
+    "why": {
+      "not_unlocked": "Belum ditawarkan",
+      "wrong_phase": "Hanya sebelum buka",
+      "owes_neighbor": "Bayar tetangga dulu",
+      "no_time": "Waktu sebelum buka tidak cukup",
+      "titipan_full": "Sudah ambil sebanyak yang bisa hari ini"
+    }
   }
 }

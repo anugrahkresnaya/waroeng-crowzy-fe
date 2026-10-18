@@ -58,6 +58,7 @@ export default function RingkasanPage() {
   const hourLabels = hours.map((_, i) => String(7 + i).padStart(2, "0"));
   const lowChange = SMALL.filter((d) => (state.drawer[d] ?? 0) < 3);
   const lowStock = content.items
+    .filter((i) => !i.consign) // titipan comes back every night, so it is never "low"
     .map((i) => ({ item: i, left: portionsLeft(state, content, i.id) }))
     .filter((x) => x.left <= 5)
     .sort((a, b) => a.left - b.left);
@@ -127,6 +128,14 @@ export default function RingkasanPage() {
           </div>
         )}
       </Card>
+
+      {(s.titipanSold > 0 || s.titipanReturned > 0 || state.titipan.owed > 0) && (
+        <Card className="p-3" data-testid="titipan-summary">
+          <div className="text-xs font-bold">{t("summary.titipan")}</div>
+          <div className="text-xs text-muted">{t("summary.titipanLine", { sold: s.titipanSold, returned: s.titipanReturned, paid: rp(s.titipanPaid) })}</div>
+          {state.titipan.owed > 0 && <div className="text-xs font-bold text-bad">{t("summary.titipanOwed", { amount: rp(state.titipan.owed) })}</div>}
+        </Card>
+      )}
 
       {(s.qrisPending > 0 || s.qrisFake > 0 || s.qrisRefused > 0) && (
         <Card className="p-3" data-testid="qris-summary">

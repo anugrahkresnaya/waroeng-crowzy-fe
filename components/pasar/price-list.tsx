@@ -87,7 +87,7 @@ export function GoodsList({ onOpen }: { onOpen: (key: string) => void }) {
     <Card>
       <ul className="divide-y divide-line">
         {content.items
-          .filter((i) => i.kind === "good")
+          .filter((i) => i.kind === "good" && !i.consign)
           .map((item) => {
             const key = goodKey(item.id);
             const pack = item.pack ?? 1;

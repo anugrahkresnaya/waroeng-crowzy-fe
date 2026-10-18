@@ -147,6 +147,13 @@
     "viewBox": "0 0 96 96"
   },
   {
+    "id": "kue-basah",
+    "name": "Kue basah",
+    "category": "barang",
+    "file": "barang/kue-basah.svg",
+    "viewBox": "0 0 96 96"
+  },
+  {
     "id": "kantong-plastik",
     "name": "Kantong plastik",
     "category": "barang",

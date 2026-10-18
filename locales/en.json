@@ -158,7 +158,12 @@
       "phone_dead": "The phone is dead",
       "no_data": "No mobile data",
       "needs_freezer": "You need a freezer for frozen goods",
-      "freezer_full": "The freezer does not have room"
+      "freezer_full": "The freezer does not have room",
+      "not_unlocked": "The neighbour has not offered titipan yet",
+      "owes_neighbor": "Pay the neighbour first",
+      "not_consigned": "That is not a titipan item",
+      "titipan_full": "You cannot take more today",
+      "nothing_owed": "You owe nothing"
     },
     "blockDone": {
       "pagi": "Morning block done{{extra}}",
@@ -213,7 +218,10 @@
     "dataBought": "Mobile data +{{mb}} MB (paid {{price}} cash)",
     "powerbankBought": "Bought a powerbank: {{price}}",
     "freezerBought": "Bought a freezer: {{price}}",
-    "frozenLost": "{{pieces}} {{item}} had nowhere to go and melted"
+    "frozenLost": "{{pieces}} {{item}} had nowhere to go and melted",
+    "titipanTaken": "Took {{qty}} {{item}} from the neighbour",
+    "titipanSettled": "Titipan: {{sold}} sold, {{returned}} returned, paid {{paid}}",
+    "titipanPaid": "Paid the neighbour {{amount}}"
   },
   "title": {
     "eyebrow": "OFFLINE · 1 PLAYER",
@@ -322,7 +330,10 @@
     "cookingLine": "Just right {{pas}} · Auto {{biasa}} · Undercooked {{kurang}} · Burnt {{gosong}}",
     "qrisPending": "QRIS taken on trust, not checked yet: {{amount}}",
     "qrisFake": "Fake payments found: {{amount}}",
-    "qrisRefused": "QRIS refused: {{n}}"
+    "qrisRefused": "QRIS refused: {{n}}",
+    "titipan": "Titipan",
+    "titipanLine": "Sold {{sold}}, returned {{returned}}, paid the neighbour {{paid}}",
+    "titipanOwed": "Still owed to the neighbour: {{amount}}"
   },
   "phone": {
     "eyebrow": "PHONE",
@@ -461,7 +472,8 @@
     "counter": "Counter",
     "menu": "Menu",
     "storage": "Storage",
-    "kitchen": "Kitchen"
+    "kitchen": "Kitchen",
+    "titipan": "Titipan"
   },
   "menu": {
     "title": "Menu & prices",
@@ -762,5 +774,31 @@
     "phoneLow": "Phone battery low: {{pct}}%",
     "buyPowerbank": "Buy a powerbank · {{price}}",
     "freezer": "The freezer will not hold that long. Frozen goods and chicken may be ruined tonight."
+  },
+  "titipan": {
+    "title": "Titipan",
+    "help": "A neighbour lets you sell their kue basah and nasi bungkus. You pay only for what sells, and what is left goes back at closing. The margin is smaller, but you cannot lose money on it.",
+    "locked": "A neighbour will offer titipan from day {{day}}.",
+    "trust": "The neighbour's trust",
+    "level": "Level {{n}}",
+    "trustMax": "Full trust",
+    "trustNext": "Trust {{have}} / {{need}} for the next level",
+    "perks": "You can take up to {{max}} of each item. Terms are {{pct}}% better than the standard price.",
+    "trustHelp": "A day when at least half of what you took sells builds trust. Taking a lot and selling almost none costs it.",
+    "owed": "You owe the neighbour {{amount}}",
+    "owedHelp": "The bank could not cover the last settlement. Pay before taking more.",
+    "pay": "Pay {{amount}}",
+    "onlyBeforeOpen": "Titipan can only be picked up before opening. Unsold pieces go back when you close.",
+    "terms": "You pay {{cost}}, you sell for {{price}}, margin {{margin}}",
+    "today": "Taken today",
+    "take": "Take {{n}}",
+    "minutes": "Each pickup takes {{minutes}} minutes of the pre-open block.",
+    "why": {
+      "not_unlocked": "Not offered yet",
+      "wrong_phase": "Only before opening",
+      "owes_neighbor": "Pay the neighbour first",
+      "no_time": "Not enough pre-open time",
+      "titipan_full": "You have taken as much as you can today"
+    }
   }
 }

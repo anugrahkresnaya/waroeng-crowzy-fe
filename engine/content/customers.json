@@ -2,7 +2,7 @@
   {
     "id": "pelajar", "art": "pelajar", "name": { "id": "Pelajar", "en": "Student" },
     "patienceMul": 1.0,
-    "items": { "indomie-goreng": 3, "es-teh": 3, "gorengan": 4, "permen": 3, "kerupuk": 2, "keripik": 2, "teh-botol": 1, "air-mineral": 1, "rokok": 0.3, "es-krim": 3},
+    "items": { "indomie-goreng": 3, "es-teh": 3, "gorengan": 4, "permen": 3, "kerupuk": 2, "keripik": 2, "teh-botol": 1, "air-mineral": 1, "rokok": 0.3, "es-krim": 3, "kue-basah": 3},
     "distinctItems": [1, 3], "maxQty": 2,
     "payment": { "cash": 0.7, "qris": 0.2, "kasbon": 0.1 },
     "tender": "exact-coins", "ageRange": [14, 19],
@@ -11,7 +11,7 @@
   {
     "id": "ojol", "art": "ojol", "name": { "id": "Driver ojol", "en": "Ojol driver" },
     "patienceMul": 0.6,
-    "items": { "kopi-hitam": 3, "kopi-sachet": 2, "air-mineral": 3, "teh-botol": 2, "rokok": 3, "roti": 1, "gorengan": 2, "es-teh": 2, "es-krim": 1},
+    "items": { "kopi-hitam": 3, "kopi-sachet": 2, "air-mineral": 3, "teh-botol": 2, "rokok": 3, "roti": 1, "gorengan": 2, "es-teh": 2, "es-krim": 1, "kue-basah": 1, "nasi-titipan": 2},
     "distinctItems": [1, 2], "maxQty": 2,
     "payment": { "cash": 0.35, "qris": 0.6, "kasbon": 0.05 },
     "tender": "round-up", "ageRange": [20, 45],
@@ -20,7 +20,7 @@
   {
     "id": "langganan", "art": "langganan", "name": { "id": "Langganan", "en": "Regular" },
     "patienceMul": 1.3,
-    "items": { "indomie-goreng": 3, "indomie-kuah": 2, "kopi-hitam": 2, "es-teh": 2, "nasi-bungkus": 2, "telur": 3, "rokok": 2, "gorengan": 2, "kopi-sachet": 1, "sampo-sachet": 1, "kerupuk": 1, "nugget": 1, "bakso-beku": 1},
+    "items": { "indomie-goreng": 3, "indomie-kuah": 2, "kopi-hitam": 2, "es-teh": 2, "nasi-bungkus": 2, "telur": 3, "rokok": 2, "gorengan": 2, "kopi-sachet": 1, "sampo-sachet": 1, "kerupuk": 1, "nugget": 1, "bakso-beku": 1, "kue-basah": 2, "nasi-titipan": 1},
     "distinctItems": [1, 4], "maxQty": 3,
     "payment": { "cash": 0.55, "qris": 0.15, "kasbon": 0.3 },
     "tender": "round-up", "ageRange": [25, 60],
@@ -29,7 +29,7 @@
   {
     "id": "keluarga", "art": "keluarga", "name": { "id": "Keluarga", "en": "Family" },
     "patienceMul": 1.6,
-    "items": { "indomie-goreng": 3, "indomie-kuah": 3, "telur": 4, "nasi-bungkus": 3, "roti": 2, "teh-botol": 2, "air-mineral": 2, "keripik": 2, "permen": 2, "sampo-sachet": 2, "es-krim": 2, "nugget": 2, "sosis": 1, "bakso-beku": 1, "dimsum": 1},
+    "items": { "indomie-goreng": 3, "indomie-kuah": 3, "telur": 4, "nasi-bungkus": 3, "roti": 2, "teh-botol": 2, "air-mineral": 2, "keripik": 2, "permen": 2, "sampo-sachet": 2, "es-krim": 2, "nugget": 2, "sosis": 1, "bakso-beku": 1, "dimsum": 1, "kue-basah": 3, "nasi-titipan": 2},
     "distinctItems": [2, 5], "maxQty": 3,
     "payment": { "cash": 0.6, "qris": 0.3, "kasbon": 0.1 },
     "tender": "round-up", "ageRange": [28, 50],

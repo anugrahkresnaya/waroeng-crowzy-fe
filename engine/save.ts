@@ -7,7 +7,7 @@ import { Game } from './game';
 import { isValidBlockPlan, type Content } from './schema';
 import type { GameState } from './types';
 
-export const SAVE_FORMAT = 8;
+export const SAVE_FORMAT = 9;
 
 const num = z.number();
 const pieces = z.record(z.string(), z.number().int().min(0));
@@ -36,7 +36,7 @@ const stats = z.object({
   itemsSold: z.record(z.string(), num),
   cashRevenue: num, qrisRevenue: num, qrisFees: num, kasbonCredit: num, kasbonRefused: num,
   wrongTrays: num, stockoutDeclines: num, underageSales: num, overChange: num,
-  shortChangeCaught: num, shortChangeUnnoticed: num, shortChangeGained: num, cogs: num, waste: num, cooking: z.object({ kurang: num, pas: num, gosong: num, biasa: num }), obralRevenue: num, givenRep: num, exchangeFees: num, qrisFake: num, qrisRefused: num,
+  shortChangeCaught: num, shortChangeUnnoticed: num, shortChangeGained: num, cogs: num, waste: num, cooking: z.object({ kurang: num, pas: num, gosong: num, biasa: num }), obralRevenue: num, givenRep: num, exchangeFees: num, qrisFake: num, qrisRefused: num, titipanSold: num, titipanReturned: num, titipanPaid: num,
   salesByHour: z.array(num),
   moods: z.object({ happy: num, neutral: num, annoyed: num }),
 });
@@ -104,6 +104,7 @@ const state = z.object({
   goodsCost: z.record(z.string(), num),
   menu: z.record(z.string(), z.object({ price: z.number().int().positive(), portion: z.enum(['small', 'normal', 'large']) })),
   display: z.record(z.string(), z.array(z.object({ qty: num, cookedAt: num, unitCost: num }))),
+  titipan: z.object({ taken: z.record(z.string(), z.number().int().min(0)), owed: num, relation: num }),
   freezer: z.boolean(),
   phone: z.object({ battery: num, powerbank: num.nullable(), data: num }),
   qrisPending: z.array(z.object({ amount: num, fake: z.boolean() })),
@@ -188,6 +189,13 @@ const MIGRATIONS: Record<number, (raw: Record<string, unknown>) => Record<string
     const state = raw.state as Record<string, unknown> | undefined;
     if (!state || typeof state !== 'object') return null;
     return { ...raw, state: { ...state, freezer: false } };
+  },
+  // Format 8 had no titipan: nothing taken, nothing owed, no trust yet.
+  8: (raw) => {
+    const state = raw.state as Record<string, unknown> | undefined;
+    if (!state || typeof state !== 'object') return null;
+    const stats = (state.stats ?? {}) as Record<string, unknown>;
+    return { ...raw, state: { ...state, titipan: { taken: {}, owed: 0, relation: 0 }, stats: { ...stats, titipanSold: 0, titipanReturned: 0, titipanPaid: 0 } } };
   },
 };
 
@@ -320,6 +328,9 @@ export function reconcile(saved: GameState, content: Content): GameState {
   for (const def of b.bills) bills[def.id] = Number.isFinite(s.bills[def.id]?.dueDay) ? s.bills[def.id] : { dueDay: s.day + def.firstDue };
   s.bills = bills;
   if (!Number.isFinite(s.token) || s.token < 0) s.token = b.token.start;
+  for (const id of Object.keys(s.titipan.taken)) if (!content.itemById[id]?.consign) delete s.titipan.taken[id];
+  s.titipan.owed = Math.max(0, s.titipan.owed);
+  s.titipan.relation = Math.min(100, Math.max(0, s.titipan.relation));
   s.phone.battery = Math.min(100, Math.max(0, s.phone.battery));
   s.phone.data = Math.max(0, s.phone.data);
   if (s.phone.powerbank !== null) s.phone.powerbank = Math.min(b.phone.powerbank.capacity, Math.max(0, s.phone.powerbank));

@@ -146,6 +146,20 @@ describe('reading what storage returns', () => {
     }
   });
 
+  it('carries a format 8 save (before titipan) forward with nothing taken or owed', () => {
+    const save = good() as unknown as { state: { titipan?: unknown; stats: Record<string, unknown> } };
+    delete save.state.titipan;
+    delete save.state.stats.titipanSold;
+    delete save.state.stats.titipanReturned;
+    delete save.state.stats.titipanPaid;
+    const parsed = parseSave({ ...save, format: 8 });
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) {
+      expect(parsed.save.state.titipan).toEqual({ taken: {}, owed: 0, relation: 0 });
+      expect(parsed.save.state.stats.titipanSold).toBe(0);
+    }
+  });
+
   it('says a format 1 save (before the market) is outdated', () => {
     expect(parseSave({ ...good(), format: 1 })).toEqual({ ok: false, reason: 'outdated' });
   });
