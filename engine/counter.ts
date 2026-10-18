@@ -4,6 +4,7 @@ import {
   advanceMarketDay, assignStorage, deliverDue, pasarTrip, placeOrder, portionOf, portionsLeft, sellPrice, spoilOvernight, sellOut,
 } from './market';
 import { buyGas } from './gas';
+import { arrivalMul, buyIce, buyLantern, rollOutage, tickPower } from './outage';
 import { dropBurners, plate, startCook, tickBurners, wasteCooked } from './cooking';
 import { clearDisplay, cookBatch, handleLeftover, sweepDisplay } from './kitchen';
 import { freshStats } from './state';
@@ -122,7 +123,7 @@ function maybeSpawn(ctx: Ctx): void {
   const b = content.balance;
   const [lo, hi] = b.arrivalReputationRange;
   const repMul = lo + ((hi - lo) * state.reputation) / 100;
-  const rate = Math.min(1, b.arrivalPerMinute[part] * b.weekdayMul[weekday(state.day)] * repMul);
+  const rate = Math.min(1, b.arrivalPerMinute[part] * b.weekdayMul[weekday(state.day)] * repMul * arrivalMul(state, content));
   if (!rng.chance(rate)) return;
   if (state.line.length >= b.lineCapacity) {
     state.stats.turnedAway++;
@@ -358,6 +359,7 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
       assignStorage(state, content);
       spoilOvernight(ctx);
       assignStorage(state, content);
+      rollOutage(ctx);
       ctx.emit({ type: 'new_day', day: state.day });
       return OK;
     }
@@ -376,6 +378,14 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
     }
     case 'placeOrder': {
       const error = placeOrder(ctx, cmd);
+      return error ? fail(error) : OK;
+    }
+    case 'buyIce': {
+      const error = buyIce(ctx);
+      return error ? fail(error) : OK;
+    }
+    case 'buyLantern': {
+      const error = buyLantern(ctx);
       return error ? fail(error) : OK;
     }
     case 'buyGas': {
@@ -559,6 +569,7 @@ export function advance(ctx: Ctx): void {
   if (state.phase !== 'open') return;
   state.tick++;
   state.minute++;
+  tickPower(ctx);
   deliverDue(ctx);
   sweepDisplay(ctx);
   tickBurners(ctx);

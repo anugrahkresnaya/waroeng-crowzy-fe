@@ -1,5 +1,6 @@
 // The kitchen: batch dishes are cooked ahead onto the display, sold from there, and what is left at night is dealt with.
 import { gasShort } from './gas';
+import { iceMissing } from './outage';
 import { consume, dishNeeds, displayPortions, ingredientQty, sellPrice, takeFromDisplay } from './market';
 import { addPieces, exactPieces } from './money';
 import type { Rng } from './rng';
@@ -79,6 +80,7 @@ export function cookBatch(ctx: KitchenCtx, cmd: Extract<Command, { type: 'cookBa
     if (state.busyUntil > 0) return 'busy';
     if (!state.shelfReady) return 'shelves_not_ready';
   }
+  if (iceMissing(state, item)) return 'no_ice';
   if (gasShort(state, content, item, item.batch.portions * cmd.batches)) return 'out_of_gas';
   if (batchesPossible(state, content, item) < cmd.batches) return 'missing_ingredients';
   const portions = item.batch.portions * cmd.batches;

@@ -136,7 +136,10 @@
       "no_such_burner": "Kompor tidak ada",
       "already_cooked": "Sudah dimasak",
       "auto_cooking": "Masak otomatis, tunggu selesai",
-      "out_of_gas": "Gas habis, beli tabung di kompor"
+      "out_of_gas": "Gas habis, beli tabung di kompor",
+      "no_ice": "Listrik padam, es batu tidak ada. Beli dulu",
+      "no_outage": "Hari ini listrik tidak padam",
+      "already_owned": "Sudah punya"
     },
     "blockDone": {
       "pagi": "Blok pagi selesai{{extra}}",
@@ -166,7 +169,12 @@
       "gosong": "{{item}} gosong"
     },
     "burnerWasted": "{{item}} di kompor terbuang",
-    "gasBought": "Beli tabung gas: {{price}}"
+    "gasBought": "Beli tabung gas: {{price}}",
+    "outageNotice": "Kabar PLN: listrik padam {{from}} sampai {{until}}",
+    "powerOut": "Listrik padam",
+    "powerBack": "Listrik menyala lagi",
+    "iceBought": "Beli es batu: {{price}}",
+    "lanternBought": "Beli lentera: {{price}}"
   },
   "title": {
     "eyebrow": "OFFLINE · 1 PEMAIN",
@@ -582,7 +590,8 @@
       "busy": "Sedang memasak",
       "shelves_not_ready": "Isi rak dulu",
       "wrong_phase": "Belum bisa sekarang",
-      "out_of_gas": "Gas habis"
+      "out_of_gas": "Gas habis",
+      "no_ice": "Listrik padam, tidak ada es batu"
     },
     "needs": "Bahan per adonan",
     "orderDishes": "Dimasak saat dipesan",
@@ -640,5 +649,21 @@
     "gas": "Gas: {{tanks}} tabung",
     "gasEmpty": "Gas habis",
     "buyGas": "Beli tabung · {{price}} · {{minutes}} mnt"
+  },
+  "outage": {
+    "now": "Listrik padam sampai {{until}}",
+    "today": "Listrik padam hari ini, {{from}} sampai {{until}}",
+    "tomorrow": "Kabar: besok listrik padam, {{from}} sampai {{until}}",
+    "fridge": "Kulkas tidak tahan selama itu. Beli es batu atau siap-siap busuk malam ini.",
+    "icy": "Es batu sudah dibeli: kulkas bertahan dan minuman dingin jalan.",
+    "buyIce": "Beli es batu · {{price}}",
+    "buyLantern": "Beli lentera · {{price}}",
+    "lantern": "Lentera siap: pelanggan malam tetap datang.",
+    "why": {
+      "wrong_phase": "Belum bisa sekarang",
+      "busy": "Sedang sibuk",
+      "no_time": "Waktu sebelum buka tidak cukup",
+      "insufficient_funds": "Saldo bank tidak cukup"
+    }
   }
 }

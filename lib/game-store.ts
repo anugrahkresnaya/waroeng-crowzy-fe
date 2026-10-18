@@ -2,6 +2,7 @@ import { create } from "zustand";
 import {
   Game,
   content,
+  formatClock,
   restoreGame,
   type Command,
   type CommandResult,
@@ -75,6 +76,16 @@ function toastFor(event: GameEvent): Omit<Toast, "id"> | null {
       return { key: "wentStale", vars: { item: itemName(event.item), portions: event.portions }, tone: "bad" };
     case "plated":
       return { key: `plated.${event.quality}`, vars: { item: itemName(event.item) }, tone: event.quality === "pas" ? "good" : event.quality === "biasa" ? "info" : "bad" };
+    case "outage_notice":
+      return { key: "outageNotice", vars: { from: formatClock(event.from), until: formatClock(Math.min(1440, event.from + event.hours * 60)) }, tone: "bad" };
+    case "power_out":
+      return { key: "powerOut", tone: "bad" };
+    case "power_back":
+      return { key: "powerBack", tone: "good" };
+    case "ice_bought":
+      return { key: "iceBought", vars: { price: rp(event.price) }, tone: "good" };
+    case "lantern_bought":
+      return { key: "lanternBought", vars: { price: rp(event.price) }, tone: "good" };
     case "gas_bought":
       return { key: "gasBought", vars: { price: rp(event.price) }, tone: "good" };
     case "burner_wasted":

@@ -66,6 +66,8 @@ export function createInitialState(content: Content, seed: number, day = 0): Gam
     goodsCost: {},
     menu: Object.fromEntries(content.items.filter((i) => i.kind === 'dish').map((i) => [i.id, { price: i.price, portion: 'normal' as const }])),
     display: {},
+    outage: null,
+    lantern: false,
     burners: Array.from({ length: content.balance.burners }, () => null),
     skill: {},
     orders: [],

@@ -187,6 +187,15 @@ export interface Stats {
   moods: Record<Mood, number>;
 }
 
+/** A power cut: the day it happens, the minute it starts, how many hours, whether the player was warned, and whether they bought ice. */
+export interface Outage {
+  day: number;
+  from: number;
+  hours: number;
+  known: boolean;
+  ice: boolean;
+}
+
 export interface GameState {
   /** Bump when the shape changes, then add a migration. */
   version: 1;
@@ -225,6 +234,10 @@ export interface GameState {
   menu: Record<string, MenuEntry>;
   /** Cooked portions on the display, by batch dish id, oldest first. */
   display: Record<string, DisplayBatch[]>;
+  /** The power cut that is coming or happening, if any. */
+  outage: Outage | null;
+  /** Whether the player owns a lantern. */
+  lantern: boolean;
   /** What is on the stove, one slot per burner (null when free). */
   burners: Array<Burner | null>;
   /** Perfect plates so far for each cooked-to-order dish. Practice widens the just-right window. */
@@ -254,6 +267,8 @@ export type Command =
   | { type: 'startCook'; item: string; auto: boolean }
   | { type: 'plate'; burner: number }
   | { type: 'buyGas' }
+  | { type: 'buyIce' }
+  | { type: 'buyLantern' }
   | { type: 'handleLeftover'; item: string; choice: LeftoverChoice }
   | { type: 'placeOrder'; supplier: string; lines: Array<{ key: string; qty: number }>; express: boolean }
   | { type: 'pasarTrip'; lines: Array<{ key: string; qty: number }> }
@@ -292,6 +307,9 @@ export type CommandError =
   | 'unknown_item'
   | 'out_of_stock'
   | 'out_of_gas'
+  | 'no_ice'
+  | 'no_outage'
+  | 'already_owned'
   | 'not_in_tray'
   | 'not_in_order'
   | 'already_checked'
@@ -349,6 +367,11 @@ export type GameEvent =
   | { type: 'plated'; item: string; quality: Quality }
   | { type: 'burner_wasted'; item: string }
   | { type: 'gas_bought'; price: number }
+  | { type: 'outage_notice'; from: number; hours: number }
+  | { type: 'power_out'; hours: number }
+  | { type: 'power_back' }
+  | { type: 'ice_bought'; price: number }
+  | { type: 'lantern_bought'; price: number }
   | { type: 'went_stale'; item: string; portions: number }
   | { type: 'leftover_handled'; item: string; choice: LeftoverChoice; portions: number }
   | { type: 'news'; event: string }

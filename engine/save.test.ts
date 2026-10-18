@@ -101,6 +101,18 @@ describe('reading what storage returns', () => {
     }
   });
 
+  it('carries a format 4 save (before power cuts) forward with none coming and no lantern', () => {
+    const save = good() as unknown as { state: { outage?: unknown; lantern?: unknown } };
+    delete save.state.outage;
+    delete save.state.lantern;
+    const parsed = parseSave({ ...save, format: 4 });
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) {
+      expect(parsed.save.state.outage).toBeNull();
+      expect(parsed.save.state.lantern).toBe(false);
+    }
+  });
+
   it('says a format 1 save (before the market) is outdated', () => {
     expect(parseSave({ ...good(), format: 1 })).toEqual({ ok: false, reason: 'outdated' });
   });

@@ -10,6 +10,7 @@ export {
   sellPrice, standardArrivalDay,
 } from './market';
 export { autoMinutes, justRight, practiceBonus, qualityAt, stillToCook } from './cooking';
+export { arrivalMul, fridgeFailed, iceMissing, outageEnd, outageToday, powerOff } from './outage';
 export { gasFlames, gasPrice, gasShort, gasTanks } from './gas';
 export { absoluteMinute, batchesPossible } from './kitchen';
 export { goodKey } from './schema';

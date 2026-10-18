@@ -6,7 +6,7 @@ import { TopBar } from "@/components/top-bar";
 import { Button, Card, Meter, Pill } from "@/components/ui";
 import { WarungNav } from "@/components/warung-nav";
 import {
-  absoluteMinute, batchesPossible, content, costPerPortion, dishNeeds, displayPortions, gasPrice, gasShort, gasTanks, type CommandError, type Item, type Phase,
+  absoluteMinute, batchesPossible, content, costPerPortion, dishNeeds, displayPortions, gasPrice, gasShort, gasTanks, iceMissing, type CommandError, type Item, type Phase,
 } from "@/engine";
 import { rp } from "@/lib/format";
 import { useGame } from "@/lib/game-store";
@@ -36,6 +36,7 @@ export default function DapurPage() {
     if (state.phase === "idle" && item.batch!.minutes > left) return "no_time";
     if (state.phase === "open" && state.busyUntil > 0) return "busy";
     if (state.phase === "open" && !state.shelfReady) return "shelves_not_ready";
+    if (iceMissing(state, item)) return "no_ice";
     if (gasShort(state, content, item, item.batch!.portions)) return "out_of_gas";
     if (batchesPossible(state, content, item) < 1) return "missing_ingredients";
     return null;

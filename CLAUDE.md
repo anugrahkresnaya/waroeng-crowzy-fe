@@ -69,6 +69,13 @@ Framework-free, deterministic cashier-counter simulation. ESLint (`eslint.config
 - `buyGas` buys one tank next door: `balance.gas.nearbyMarkup` times the market price, paid from the bank, in the pantry at once. It costs `nearbyMinutes` of pre-open time, or blocks the counter (`busyUntil`) while open. No new saved state.
 - UI: a gas card on `/dapur`, and a gas line with a buy button in the stove panel when below 0.1 tank. The live counter has no link to `/dapur`, so anything needed mid-service must live on the counter itself.
 
+## Power cuts (`engine/outage.ts`)
+
+- `state.outage` is one cut: its `day`, start minute `from`, `hours` (capped at midnight), `known` (announced) and `ice`. `rollOutage` runs in `nextDay` after spoilage: a cut that passed is cleared, and if none is pending one may be rolled from `balance.outage.fromDay` on. With notice it is set for tomorrow and announced (`outage_notice`); without, it hits today. `tickPower` emits `power_out` / `power_back`. `state.lantern` is owned for good. Save format 5.
+- Effects: no dish that uses `es-batu` can be cooked while the power is out and no ice was bought (`no_ice`); from `darkFrom` arrivals drop to `lantern.darkMul`, or `lanternMul` with a lantern (`arrivalMul`). If a cut is longer than `fridgeHoldHours` (plus `ice.holdHours` with ice), `spoilOvernight` ages fridge lots at room-temperature life that night, and the morning spoilage report shows the loss.
+- `buyIce` (only on the cut's day) and `buyLantern` are errands: pre-open minutes, a blocked counter while open, free at night. Paid from the bank. `components/outage-banner.tsx` sits in the `(game)` layout and holds both buttons.
+- Not built yet (PRD): electricity token and bills, phone battery and mobile data, QRIS failing, selling pantry stock cheaply, helping a neighbour, generator, freezer, and the chapter 2 scripted first cut.
+
 ## Gotchas
 
 - This is not the Next.js in your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing Next code (see AGENTS.md above).

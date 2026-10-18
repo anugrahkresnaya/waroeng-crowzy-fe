@@ -236,6 +236,25 @@ export const balanceSchema = z.object({
   }),
   /** Burners on the stove: how many dishes can be cooked at once. */
   burners: positiveInt,
+  /** Power cuts: when they start, how long, what a closed fridge survives, and what ice and a lantern do about it. */
+  outage: z.object({
+    fromDay: z.number().int().min(0),
+    chancePerDay: z.number().min(0).max(1),
+    /** Chance the cut is announced the day before. */
+    noticeChance: z.number().min(0).max(1),
+    /** Minute of the day a cut can start, and how many hours it can last. */
+    starts: z.array(z.number().int().min(0).max(1439)).min(1),
+    hours: z.array(positiveInt).min(1),
+    /** Hours a closed fridge keeps its contents cold. A longer cut spoils what it holds. */
+    fridgeHoldHours: positiveInt,
+    /** From this minute on, a cut means darkness. */
+    darkFrom: z.number().int().min(0).max(1439),
+    /** Minutes away from the counter to fetch ice or a lantern. */
+    errandMinutes: positiveInt,
+    ice: z.object({ price: positiveInt, holdHours: positiveInt }),
+    /** Arrival multipliers in the dark without and with a lantern. */
+    lantern: z.object({ price: positiveInt, darkMul: z.number().min(0).max(1), lanternMul: z.number().min(0).max(1) }),
+  }),
   /** Buying a tank from a neighbour when the stove runs dry: price multiplier on the market price, and the minutes it takes. */
   gas: z.object({ nearbyMarkup: z.number().min(1), nearbyMinutes: positiveInt }),
   cooking: z.object({

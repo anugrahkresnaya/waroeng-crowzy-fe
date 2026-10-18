@@ -7,7 +7,7 @@ import { Game } from './game';
 import { isValidBlockPlan, type Content } from './schema';
 import type { GameState } from './types';
 
-export const SAVE_FORMAT = 4;
+export const SAVE_FORMAT = 5;
 
 const num = z.number();
 const pieces = z.record(z.string(), z.number().int().min(0));
@@ -104,6 +104,8 @@ const state = z.object({
   goodsCost: z.record(z.string(), num),
   menu: z.record(z.string(), z.object({ price: z.number().int().positive(), portion: z.enum(['small', 'normal', 'large']) })),
   display: z.record(z.string(), z.array(z.object({ qty: num, cookedAt: num, unitCost: num }))),
+  outage: z.object({ day: num, from: num, hours: num, known: z.boolean(), ice: z.boolean() }).nullable(),
+  lantern: z.boolean(),
   burners: z.array(z.object({ item: z.string(), customerId: num, startedAt: num, auto: z.boolean(), cost: num }).nullable()),
   skill: z.record(z.string(), num),
   orders: z.array(order),
@@ -152,6 +154,12 @@ const MIGRATIONS: Record<number, (raw: Record<string, unknown>) => Record<string
       ...raw,
       state: { ...state, burners: [null, null], skill: {}, line, stats: { ...stats, cooking: { kurang: 0, pas: 0, gosong: 0, biasa: 0 } } },
     };
+  },
+  // Format 4 had no power cuts: none coming, and no lantern.
+  4: (raw) => {
+    const state = raw.state as Record<string, unknown> | undefined;
+    if (!state || typeof state !== 'object') return null;
+    return { ...raw, state: { ...state, outage: null, lantern: false } };
   },
 };
 

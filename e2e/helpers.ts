@@ -186,6 +186,7 @@ export async function stateOf(page: Page) {
       stats: { cogs: number; served: number; waste: number; cooking: Record<string, number>; moods: Record<string, number> };
       burners: Array<{ item: string } | null>;
       preOpenUsed: number;
+      lantern: boolean;
     };
   });
 }

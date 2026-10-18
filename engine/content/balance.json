@@ -158,6 +158,18 @@
     "giveRepMax": 1.5
   },
   "burners": 2,
+  "outage": {
+    "fromDay": 5,
+    "chancePerDay": 0.06,
+    "noticeChance": 0.5,
+    "starts": [480, 660, 900, 1080],
+    "hours": [2, 3, 5, 8],
+    "fridgeHoldHours": 4,
+    "darkFrom": 1080,
+    "errandMinutes": 10,
+    "ice": { "price": 15000, "holdHours": 4 },
+    "lantern": { "price": 45000, "darkMul": 0.5, "lanternMul": 0.85 }
+  },
   "gas": {
     "nearbyMarkup": 1.3,
     "nearbyMinutes": 15

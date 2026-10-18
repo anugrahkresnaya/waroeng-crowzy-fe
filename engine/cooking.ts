@@ -1,6 +1,7 @@
 // Cooking to order: a dish goes on a burner and the player plates it when it is done.
 // The burner runs on game time, so plating at the same tick always gives the same result and a run replays exactly.
 import { gasShort } from './gas';
+import { iceMissing } from './outage';
 import { consume, dishNeeds, portionsLeft } from './market';
 import type { Content, Item } from './schema';
 import type { Burner, Command, CommandError, Customer, GameEvent, GameState, Quality } from './types';
@@ -52,6 +53,7 @@ export function startCook(ctx: CookCtx, c: Customer, cmd: Extract<Command, { typ
   if (stillToCook(state, c, item.id) <= 0) return 'already_cooked';
   const slot = state.burners.findIndex((b) => b === null);
   if (slot < 0) return 'no_burner';
+  if (iceMissing(state, item)) return 'no_ice';
   if (gasShort(state, content, item)) return 'out_of_gas';
   if (portionsLeft(state, content, item.id) <= 0) return 'out_of_stock';
   let cost = 0;

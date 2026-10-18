@@ -1,6 +1,7 @@
 // The market: simulated prices, supplier orders and delivery, the pantry (with spoilage and a small
 // fridge), pasar trips, and what each dish costs to make. Time and chance come only from the game.
 import { addDays, inRange } from './calendar';
+import { fridgeSpoilsAsRoom } from './outage';
 import type { Rng } from './rng';
 import { goodKey, type Content, type Item, type Portion, type Product } from './schema';
 import type { CommandError, GameEvent, GameState, Lot, MarketState, Order, PurchaseLine, Spoiled } from './types';
@@ -153,9 +154,10 @@ export function fridgeUsed(state: GameState, content: Content): number {
 export function spoilOvernight(ctx: MarketCtx): void {
   const { state, content } = ctx;
   const gone = new Map<string, Spoiled>();
+  const fridgeFailed = fridgeSpoilsAsRoom(state, content);
   state.pantry = state.pantry.filter((lot) => {
     const ing = content.ingredientById[lot.ingredient];
-    const life = ing.life[lot.stored];
+    const life = ing.life[lot.stored === 'fridge' && fridgeFailed ? 'room' : lot.stored];
     if (life === null || state.day - lot.bought <= life) return true;
     const entry = gone.get(lot.ingredient) ?? { ingredient: lot.ingredient, qty: 0, value: 0 };
     entry.qty += lot.qty / ing.unitSize;
