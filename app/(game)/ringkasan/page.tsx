@@ -128,6 +128,16 @@ export default function RingkasanPage() {
         )}
       </Card>
 
+      {(s.qrisPending > 0 || s.qrisFake > 0 || s.qrisRefused > 0) && (
+        <Card className="p-3" data-testid="qris-summary">
+          <div className="flex flex-col gap-0.5 text-xs">
+            {s.qrisPending > 0 && <span className="font-bold text-warn">{t("summary.qrisPending", { amount: rp(s.qrisPending) })}</span>}
+            {s.qrisFake > 0 && <span className="font-bold text-bad">{t("summary.qrisFake", { amount: rp(s.qrisFake) })}</span>}
+            {s.qrisRefused > 0 && <span className="text-muted">{t("summary.qrisRefused", { n: s.qrisRefused })}</span>}
+          </div>
+        </Card>
+      )}
+
       {Object.values(state.stats.cooking).some((n) => n > 0) && (
         <Card className="p-3" data-testid="cooking-summary">
           <div className="text-xs font-bold">{t("summary.cooking")}</div>

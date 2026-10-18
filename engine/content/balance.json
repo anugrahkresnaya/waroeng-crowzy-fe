@@ -158,6 +158,21 @@
     "giveRepMax": 1.5
   },
   "burners": 2,
+  "phone": {
+    "start": { "battery": 100, "data": 1000 },
+    "drainPerMinute": 0.2,
+    "chargePerMinute": 0.6,
+    "actionCost": 0.3,
+    "lowBattery": 20,
+    "lowData": 100,
+    "dataCosts": { "order": 40, "qris": 2 },
+    "dataPacks": [
+      { "mb": 500, "price": 10000 },
+      { "mb": 2000, "price": 30000 }
+    ],
+    "powerbank": { "price": 90000, "capacity": 60 },
+    "signal": { "backupMinutes": 180, "slowMinutes": 120, "slowPatience": 4, "fakeChance": 0.25 }
+  },
   "token": {
     "start": 60000,
     "openPerMinute": 10,

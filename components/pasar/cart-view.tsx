@@ -3,7 +3,7 @@
 import { useTranslation } from "react-i18next";
 import { Art } from "@/components/art";
 import { Button, Card, Chip } from "@/components/ui";
-import { content, onPasarTrip, pasarQuote, quoteOrder } from "@/engine";
+import { content, onPasarTrip, pasarQuote, phoneGate, quoteOrder } from "@/engine";
 import { arrivalIfPlacedNow, type Arrival } from "@/lib/arrival";
 import { cartLines, useCart } from "@/lib/cart-store";
 import { rp } from "@/lib/format";
@@ -95,6 +95,7 @@ export function CartView({ onDone }: { onDone: () => void }) {
   const belowMin = q.subtotal < supplier.minOrder;
   const enough = state.bank >= q.total;
   const arrival = arrivalIfPlacedNow(state, content, cart.express);
+  const gate = phoneGate(state, content, content.balance.phone.dataCosts.order);
 
   return (
     <>
@@ -151,9 +152,10 @@ export function CartView({ onDone }: { onDone: () => void }) {
 
       {belowMin && <p className="text-xs text-bad" role="alert">{t("pasar.belowMin", { min: rp(supplier.minOrder) })}</p>}
       {!belowMin && !enough && <p className="text-xs text-bad" role="alert">{t("pasar.noFunds")}</p>}
+      {gate && <p className="text-xs text-bad" role="alert" data-testid="phone-gate">{t(gate === "phone_dead" ? "pasar.noPhone" : "pasar.noData")}</p>}
       <Button
         data-testid="pay-order"
-        disabled={belowMin || !enough}
+        disabled={belowMin || !enough || gate !== null}
         onClick={() => {
           const r = send({ type: "placeOrder", supplier: cart.supplier, lines, express: cart.express });
           if (r.ok) {

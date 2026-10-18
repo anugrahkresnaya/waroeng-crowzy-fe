@@ -236,6 +236,30 @@ export const balanceSchema = z.object({
   }),
   /** Burners on the stove: how many dishes can be cooked at once. */
   burners: positiveInt,
+  /** The phone: battery that only drains without power, data for apps and QRIS checks, and QRIS signal during a PLN cut. */
+  phone: z.object({
+    start: z.object({ battery: z.number().min(0).max(100), data: z.number().min(0) }),
+    /** Percent per minute while the power is out, and while it is on. */
+    drainPerMinute: z.number().min(0),
+    chargePerMinute: z.number().min(0),
+    /** Extra percent each phone action costs while the power is out. */
+    actionCost: z.number().min(0),
+    lowBattery: z.number().min(0).max(100),
+    lowData: z.number().min(0),
+    /** Megabytes an order in the market app and a QRIS check use. */
+    dataCosts: z.object({ order: z.number().min(0), qris: z.number().min(0) }),
+    dataPacks: z.array(z.object({ mb: positiveInt, price: positiveInt })).min(1),
+    powerbank: z.object({ price: positiveInt, capacity: positiveInt }),
+    signal: z.object({
+      /** Minutes into a PLN cut that the towers' batteries keep QRIS normal, then slow, then it is down. */
+      backupMinutes: z.number().min(0),
+      slowMinutes: z.number().min(0),
+      /** Patience a customer loses while a slow QRIS goes through. */
+      slowPatience: z.number().min(0),
+      /** Chance that a "success" screen shown while payments cannot be checked is fake. */
+      fakeChance: z.number().min(0).max(1),
+    }),
+  }),
   /** The prepaid electricity token: credit in rupiah, burned per open minute and per night, topped up in packs for a fee. */
   token: z.object({
     start: z.number().int().min(0),

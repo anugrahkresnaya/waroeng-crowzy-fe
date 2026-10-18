@@ -356,6 +356,7 @@ describe('delivery', () => {
         r.market.events.find((e) => e.id === 'flood')!.lateBoost = 1;
       });
       if (flood) g.state.market.active.push({ id: 'flood', start: 0, end: 9 });
+      g.state.phone.data = 1e6; // thirty orders in a row would use up the data package
       for (let i = 0; i < 30; i++) g.dispatch({ type: 'placeOrder', supplier: 'pak-slamet', lines: [{ key: 'tisu', qty: 1 }], express: false });
       passDay(g);
       return g.state.orders.filter((o) => o.late).length;

@@ -183,11 +183,13 @@ export async function stateOf(page: Page) {
       orders: Array<{ id: number; status: string; late: boolean; express: boolean; total: number; supplier: string; arriveDay: number }>;
       menu: Record<string, { price: number; portion: string }>;
       market: { prices: Record<string, number>; history: Record<string, number[]>; news: unknown[]; active: unknown[] };
-      stats: { cogs: number; served: number; waste: number; cooking: Record<string, number>; moods: Record<string, number> };
+      stats: { qrisRefused: number; qrisFake: number; cogs: number; served: number; waste: number; cooking: Record<string, number>; moods: Record<string, number> };
       burners: Array<{ item: string } | null>;
       preOpenUsed: number;
       lantern: boolean;
       token: number;
+      phone: { battery: number; powerbank: number | null; data: number };
+      qrisPending: Array<{ amount: number; fake: boolean }>;
       bills: Record<string, { dueDay: number }>;
     };
   });

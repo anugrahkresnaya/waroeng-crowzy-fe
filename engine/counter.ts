@@ -5,6 +5,7 @@ import {
 } from './market';
 import { buyGas } from './gas';
 import { payBill, tickBills } from './bills';
+import { buyData, buyPowerbank, phoneGate, phoneNight, qrisCheck, tickPhone, spendPhone } from './phone';
 import { arrivalMul, buyIce, buyLantern, buyToken, rollOutage, tickPower, tickToken, tokenNewDay, tokenOvernight } from './outage';
 import { dropBurners, plate, startCook, tickBurners, wasteCooked } from './cooking';
 import { clearDisplay, cookBatch, handleLeftover, sweepDisplay } from './kitchen';
@@ -353,6 +354,7 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
       state.preOpenUsed = 0;
       state.line = [];
       clearDisplay(ctx); // nothing cooked yesterday is sold today
+      phoneNight(ctx);
       state.stats = freshStats(content);
       // The overnight tick: prices move, due orders arrive, and what is too old is thrown out.
       advanceMarketDay(ctx);
@@ -381,7 +383,18 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
       return error ? fail(error) : OK;
     }
     case 'placeOrder': {
+      const gate = phoneGate(state, content, b.phone.dataCosts.order);
+      if (gate) return fail(gate);
       const error = placeOrder(ctx, cmd);
+      if (!error) spendPhone(ctx, b.phone.dataCosts.order);
+      return error ? fail(error) : OK;
+    }
+    case 'buyData': {
+      const error = buyData(ctx, cmd);
+      return error ? fail(error) : OK;
+    }
+    case 'buyPowerbank': {
+      const error = buyPowerbank(ctx);
       return error ? fail(error) : OK;
     }
     case 'buyToken': {
@@ -518,11 +531,35 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
     case 'confirmQris': {
       if (c.stage !== 'paying') return fail('wrong_stage');
       if (c.method !== 'qris') return fail('wrong_method');
+      const check = qrisCheck(state, content);
+      if (!check.ok) return fail('cannot_verify');
+      // A slow signal keeps the customer waiting while the payment goes through.
+      if (check.signal === 'slow') c.patience = Math.max(1, c.patience - b.phone.signal.slowPatience);
+      spendPhone(ctx, b.phone.dataCosts.qris);
       const fee = Math.ceil((c.bill * b.qrisFeeBp) / 10000);
       state.bank += c.bill - fee;
       state.stats.qrisRevenue += c.bill - fee;
       state.stats.qrisFees += fee;
       completeSale(ctx, c);
+      return OK;
+    }
+    case 'trustQris': {
+      if (c.stage !== 'paying') return fail('wrong_stage');
+      if (c.method !== 'qris') return fail('wrong_method');
+      if (qrisCheck(state, content).ok) return fail('can_verify');
+      // The customer's screen says "success"; whether the money is real is only known once the phone can check.
+      state.qrisPending.push({ amount: c.bill, fake: ctx.rng.chance(b.phone.signal.fakeChance) });
+      ctx.emit({ type: 'qris_trusted', customerId: c.id });
+      completeSale(ctx, c);
+      return OK;
+    }
+    case 'refuseQris': {
+      if (c.stage !== 'paying') return fail('wrong_stage');
+      if (c.method !== 'qris') return fail('wrong_method');
+      if (qrisCheck(state, content).ok) return fail('can_verify');
+      state.stats.qrisRefused++;
+      changeReputation(ctx, b.reputation.walkaway);
+      walkAway(ctx, c, 'qris_refused');
       return OK;
     }
     case 'grantKasbon': {
@@ -583,6 +620,7 @@ export function advance(ctx: Ctx): void {
   state.minute++;
   tickPower(ctx);
   tickToken(ctx);
+  tickPhone(ctx);
   deliverDue(ctx);
   sweepDisplay(ctx);
   tickBurners(ctx);

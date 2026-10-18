@@ -70,7 +70,17 @@
   "qris": {
     "scan": "Customer scans QRIS",
     "note": "{{net}} goes to the bank after a {{fee}} fee. Not in the drawer.",
-    "confirm": "Confirm QRIS"
+    "confirm": "Confirm QRIS",
+    "slow": "The signal is slow. This will take a moment.",
+    "unverified": "Cannot check the payment ({{reason}}). Their screen says it worked.",
+    "trust": "Trust them",
+    "refuse": "Refuse",
+    "reason": {
+      "signal": "no signal",
+      "data": "no data",
+      "battery": "dead phone"
+    },
+    "trustHint": "If it was fake you only find out when the phone can check again."
   },
   "kasbon": {
     "ask": "{{who}} asks for credit",
@@ -87,7 +97,8 @@
     "walkaway": {
       "patience": "A customer left after waiting too long",
       "empty_order": "The customer left",
-      "kasbon_refused": "Credit refused, the customer left"
+      "kasbon_refused": "Credit refused, the customer left",
+      "qris_refused": "Payment could not be checked, the customer left"
     },
     "orderMismatch": "That is not the order",
     "shortChangeCaught": "Caught short-changing!",
@@ -141,7 +152,11 @@
       "no_outage": "There is no power cut today",
       "already_owned": "You already have that",
       "unknown_bill": "Unknown bill",
-      "not_due_yet": "Not due yet"
+      "not_due_yet": "Not due yet",
+      "cannot_verify": "Cannot check this payment",
+      "can_verify": "The payment can be checked",
+      "phone_dead": "The phone is dead",
+      "no_data": "No mobile data"
     },
     "blockDone": {
       "pagi": "Morning block done{{extra}}",
@@ -187,7 +202,14 @@
       "today": "today",
       "tomorrow": "tomorrow",
       "soon": "in {{n}} days"
-    }
+    },
+    "qrisTrusted": "Took their word for the QRIS payment",
+    "qrisSettled": "Bank statement: {{received}} arrived, {{lost}} never came",
+    "qrisSettledOk": "QRIS checked: {{received}} arrived",
+    "phoneLow": "Phone battery low: {{battery}}%",
+    "dataLow": "Mobile data is almost gone: {{mb}} MB left",
+    "dataBought": "Mobile data +{{mb}} MB (paid {{price}} cash)",
+    "powerbankBought": "Bought a powerbank: {{price}}"
   },
   "title": {
     "eyebrow": "OFFLINE · 1 PLAYER",
@@ -293,7 +315,10 @@
     "profit": "Net profit",
     "profitSub": "After {{cost}} of ingredients and {{fees}} of QRIS fees",
     "cooking": "Cooking today",
-    "cookingLine": "Just right {{pas}} · Auto {{biasa}} · Undercooked {{kurang}} · Burnt {{gosong}}"
+    "cookingLine": "Just right {{pas}} · Auto {{biasa}} · Undercooked {{kurang}} · Burnt {{gosong}}",
+    "qrisPending": "QRIS taken on trust, not checked yet: {{amount}}",
+    "qrisFake": "Fake payments found: {{amount}}",
+    "qrisRefused": "QRIS refused: {{n}}"
   },
   "phone": {
     "eyebrow": "PHONE",
@@ -308,7 +333,22 @@
       "buku-kas": "Ledger",
       "layanan": "Services",
       "berita": "News"
-    }
+    },
+    "statusTitle": "Phone status",
+    "battery": "Battery {{pct}}%",
+    "powerbank": "Powerbank {{pct}}%",
+    "noPowerbank": "No powerbank",
+    "data": "{{mb}} MB of data",
+    "signal": {
+      "good": "Signal OK",
+      "slow": "Signal slow",
+      "down": "No signal"
+    },
+    "charging": "Charging",
+    "help": "The battery only drains while the power is out. Data is used by the market app and by checking QRIS. Data packs are paid in cash from the drawer.",
+    "buyData": "+{{mb}} MB · {{price}} cash",
+    "buyPowerbank": "Buy a powerbank · {{price}}",
+    "ownPowerbank": "You have a powerbank"
   },
   "stat": {
     "mood": "Mood",
@@ -557,7 +597,9 @@
       "flood": "Flooding where the suppliers are. Greens go up and deliveries may run late, {{starts}}.",
       "lpg-shortage": "3 kg LPG is scarce at the retailers. The price rises, {{starts}}.",
       "market-operation": "A government market operation. Rice and cooking oil get cheaper, {{starts}}."
-    }
+    },
+    "noPhone": "The phone is dead. Charge it or use a powerbank.",
+    "noData": "Out of mobile data. Top up on the phone screen."
   },
   "news": {
     "title": "News",
@@ -698,6 +740,10 @@
     },
     "tokenEmpty": "The electricity token ran out. Power is off",
     "tokenLow": "Electricity token is low: {{token}}",
-    "buyToken": "Top up {{amount}} · fee {{fee}}"
+    "buyToken": "Top up {{amount}} · fee {{fee}}",
+    "dataLow": "Mobile data is almost gone: {{mb}} MB",
+    "buyData": "Buy {{mb}} MB · {{price}} cash",
+    "phoneLow": "Phone battery low: {{pct}}%",
+    "buyPowerbank": "Buy a powerbank · {{price}}"
   }
 }

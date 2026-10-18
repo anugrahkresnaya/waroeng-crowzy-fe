@@ -178,6 +178,10 @@ export interface Stats {
   cooking: Record<Quality, number>;
   /** Money from selling leftovers cheaply (obral). */
   obralRevenue: number;
+  /** Rupiah lost today to fake QRIS "success" screens, found out once the phone could check. */
+  qrisFake: number;
+  /** QRIS payments refused today because they could not be checked. */
+  qrisRefused: number;
   /** Reputation gained today by giving food away. */
   givenRep: number;
   /** Rupiah paid as fee when exchanging big notes for small ones. */
@@ -199,6 +203,19 @@ export interface Outage {
 /** A recurring bill the player owes: the day it is due. */
 export interface Bill {
   dueDay: number;
+}
+
+/** The player's phone: battery in percent, a powerbank charge if they own one, and mobile data in megabytes. */
+export interface Phone {
+  battery: number;
+  powerbank: number | null;
+  data: number;
+}
+
+/** A QRIS payment taken on trust while it could not be checked. `fake` is hidden until the signal is back. */
+export interface PendingQris {
+  amount: number;
+  fake: boolean;
 }
 
 export interface GameState {
@@ -239,6 +256,9 @@ export interface GameState {
   menu: Record<string, MenuEntry>;
   /** Cooked portions on the display, by batch dish id, oldest first. */
   display: Record<string, DisplayBatch[]>;
+  phone: Phone;
+  /** QRIS payments accepted on trust, settled when the phone can check them again. */
+  qrisPending: PendingQris[];
   /** Prepaid electricity credit in rupiah. At zero the power is out until it is topped up. */
   token: number;
   /** Minutes today the token was empty while the shop was open (plus the night, if it was empty at bedtime). */
@@ -281,6 +301,10 @@ export type Command =
   | { type: 'buyIce' }
   | { type: 'buyLantern' }
   | { type: 'buyToken'; amount: number }
+  | { type: 'trustQris' }
+  | { type: 'refuseQris' }
+  | { type: 'buyData'; pack: number }
+  | { type: 'buyPowerbank' }
   | { type: 'payBill'; id: string }
   | { type: 'handleLeftover'; item: string; choice: LeftoverChoice }
   | { type: 'placeOrder'; supplier: string; lines: Array<{ key: string; qty: number }>; express: boolean }
@@ -324,6 +348,10 @@ export type CommandError =
   | 'no_outage'
   | 'already_owned'
   | 'unknown_bill'
+  | 'cannot_verify'
+  | 'can_verify'
+  | 'phone_dead'
+  | 'no_data'
   | 'not_due_yet'
   | 'not_in_tray'
   | 'not_in_order'
@@ -356,7 +384,7 @@ export type CommandError =
   | 'auto_cooking'
   | 'invalid_price';
 
-export type WalkawayReason = 'patience' | 'closing' | 'empty_order' | 'kasbon_refused';
+export type WalkawayReason = 'patience' | 'closing' | 'empty_order' | 'kasbon_refused' | 'qris_refused';
 
 export type GameEvent =
   | { type: 'opened' }
@@ -385,6 +413,12 @@ export type GameEvent =
   | { type: 'outage_notice'; from: number; hours: number }
   | { type: 'power_out'; hours: number }
   | { type: 'power_back' }
+  | { type: 'qris_trusted'; customerId: number }
+  | { type: 'qris_settled'; received: number; lost: number }
+  | { type: 'phone_low'; battery: number }
+  | { type: 'data_low'; mb: number }
+  | { type: 'data_bought'; mb: number; price: number }
+  | { type: 'powerbank_bought'; price: number }
   | { type: 'token_low'; token: number }
   | { type: 'token_out' }
   | { type: 'token_bought'; amount: number; fee: number }
@@ -425,6 +459,10 @@ export interface DaySummary {
   stockoutDeclines: number;
   underageSales: number;
   exchangeFees: number;
+  qrisFake: number;
+  qrisRefused: number;
+  /** QRIS taken on trust that is still waiting to be checked. */
+  qrisPending: number;
   salesByHour: number[];
   stockLeft: Record<string, number>;
   drawerTotal: number;

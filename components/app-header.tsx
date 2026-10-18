@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import { Art } from "@/components/art";
+import { PhoneStatus } from "@/components/phone-status";
 
 /** The top of a phone app: back to the phone, the app's icon and name. */
 export function AppHeader({ title, icon, back = "/ponsel", right }: { title: string; icon: string; back?: string; right?: React.ReactNode }) {
@@ -16,7 +17,10 @@ export function AppHeader({ title, icon, back = "/ponsel", right }: { title: str
         <Art id={icon} />
       </span>
       <h1 className="font-display text-lg font-bold">{title}</h1>
-      <span className="ml-auto flex items-center gap-1.5 text-xs">{right}</span>
+      <span className="ml-auto flex items-center gap-2 text-xs">
+        {right}
+        <PhoneStatus />
+      </span>
     </header>
   );
 }

@@ -102,6 +102,20 @@ function toastFor(event: GameEvent): Omit<Toast, "id"> | null {
       return { key: "billPaid", vars: { bill: billName(event.id), total: rp(event.total) }, tone: "good" };
     case "bill_overdue":
       return { key: "billOverdue", vars: { bill: billName(event.id) }, tone: "bad" };
+    case "qris_trusted":
+      return { key: "qrisTrusted", tone: "info" };
+    case "qris_settled":
+      return event.lost > 0
+        ? { key: "qrisSettled", vars: { received: rp(event.received), lost: rp(event.lost) }, tone: "bad" }
+        : { key: "qrisSettledOk", vars: { received: rp(event.received) }, tone: "good" };
+    case "phone_low":
+      return { key: "phoneLow", vars: { battery: event.battery }, tone: "bad" };
+    case "data_low":
+      return { key: "dataLow", vars: { mb: event.mb }, tone: "bad" };
+    case "data_bought":
+      return { key: "dataBought", vars: { mb: event.mb, price: rp(event.price) }, tone: "good" };
+    case "powerbank_bought":
+      return { key: "powerbankBought", vars: { price: rp(event.price) }, tone: "good" };
     case "gas_bought":
       return { key: "gasBought", vars: { price: rp(event.price) }, tone: "good" };
     case "burner_wasted":

@@ -120,7 +120,7 @@ export function buyToken(ctx: OutageCtx, cmd: { amount: number }): CommandError 
 }
 
 /** Time away for an errand: pre-open minutes before opening, a busy counter while open, free otherwise. */
-function errand(state: GameState, content: Content): CommandError | null {
+export function errand(state: GameState, content: Content): CommandError | null {
   const minutes = content.balance.outage.errandMinutes;
   if (state.phase === 'open') {
     if (state.busyUntil > 0) return 'busy';
@@ -133,7 +133,7 @@ function errand(state: GameState, content: Content): CommandError | null {
 }
 
 /** Whether an errand is possible right now, without doing it. */
-function errandBlocked(state: GameState, content: Content): CommandError | null {
+export function errandBlocked(state: GameState, content: Content): CommandError | null {
   if (state.phase === 'open') return state.busyUntil > 0 ? 'busy' : null;
   if (state.phase === 'idle') return state.preOpenUsed + content.balance.outage.errandMinutes > content.balance.preOpenMinutes ? 'no_time' : null;
   return state.phase === 'ended' || state.phase === 'night' || state.phase === 'bed' ? null : 'wrong_phase';

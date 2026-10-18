@@ -7,7 +7,7 @@ import { Game } from './game';
 import { isValidBlockPlan, type Content } from './schema';
 import type { GameState } from './types';
 
-export const SAVE_FORMAT = 6;
+export const SAVE_FORMAT = 7;
 
 const num = z.number();
 const pieces = z.record(z.string(), z.number().int().min(0));
@@ -36,7 +36,7 @@ const stats = z.object({
   itemsSold: z.record(z.string(), num),
   cashRevenue: num, qrisRevenue: num, qrisFees: num, kasbonCredit: num, kasbonRefused: num,
   wrongTrays: num, stockoutDeclines: num, underageSales: num, overChange: num,
-  shortChangeCaught: num, shortChangeUnnoticed: num, shortChangeGained: num, cogs: num, waste: num, cooking: z.object({ kurang: num, pas: num, gosong: num, biasa: num }), obralRevenue: num, givenRep: num, exchangeFees: num,
+  shortChangeCaught: num, shortChangeUnnoticed: num, shortChangeGained: num, cogs: num, waste: num, cooking: z.object({ kurang: num, pas: num, gosong: num, biasa: num }), obralRevenue: num, givenRep: num, exchangeFees: num, qrisFake: num, qrisRefused: num,
   salesByHour: z.array(num),
   moods: z.object({ happy: num, neutral: num, annoyed: num }),
 });
@@ -104,6 +104,8 @@ const state = z.object({
   goodsCost: z.record(z.string(), num),
   menu: z.record(z.string(), z.object({ price: z.number().int().positive(), portion: z.enum(['small', 'normal', 'large']) })),
   display: z.record(z.string(), z.array(z.object({ qty: num, cookedAt: num, unitCost: num }))),
+  phone: z.object({ battery: num, powerbank: num.nullable(), data: num }),
+  qrisPending: z.array(z.object({ amount: num, fake: z.boolean() })),
   token: num,
   tokenOffMinutes: num,
   bills: z.record(z.string(), z.object({ dueDay: num })),
@@ -169,6 +171,16 @@ const MIGRATIONS: Record<number, (raw: Record<string, unknown>) => Record<string
     const state = raw.state as Record<string, unknown> | undefined;
     if (!state || typeof state !== 'object') return null;
     return { ...raw, state: { ...state, token: 60000, tokenOffMinutes: 0, bills: {} } };
+  },
+  // Format 6 had no phone: a full battery, the starting data, and no QRIS waiting to be checked.
+  6: (raw) => {
+    const state = raw.state as Record<string, unknown> | undefined;
+    if (!state || typeof state !== 'object') return null;
+    const stats = (state.stats ?? {}) as Record<string, unknown>;
+    return {
+      ...raw,
+      state: { ...state, phone: { battery: 100, powerbank: null, data: 1000 }, qrisPending: [], stats: { ...stats, qrisFake: 0, qrisRefused: 0 } },
+    };
   },
 };
 
@@ -298,6 +310,9 @@ export function reconcile(saved: GameState, content: Content): GameState {
   for (const def of b.bills) bills[def.id] = Number.isFinite(s.bills[def.id]?.dueDay) ? s.bills[def.id] : { dueDay: s.day + def.firstDue };
   s.bills = bills;
   if (!Number.isFinite(s.token) || s.token < 0) s.token = b.token.start;
+  s.phone.battery = Math.min(100, Math.max(0, s.phone.battery));
+  s.phone.data = Math.max(0, s.phone.data);
+  if (s.phone.powerbank !== null) s.phone.powerbank = Math.min(b.phone.powerbank.capacity, Math.max(0, s.phone.powerbank));
 
   s.mood = Math.min(100, Math.max(0, s.mood));
   s.hunger = Math.min(100, Math.max(0, s.hunger));

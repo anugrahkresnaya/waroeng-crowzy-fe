@@ -70,7 +70,17 @@
   "qris": {
     "scan": "Pelanggan scan QRIS",
     "note": "Masuk ke bank {{net}} · biaya {{fee}}. Tidak masuk laci.",
-    "confirm": "Konfirmasi QRIS"
+    "confirm": "Konfirmasi QRIS",
+    "slow": "Sinyal lambat. Tunggu sebentar.",
+    "unverified": "Pembayaran tidak bisa dicek ({{reason}}). Layar mereka bilang berhasil.",
+    "trust": "Percaya",
+    "refuse": "Tolak",
+    "reason": {
+      "signal": "tidak ada sinyal",
+      "data": "paket data habis",
+      "battery": "HP mati"
+    },
+    "trustHint": "Kalau palsu, baru ketahuan nanti saat HP bisa mengecek lagi."
   },
   "kasbon": {
     "ask": "{{who}} minta kasbon",
@@ -87,7 +97,8 @@
     "walkaway": {
       "patience": "Pelanggan pergi karena menunggu",
       "empty_order": "Pelanggan pergi",
-      "kasbon_refused": "Kasbon ditolak, pelanggan pergi"
+      "kasbon_refused": "Kasbon ditolak, pelanggan pergi",
+      "qris_refused": "Pembayaran tidak bisa dicek, pelanggan pergi"
     },
     "orderMismatch": "Pesanan belum pas",
     "shortChangeCaught": "Ketahuan kurang kembalian!",
@@ -141,7 +152,11 @@
       "no_outage": "Hari ini listrik tidak padam",
       "already_owned": "Sudah punya",
       "unknown_bill": "Tagihan tidak dikenal",
-      "not_due_yet": "Belum waktunya bayar"
+      "not_due_yet": "Belum waktunya bayar",
+      "cannot_verify": "Pembayaran tidak bisa dicek",
+      "can_verify": "Pembayaran bisa dicek",
+      "phone_dead": "HP mati",
+      "no_data": "Paket data habis"
     },
     "blockDone": {
       "pagi": "Blok pagi selesai{{extra}}",
@@ -187,7 +202,14 @@
       "today": "hari ini",
       "tomorrow": "besok",
       "soon": "{{n}} hari lagi"
-    }
+    },
+    "qrisTrusted": "Percaya saja pembayaran QRIS-nya",
+    "qrisSettled": "Mutasi rekening: masuk {{received}}, {{lost}} tidak pernah masuk",
+    "qrisSettledOk": "QRIS sudah dicek: masuk {{received}}",
+    "phoneLow": "Baterai HP tinggal {{battery}}%",
+    "dataLow": "Paket data hampir habis: sisa {{mb}} MB",
+    "dataBought": "Paket data +{{mb}} MB (bayar tunai {{price}})",
+    "powerbankBought": "Beli powerbank: {{price}}"
   },
   "title": {
     "eyebrow": "OFFLINE · 1 PEMAIN",
@@ -293,7 +315,10 @@
     "profit": "Laba bersih",
     "profitSub": "Setelah modal bahan {{cost}} dan biaya QRIS {{fees}}",
     "cooking": "Masakan hari ini",
-    "cookingLine": "Pas {{pas}} · Otomatis {{biasa}} · Mentah {{kurang}} · Gosong {{gosong}}"
+    "cookingLine": "Pas {{pas}} · Otomatis {{biasa}} · Mentah {{kurang}} · Gosong {{gosong}}",
+    "qrisPending": "QRIS yang dipercaya, belum dicek: {{amount}}",
+    "qrisFake": "Pembayaran palsu ketahuan: {{amount}}",
+    "qrisRefused": "QRIS ditolak: {{n}}"
   },
   "phone": {
     "eyebrow": "PONSEL",
@@ -308,7 +333,22 @@
       "buku-kas": "Buku kas",
       "layanan": "Layanan",
       "berita": "Berita"
-    }
+    },
+    "statusTitle": "Kondisi HP",
+    "battery": "Baterai {{pct}}%",
+    "powerbank": "Powerbank {{pct}}%",
+    "noPowerbank": "Belum punya powerbank",
+    "data": "Paket data {{mb}} MB",
+    "signal": {
+      "good": "Sinyal bagus",
+      "slow": "Sinyal lambat",
+      "down": "Tidak ada sinyal"
+    },
+    "charging": "Mengisi daya",
+    "help": "Baterai hanya terkuras saat listrik mati. Paket data dipakai aplikasi pasar dan untuk mengecek QRIS. Paket data dibayar tunai dari laci.",
+    "buyData": "+{{mb}} MB · {{price}} tunai",
+    "buyPowerbank": "Beli powerbank · {{price}}",
+    "ownPowerbank": "Powerbank sudah ada"
   },
   "stat": {
     "mood": "Mood",
@@ -557,7 +597,9 @@
       "flood": "Banjir di daerah pemasok. Sayur naik dan pengiriman bisa telat, {{starts}}.",
       "lpg-shortage": "Gas LPG 3 kg langka di pengecer. Harganya naik, {{starts}}.",
       "market-operation": "Operasi pasar pemerintah. Harga beras dan minyak goreng turun, {{starts}}."
-    }
+    },
+    "noPhone": "HP mati. Isi daya atau pakai powerbank.",
+    "noData": "Paket data habis. Isi di layar HP."
   },
   "news": {
     "title": "Berita",
@@ -698,6 +740,10 @@
     },
     "tokenEmpty": "Token listrik habis. Listrik mati",
     "tokenLow": "Token listrik menipis: sisa {{token}}",
-    "buyToken": "Isi {{amount}} · admin {{fee}}"
+    "buyToken": "Isi {{amount}} · admin {{fee}}",
+    "dataLow": "Paket data hampir habis: sisa {{mb}} MB",
+    "buyData": "Beli {{mb}} MB · {{price}} tunai",
+    "phoneLow": "Baterai HP tinggal {{pct}}%",
+    "buyPowerbank": "Beli powerbank · {{price}}"
   }
 }

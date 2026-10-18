@@ -5,6 +5,7 @@ import { stillToCook } from '../cooking';
 import { portionsLeft, quoteOrder } from '../market';
 import { Game } from '../game';
 import { payOutBestEffort, addPieces } from '../money';
+import { qrisCheck } from '../phone';
 import type { Command } from '../types';
 
 export interface BotOptions {
@@ -42,7 +43,8 @@ export function botAct(game: Game): boolean {
     return send({ type: 'confirmOrder' });
   }
   if (c.stage === 'paying') {
-    return send(c.method === 'qris' ? { type: 'confirmQris' } : { type: 'grantKasbon' });
+    if (c.method === 'qris') return send(qrisCheck(state, content).ok ? { type: 'confirmQris' } : { type: 'trustQris' });
+    return send({ type: 'grantKasbon' });
   }
   const pieces = changeFor(state, c) ?? (() => {
     const drawer = { ...state.drawer };
@@ -103,6 +105,7 @@ export function payUp(game: Game): void {
   // A day of open hours burns about this much; top up before it could run dry.
   const need = content.balance.token.openPerMinute * (content.balance.closeMinute - content.balance.openMinute) + content.balance.token.perDay;
   if (state.token < need) game.dispatch({ type: 'buyToken', amount: content.balance.token.packs[1] });
+  if (state.phone.data < content.balance.phone.lowData * 3) game.dispatch({ type: 'buyData', pack: 0 });
   for (const bill of content.balance.bills) {
     if (state.bank >= bill.amount && state.day >= state.bills[bill.id].dueDay - bill.noticeDays) game.dispatch({ type: 'payBill', id: bill.id });
   }

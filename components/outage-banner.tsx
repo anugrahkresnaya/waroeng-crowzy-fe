@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
-import { content, formatClock, outageEnd, plnOff, tokenEmpty, type CommandError } from "@/engine";
+import { content, formatClock, outageEnd, plnOff, powerOff, tokenEmpty, type CommandError } from "@/engine";
 import { rp } from "@/lib/format";
 import { useGame } from "@/lib/game-store";
 
@@ -20,7 +20,10 @@ export function OutageBanner() {
   const today = !!o && o.day === state.day && state.minute < outageEnd(o);
   const tomorrow = !!o && o.known && o.day === state.day + 1;
   const tokenLow = state.token < tk.lowMark;
-  if (!today && !tomorrow && !tokenLow) return null;
+  const ph = content.balance.phone;
+  const dataLow = state.phone.data < ph.lowData;
+  const phoneLow = powerOff(state) && state.phone.battery < ph.lowBattery && state.phone.powerbank === null;
+  if (!today && !tomorrow && !tokenLow && !dataLow && !phoneLow) return null;
 
   const errandWhy = (): CommandError | null => {
     if (state.phase === "open") return state.busyUntil > 0 ? "busy" : null;
@@ -43,8 +46,28 @@ export function OutageBanner() {
           </div>
         </div>
       )}
+      {dataLow && (
+        <div data-testid="data-alert" className={tokenLow ? "mt-1.5 border-t border-bad/30 pt-1.5" : ""}>
+          <b className="text-bad">{t("outage.dataLow", { mb: Math.round(state.phone.data) })}</b>
+          <div className="mt-1 flex flex-wrap items-center gap-1.5">
+            <button className={BTN} data-testid="buy-data" onClick={() => send({ type: "buyData", pack: 0 })}>
+              {t("outage.buyData", { mb: ph.dataPacks[0].mb, price: rp(ph.dataPacks[0].price) })}
+            </button>
+          </div>
+        </div>
+      )}
+      {phoneLow && (
+        <div data-testid="phone-alert" className={tokenLow || dataLow ? "mt-1.5 border-t border-bad/30 pt-1.5" : ""}>
+          <b className="text-bad">{t("outage.phoneLow", { pct: Math.round(state.phone.battery) })}</b>
+          <div className="mt-1 flex flex-wrap items-center gap-1.5">
+            <button className={BTN} disabled={why(ph.powerbank.price) !== null} data-testid="buy-powerbank-banner" onClick={() => send({ type: "buyPowerbank" })}>
+              {t("outage.buyPowerbank", { price: rp(ph.powerbank.price) })}
+            </button>
+          </div>
+        </div>
+      )}
       {(today || tomorrow) && o && (
-        <div className={tokenLow ? "mt-1.5 border-t border-bad/30 pt-1.5" : ""}>
+        <div className={tokenLow || dataLow || phoneLow ? "mt-1.5 border-t border-bad/30 pt-1.5" : ""}>
           <b className="text-bad">
             {t(today ? (plnOff(state) ? "outage.now" : "outage.today") : "outage.tomorrow", { from: formatClock(o.from), until: formatClock(outageEnd(o)) })}
           </b>
