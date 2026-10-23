@@ -1,7 +1,7 @@
 import { writeFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { content } from './content';
-import { STRATEGIES, compareStrategies, formatReport, runStrategy } from './testing/balance';
+import { STRATEGIES, compareStrategies, formatReport, ramadanContent, runStrategy } from './testing/balance';
 
 describe('the strategy harness', () => {
   it('plays every strategy for a fortnight without breaking the game', () => {
@@ -39,12 +39,36 @@ describe('gate 3: no single strategy wins', () => {
   });
 });
 
+describe('gate 3 through Ramadan and Lebaran', () => {
+  const seeds = [1, 2, 3, 4];
+  const season = ramadanContent(content);
+  const result = compareStrategies(season, seeds, 45);
+
+  it('no strategy beats every other strategy on every seed', () => {
+    expect(result.winners).toEqual([]);
+  });
+
+  it('the best strategy is not far ahead of the pack', () => {
+    const medians = result.rows.map((r) => r.median).sort((a, b) => b - a);
+    const rest = medians.slice(1);
+    expect(medians[0]).toBeLessThan(rest[Math.floor(rest.length / 2)] * 2);
+  });
+
+  it('every strategy still makes money through the fast', () => {
+    for (const r of result.rows) expect(r.median, r.name).toBeGreaterThan(0);
+  });
+});
+
 // `npm run balance` writes the full report: 6 seeds, 45 days.
 describe.runIf(process.env.BALANCE)('report', () => {
   it('writes the balance report', () => {
     const seeds = [1, 2, 3, 4, 5, 6];
     const days = 45;
     const c = compareStrategies(content, seeds, days);
-    writeFileSync(process.env.BALANCE_OUT ?? 'balance-report.md', formatReport(c, seeds, days));
+    const season = compareStrategies(ramadanContent(content), seeds, days);
+    writeFileSync(
+      process.env.BALANCE_OUT ?? 'balance-report.md',
+      formatReport(c, seeds, days) + '\n' + formatReport(season, seeds, days, STRATEGIES, 'Balance sweep from 25 January (Ramadan and Lebaran)'),
+    );
   }, 600000);
 });

@@ -2,7 +2,7 @@
 // decided by the seed and the strategy. Used by `npm run balance` and by a small sanity test.
 import { freezerRoom, slotsPerPiece } from '../freezer';
 import { Game } from '../game';
-import { quoteOrder } from '../market';
+import { costPerPortion, quoteOrder } from '../market';
 import { total } from '../money';
 import type { Content } from '../schema';
 import { titipanRoom, titipanUnlocked } from '../titipan';
@@ -19,10 +19,14 @@ export interface Strategy {
   options?: Partial<BotOptions>;
   /** Top up the token and data and pay the rent (default). */
   upkeep?: boolean;
+  /** Move every dish price with its ingredient cost, as a player does after a price spike (default). */
+  followCosts?: boolean;
 }
 
 export interface RunResult {
   strategy: string;
+  /** Customers served on each game day, to see the crowd follow the calendar. */
+  servedByDay: number[];
   seed: number;
   /** Bank, drawer and what the shelves and pantry are worth at cost, minus what is owed. */
   netWorth: number;
@@ -46,10 +50,19 @@ export function netWorth(game: Game): number {
   for (const [id, qty] of Object.entries(state.stock)) value += qty * (state.goodsCost[id] ?? 0);
   value -= state.titipan.owed;
   for (const bill of content.balance.bills) {
-    // a bill that is due and unpaid is money the player has already lost
-    if (state.day >= state.bills[bill.id].dueDay) value -= bill.amount;
+    // every period of rent that has fallen due and is unpaid is money the player has already lost
+    const due = state.bills[bill.id].dueDay;
+    if (state.day >= due) value -= bill.amount * (Math.floor((state.day - due) / bill.everyDays) + 1);
   }
   return Math.round(value);
+}
+
+/**
+ * The same game started on another date, so a run meets the seasons: from Monday 25 January 2027, 45 days cover the weeks before Ramadan,
+ * Ramadan itself (8 February) and Lebaran (10 March). It must be a Monday, because day 0 is always a Monday in the weekly plan.
+ */
+export function ramadanContent(content: Content): Content {
+  return { ...content, market: { ...content.market, calendarStart: { year: 2027, month: 1, day: 25 } } };
 }
 
 const roundTo = (n: number, step: number) => Math.round(n / step) * step;
@@ -94,6 +107,25 @@ function takeAllTitipan(game: Game): void {
   }
 }
 
+/**
+ * Keeps the margin when ingredients get dearer or cheaper: each dish price moves by the change in its cost since the last time it moved.
+ * Small moves are ignored, so the price is not nudged by the daily wobble.
+ */
+function followCosts(game: Game, memory: Record<string, number>): void {
+  const { state, content } = game;
+  if (state.phase !== 'idle') return;
+  for (const item of content.items) {
+    if (item.kind !== 'dish') continue;
+    const cost = costPerPortion(state, content, item);
+    const last = memory[item.id] ?? cost;
+    memory[item.id] = last;
+    if (Math.abs(cost / last - 1) < 0.04) continue;
+    const price = state.menu[item.id]?.price ?? item.price;
+    game.dispatch({ type: 'setDishPrice', item: item.id, price: Math.max(500, roundTo((price * cost) / last, 100)) });
+    memory[item.id] = cost;
+  }
+}
+
 const reprice = (game: Game, mul: number) => {
   for (const item of game.content.items) {
     if (item.kind !== 'dish') continue;
@@ -132,6 +164,7 @@ export const STRATEGIES: Strategy[] = [
       takeAllTitipan(g);
     },
   },
+  { name: 'fixed prices', note: 'never move a price, even when ingredients get dearer', followCosts: false },
   { name: 'neglect upkeep', note: 'never top up the token or data, never pay the rent', upkeep: false },
 ];
 
@@ -141,11 +174,14 @@ export function runStrategy(content: Content, strategy: Strategy, seed: number, 
   strategy.setup?.(g);
   const start = netWorth(g);
   // A competent baseline: cook as much as the pre-open time allows and keep a few days of stock.
-  const opts: BotOptions = { actionsPerTick: 4, batches: 'fill', restockMul: 3, ...strategy.options };
+  const opts: BotOptions = { actionsPerTick: 4, batches: 'fill', restockMul: 1, ...strategy.options };
   const sums = { served: 0, walkaways: 0, turnedAway: 0, stockoutDeclines: 0, waste: 0 };
+  const costMemory: Record<string, number> = {};
   const trail: number[] = [];
+  const servedByDay: number[] = [];
   let workDays = 0;
   for (let d = 0; d < days; d++) {
+    if (g.state.phase === 'idle' && (strategy.followCosts ?? true)) followCosts(g, costMemory);
     if (g.state.phase === 'idle') strategy.beforeDay?.(g);
     bankTheBigNotes(g);
     restock(g, 'pak-slamet', opts.restockMul ?? 1);
@@ -164,10 +200,11 @@ export function runStrategy(content: Content, strategy: Strategy, seed: number, 
     sums.stockoutDeclines += s.stockoutDeclines;
     sums.waste += s.waste;
     trail.push(netWorth(g));
+    servedByDay.push(s.served);
     sleepThrough(g);
   }
   const end = netWorth(g);
-  return { strategy: strategy.name, seed, netWorth: end, gain: end - start, reputation: g.state.reputation, ...sums, days, workDays, trail };
+  return { strategy: strategy.name, servedByDay, seed, netWorth: end, gain: end - start, reputation: g.state.reputation, ...sums, days, workDays, trail };
 }
 
 const median = (xs: number[]) => {
@@ -209,10 +246,10 @@ const rp = (n: number) => `Rp${(Math.round(n / 1000) / 1000).toFixed(2)}M`;
 const rb = (n: number) => `Rp${Math.round(n / 1000)}k`;
 
 /** A markdown report of a comparison, best first, with each strategy measured against the baseline seed by seed. */
-export function formatReport(c: Comparison, seeds: number[], days: number, strategies: Strategy[] = STRATEGIES): string {
+export function formatReport(c: Comparison, seeds: number[], days: number, strategies: Strategy[] = STRATEGIES, title = 'Balance sweep'): string {
   const baseIndex = strategies.findIndex((s) => s.name === 'baseline');
   const lines = [
-    `# Balance sweep: ${strategies.length} strategies, ${seeds.length} seeds (${seeds.join(', ')}), ${days} days`,
+    `# ${title}: ${strategies.length} strategies, ${seeds.length} seeds (${seeds.join(', ')}), ${days} days`,
     '',
     'Gain is net worth at the end minus at the start: bank, drawer, stock and pantry at cost, minus what is owed. Equipment (the freezer) counts as spent.',
     '',
