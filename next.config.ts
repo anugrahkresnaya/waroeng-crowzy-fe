@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   // Offline-first, client-only game: no server features, so ship it as a static export.
   output: "export",
   images: { unoptimized: true },
+  experimental: { agentUpgrade: "security" },
   turbopack: {
     rules: {
       "*.css": {
