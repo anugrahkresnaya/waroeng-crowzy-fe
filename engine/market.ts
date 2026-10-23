@@ -155,12 +155,15 @@ export function assignStorage(state: GameState, content: Content): void {
       continue;
     }
     const helps = ing.life.fridge !== null && (ing.life.room === null || ing.life.fridge > ing.life.room);
-    if (helps && cold + units <= content.market.fridgeCapacity + 1e-9) {
+    if (helps && cold + units <= fridgeCap(state, content) + 1e-9) {
       lot.stored = 'fridge';
       cold += units;
     } else lot.stored = 'room';
   }
 }
+
+/** Fridge space, in sold units: the small fridge or the big one. */
+export const fridgeCap = (state: GameState, content: Content): number => (state.bigFridge ? content.market.bigFridge.capacity : content.market.fridgeCapacity);
 
 /** Fridge space in use, in sold units. */
 export function fridgeUsed(state: GameState, content: Content): number {

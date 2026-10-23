@@ -6,7 +6,7 @@ export type { SaveData, SaveParse } from './save';
 export { moodOf, changeFor } from './counter';
 export { createInitialState } from './state';
 export {
-  baseCostPerPortion, costPerPortion, dishNeeds, displayPortions, fridgeUsed, ingredientQty, marketPrice, onPasarTrip, pasarQuote, portionsLeft, quoteOrder, roundPrice,
+  baseCostPerPortion, fridgeCap, costPerPortion, dishNeeds, displayPortions, fridgeUsed, ingredientQty, marketPrice, onPasarTrip, pasarQuote, portionsLeft, quoteOrder, roundPrice,
   sellPrice, standardArrivalDay,
 } from './market';
 export { autoMinutes, justRight, practiceBonus, qualityAt, stillToCook } from './cooking';

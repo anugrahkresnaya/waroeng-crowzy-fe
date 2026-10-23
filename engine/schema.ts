@@ -183,6 +183,8 @@ export const marketSchema = z.object({
   /** Freezer slots: a sold unit of an ingredient is one slot, and frozen goods take their own slots per piece. */
   freezerCapacity: z.number().positive(),
   freezerPrice: positiveInt,
+  /** A bigger fridge to replace the small one: more cold space for the sold units of fridge-friendly stock. */
+  bigFridge: z.object({ capacity: z.number().positive(), price: positiveInt }),
   portion: z.object({
     small: z.object({ mul: z.number().positive(), rep: z.number() }),
     normal: z.object({ mul: z.number().positive(), rep: z.number() }),

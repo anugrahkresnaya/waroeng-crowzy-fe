@@ -8,7 +8,7 @@ import { OrdersView } from "@/components/pasar/orders-view";
 import { TopBar } from "@/components/top-bar";
 import { Button, Card, Chip, Meter, Pill } from "@/components/ui";
 import { WarungNav } from "@/components/warung-nav";
-import { batchesPossible, content, displayPortions, freezerHoldHours, freezerUsed, fridgeUsed, portionsLeft, type Phase } from "@/engine";
+import { batchesPossible, content, displayPortions, freezerHoldHours, freezerUsed, fridgeCap, fridgeUsed, portionsLeft, type Phase } from "@/engine";
 import { rp } from "@/lib/format";
 import { useGame } from "@/lib/game-store";
 import { useGuard } from "@/lib/use-guard";
@@ -28,7 +28,7 @@ export default function GudangPage() {
   if (!ready || !state) return null;
 
   const used = fridgeUsed(state, content);
-  const cap = content.market.fridgeCapacity;
+  const cap = fridgeCap(state, content);
   const groups = content.ingredients
     .map((ing) => {
       const lots = state.pantry.filter((l) => l.ingredient === ing.id);
@@ -57,6 +57,14 @@ export default function GudangPage() {
         <Card className="grid grid-cols-2 gap-3 p-3">
           <Meter label={t("storage.fridge", { used: used.toFixed(1), cap })} pct={cap > 0 ? (used / cap) * 100 : 0} tone={used / cap > 0.9 ? "bg-warn" : "bg-accent"} />
           <div className="text-[11px] leading-tight text-muted">{t("storage.fridgeHelp")}</div>
+          {!state.bigFridge && (
+            <div className="col-span-2 flex flex-col gap-1">
+              <Button className="py-2" disabled={state.bank < content.market.bigFridge.price} data-testid="buy-big-fridge" onClick={() => send({ type: "buyBigFridge" })}>
+                {t("storage.buyBigFridge", { price: rp(content.market.bigFridge.price), cap: content.market.bigFridge.capacity })}
+              </Button>
+              {state.bank < content.market.bigFridge.price && <p className="text-[11px] text-muted">{t("pasar.noFunds")}</p>}
+            </div>
+          )}
         </Card>
 
         <Card className="p-3" data-testid="freezer-card">

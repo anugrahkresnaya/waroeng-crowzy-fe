@@ -275,6 +275,8 @@ export interface GameState {
   titipan: TitipanState;
   /** Whether the player owns a freezer. */
   freezer: boolean;
+  /** Whether the small fridge was replaced with the big one. */
+  bigFridge: boolean;
   /** Prepaid electricity credit in rupiah. At zero the power is out until it is topped up. */
   token: number;
   /** Minutes today the token was empty while the shop was open (plus the night, if it was empty at bedtime). */
@@ -319,6 +321,7 @@ export type Command =
   | { type: 'takeTitipan'; item: string; qty: number }
   | { type: 'payNeighbor' }
   | { type: 'buyFreezer' }
+  | { type: 'buyBigFridge' }
   | { type: 'buyToken'; amount: number }
   | { type: 'trustQris' }
   | { type: 'refuseQris' }
@@ -449,6 +452,7 @@ export type GameEvent =
   | { type: 'titipan_settled'; sold: number; returned: number; paid: number; owed: number; relation: number }
   | { type: 'titipan_paid'; amount: number }
   | { type: 'freezer_bought'; price: number }
+  | { type: 'fridge_bought'; price: number }
   | { type: 'frozen_lost'; item: string; pieces: number }
   | { type: 'token_low'; token: number }
   | { type: 'token_out' }

@@ -7,7 +7,7 @@ import { Game } from './game';
 import { isValidBlockPlan, type Content } from './schema';
 import type { GameState } from './types';
 
-export const SAVE_FORMAT = 9;
+export const SAVE_FORMAT = 10;
 
 const num = z.number();
 const pieces = z.record(z.string(), z.number().int().min(0));
@@ -106,6 +106,7 @@ const state = z.object({
   display: z.record(z.string(), z.array(z.object({ qty: num, cookedAt: num, unitCost: num }))),
   titipan: z.object({ taken: z.record(z.string(), z.number().int().min(0)), owed: num, relation: num }),
   freezer: z.boolean(),
+  bigFridge: z.boolean(),
   phone: z.object({ battery: num, powerbank: num.nullable(), data: num }),
   qrisPending: z.array(z.object({ amount: num, fake: z.boolean() })),
   token: num,
@@ -196,6 +197,12 @@ const MIGRATIONS: Record<number, (raw: Record<string, unknown>) => Record<string
     if (!state || typeof state !== 'object') return null;
     const stats = (state.stats ?? {}) as Record<string, unknown>;
     return { ...raw, state: { ...state, titipan: { taken: {}, owed: 0, relation: 0 }, stats: { ...stats, titipanSold: 0, titipanReturned: 0, titipanPaid: 0 } } };
+  },
+  // Format 9 had only the small fridge.
+  9: (raw) => {
+    const state = raw.state as Record<string, unknown> | undefined;
+    if (!state || typeof state !== 'object') return null;
+    return { ...raw, state: { ...state, bigFridge: false } };
   },
 };
 

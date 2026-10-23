@@ -414,6 +414,15 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
       ctx.emit({ type: 'freezer_bought', price: content.market.freezerPrice });
       return OK;
     }
+    case 'buyBigFridge': {
+      if (state.bigFridge) return fail('already_owned');
+      if (state.bank < content.market.bigFridge.price) return fail('insufficient_funds');
+      state.bank -= content.market.bigFridge.price;
+      state.bigFridge = true;
+      assignStorage(state, content);
+      ctx.emit({ type: 'fridge_bought', price: content.market.bigFridge.price });
+      return OK;
+    }
     case 'buyData': {
       const error = buyData(ctx, cmd);
       return error ? fail(error) : OK;
