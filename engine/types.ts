@@ -461,6 +461,7 @@ export type GameEvent =
   | { type: 'went_stale'; item: string; portions: number }
   | { type: 'leftover_handled'; item: string; choice: LeftoverChoice; portions: number }
   | { type: 'news'; event: string }
+  | { type: 'season_notice'; id: string; inDays: number }
   | { type: 'closed' };
 
 export type CommandResult = { ok: true; events: GameEvent[] } | { ok: false; error: CommandError };

@@ -19,6 +19,7 @@ export { freezerHoldHours, freezerRoom, freezerUsed, frozenSlotsNeeded, slotsPer
 export { titipanBlocked, titipanCost, titipanLevel, titipanRoom, titipanUnlocked } from './titipan';
 export { absoluteMinute, batchesPossible } from './kitchen';
 export { goodKey } from './schema';
+export { demandOn, seasonArrivalMul, seasonHeadlines } from './season';
 export { addDays } from './calendar';
 export { formatClock, dayPart, weekday } from './clock';
 export { DENOMS, total, makeChange, exactPieces, exchangeBreakdown } from './money';

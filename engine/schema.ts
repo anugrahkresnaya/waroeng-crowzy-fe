@@ -99,6 +99,13 @@ export const supplierSchema = z.object({
 
 const match = z.array(z.string().min(1)).min(1);
 
+/** How a stretch of days changes the crowd: all arrivals, arrivals by day part, and how often an item is asked for. */
+const demandEffect = z.object({
+  arrivalMul: z.number().positive().default(1),
+  partMul: z.partialRecord(z.enum(['morning', 'lunch', 'afternoon', 'evening', 'night']), z.number().positive()).default({}),
+  itemMul: z.record(z.string(), z.number().positive()).default({}),
+});
+
 export const marketSchema = z.object({
   calendarStart: z.object({ year: z.number().int(), month: z.number().int().min(1).max(12), day: z.number().int().min(1).max(31) }),
   historyDays: positiveInt,
@@ -148,6 +155,28 @@ export const marketSchema = z.object({
     /** Haggling moves the price by up to this fraction either way. */
     haggle: z.number().min(0).max(0.5),
     grosir: z.array(z.object({ min: positiveInt, off: z.number().min(0).max(0.5) })),
+  }),
+  /** Who comes when: fasting, holidays and long weekends move the crowd. Dates repeat yearly unless a holiday names its year. */
+  demand: z.object({
+    /** A headline this many days before a period or holiday starts. */
+    noticeDays: z.number().int().min(1),
+    /** A holiday on a Monday or Friday makes the weekend around it a long weekend. */
+    longWeekend: demandEffect,
+    periods: z.array(
+      z.object({
+        id: z.string().min(1),
+        from: z.object({ month: z.number().int().min(1).max(12), day: z.number().int().min(1).max(31) }),
+        to: z.object({ month: z.number().int().min(1).max(12), day: z.number().int().min(1).max(31) }),
+      }).merge(demandEffect),
+    ),
+    holidays: z.array(
+      z.object({
+        id: z.string().min(1),
+        year: z.number().int().optional(),
+        month: z.number().int().min(1).max(12),
+        day: z.number().int().min(1).max(31),
+      }).merge(demandEffect),
+    ),
   }),
   /** How many sold units of fridge-friendly goods fit in the small fridge. */
   fridgeCapacity: z.number().min(0),
@@ -395,6 +424,10 @@ export const contentSchema = z
     c.market.seasons.forEach((s, i) =>
       s.effects.forEach((e, j) => e.match.forEach((t) => !validToken(t) && problem(`unknown match "${t}"`, ['market', 'seasons', i, 'effects', j]))),
     );
+    const demandEffects = [...c.market.demand.periods, ...c.market.demand.holidays, c.market.demand.longWeekend];
+    demandEffects.forEach((d, i) => {
+      for (const id of Object.keys(d.itemMul)) if (!itemIds.has(id)) problem(`demand names unknown item "${id}"`, ['market', 'demand', i, 'itemMul', id]);
+    });
     c.market.events.forEach((ev, i) =>
       ev.effects.forEach((e, j) => e.match.forEach((t) => !validToken(t) && problem(`unknown match "${t}"`, ['market', 'events', i, 'effects', j]))),
     );

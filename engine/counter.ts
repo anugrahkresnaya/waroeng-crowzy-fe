@@ -7,6 +7,7 @@ import { buyGas } from './gas';
 import { payBill, tickBills } from './bills';
 import { payNeighbor, settleTitipan, takeTitipan } from './titipan';
 import { buyData, buyPowerbank, phoneGate, phoneNight, qrisCheck, tickPhone, spendPhone } from './phone';
+import { seasonArrivalMul, seasonHeadlines, demandOn } from './season';
 import { arrivalMul, buyIce, buyLantern, buyToken, rollOutage, tickPower, tickToken, tokenNewDay, tokenOvernight } from './outage';
 import { dropBurners, plate, startCook, tickBurners, wasteCooked } from './cooking';
 import { clearDisplay, cookBatch, handleLeftover, sweepDisplay } from './kitchen';
@@ -85,7 +86,10 @@ function planPayment(ctx: Ctx, c: Customer): void {
 function spawnCustomer(ctx: Ctx, type: CustomerType): void {
   const { state, content, rng } = ctx;
   // Nobody asks for frozen goods in a warung with no freezer.
-  const pool: Array<[string, number]> = Object.entries(type.items).filter(([id]) => (state.freezer || !content.itemById[id]?.frozen) && (!content.itemById[id]?.consign || (state.stock[id] ?? 0) > 0));
+  const itemMul = demandOn(content, state.day).itemMul;
+  const pool: Array<[string, number]> = Object.entries(type.items)
+    .filter(([id]) => (state.freezer || !content.itemById[id]?.frozen) && (!content.itemById[id]?.consign || (state.stock[id] ?? 0) > 0))
+    .map(([id, w]) => [id, w * (itemMul[id] ?? 1)]);
   const distinct = rng.int(type.distinctItems[0], type.distinctItems[1]);
   const order: OrderLine[] = [];
   for (let i = 0; i < distinct && pool.length > 0; i++) {
@@ -127,7 +131,7 @@ function maybeSpawn(ctx: Ctx): void {
   const b = content.balance;
   const [lo, hi] = b.arrivalReputationRange;
   const repMul = lo + ((hi - lo) * state.reputation) / 100;
-  const rate = Math.min(1, b.arrivalPerMinute[part] * b.weekdayMul[weekday(state.day)] * repMul * arrivalMul(state, content));
+  const rate = Math.min(1, b.arrivalPerMinute[part] * b.weekdayMul[weekday(state.day)] * repMul * arrivalMul(state, content) * seasonArrivalMul(content, state.day, part));
   if (!rng.chance(rate)) return;
   if (state.line.length >= b.lineCapacity) {
     state.stats.turnedAway++;
@@ -369,6 +373,7 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
       tokenNewDay(ctx);
       rollOutage(ctx);
       tickBills(ctx);
+      for (const h of seasonHeadlines(content, state.day)) ctx.emit({ type: 'season_notice', id: h.id, inDays: h.inDays });
       ctx.emit({ type: 'new_day', day: state.day });
       return OK;
     }

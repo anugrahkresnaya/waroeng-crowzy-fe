@@ -194,6 +194,15 @@
     },
     "burnerWasted": "{{item}} di kompor terbuang",
     "gasBought": "Beli tabung gas: {{price}}",
+    "season": {
+      "ramadan": { "now": "Ramadan mulai hari ini: siang sepi, malam ramai (takjil, es teh, gorengan)", "soon": "Ramadan mulai {{n}} hari lagi: sore ramai, siang sepi" },
+      "mudik": { "now": "Musim mudik: banyak tetangga pulang kampung", "soon": "Musim mudik {{n}} hari lagi: jalanan bakal sepi" },
+      "lebaran": { "now": "Lebaran: kebanyakan warung tutup, tamu cari kue dan minuman", "soon": "Lebaran {{n}} hari lagi" },
+      "christmas": { "now": "Hari Natal: agak sepi", "soon": "Natal {{n}} hari lagi" },
+      "new-year": { "now": "Tahun Baru: malam ramai, cari rokok dan air", "soon": "Tahun Baru {{n}} hari lagi" },
+      "independence": { "now": "17 Agustus: jalanan ramai seharian", "soon": "17 Agustus {{n}} hari lagi" },
+      "long-weekend": { "now": "Libur panjang: orang pergi, camilan sore laku", "soon": "Libur panjang {{n}} hari lagi" }
+    },
     "outageNotice": "Kabar PLN: listrik padam {{from}} sampai {{until}}",
     "powerOut": "Listrik padam",
     "powerBack": "Listrik menyala lagi",

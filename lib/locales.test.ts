@@ -55,6 +55,7 @@ describe("translations", () => {
       ...["idle", "open", "ended", "night", "bed", "dayoff"].map((ph) => `phase.${ph}`),
       ...["all", "pokok", "protein", "sayur", "minuman", "perlengkapan"].map((c) => `pasar.category.${c}`),
       ...["harvest-failure", "fuel-hike", "flood", "lpg-shortage", "market-operation"].flatMap((e) => [`pasar.event.${e}`, `pasar.news.${e}`, `toast.news.${e}`]),
+      ...["ramadan", "mudik", "lebaran", "christmas", "new-year", "independence", "long-weekend"].flatMap((e) => [`toast.season.${e}.now`, `toast.season.${e}.soon`]),
       ...["small", "normal", "large"].map((p) => `menu.portions.${p}`),
       ...["bahan", "barang", "pesanan"].map((x) => `storage.tabs.${x}`),
       ...["insufficient_funds", "below_minimum", "empty_order", "unknown_supplier", "unknown_product", "invalid_quantity", "no_pasar_trip", "not_a_dish", "invalid_price"].map((e) => `toast.error.${e}`),

@@ -193,6 +193,7 @@ describe('content that changed since the save', () => {
   const without = (r: Raw, id: string) => {
     r.items = r.items.filter((i) => i.id !== id);
     r.customers = r.customers.map((c) => ({ ...c, items: Object.fromEntries(Object.entries(c.items).filter(([k]) => k !== id)) }));
+    for (const d of [...r.market.demand.periods, ...r.market.demand.holidays, r.market.demand.longWeekend]) if (d.itemMul) delete d.itemMul[id];
   };
 
   it('drops goods and dishes that no longer exist, and starts new goods at their starting stock', () => {

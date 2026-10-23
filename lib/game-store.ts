@@ -130,6 +130,8 @@ function toastFor(event: GameEvent): Omit<Toast, "id"> | null {
       return { key: "gasBought", vars: { price: rp(event.price) }, tone: "good" };
     case "burner_wasted":
       return { key: "burnerWasted", vars: { item: itemName(event.item) }, tone: "bad" };
+    case "season_notice":
+      return { key: `season.${event.id}.${event.inDays === 0 ? "now" : "soon"}`, vars: { n: event.inDays }, tone: "info" };
     case "news":
       return { key: `news.${event.event}`, tone: "info" };
     case "shelves_ready":

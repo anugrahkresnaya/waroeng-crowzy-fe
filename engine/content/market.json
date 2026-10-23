@@ -95,6 +95,26 @@
      "mul": 1.08
     }
    ]
+  },
+  {
+   "id": "year-end",
+   "from": {
+    "month": 12,
+    "day": 20
+   },
+   "to": {
+    "month": 1,
+    "day": 2
+   },
+   "effects": [
+    {
+     "match": [
+      "telur",
+      "ayam"
+     ],
+     "mul": 1.08
+    }
+   ]
   }
  ],
  "events": [
@@ -224,5 +244,120 @@
   }
  },
  "freezerCapacity": 30,
- "freezerPrice": 1800000
+ "freezerPrice": 1800000,
+ "demand": {
+  "noticeDays": 3,
+  "longWeekend": {
+   "arrivalMul": 0.85,
+   "partMul": {
+    "evening": 1.15
+   },
+   "itemMul": {
+    "es-krim": 1.5,
+    "keripik": 1.3
+   }
+  },
+  "periods": [
+   {
+    "id": "ramadan",
+    "from": {
+     "month": 2,
+     "day": 8
+    },
+    "to": {
+     "month": 3,
+     "day": 9
+    },
+    "partMul": {
+     "morning": 0.45,
+     "lunch": 0.4,
+     "afternoon": 0.8,
+     "evening": 2.2,
+     "night": 1.5
+    },
+    "itemMul": {
+     "es-teh": 2.5,
+     "gorengan": 2.5,
+     "kue-basah": 2.5,
+     "kopi-hitam": 0.5,
+     "rokok": 0.6,
+     "indomie-goreng": 0.7,
+     "indomie-kuah": 0.7
+    }
+   },
+   {
+    "id": "mudik",
+    "from": {
+     "month": 3,
+     "day": 4
+    },
+    "to": {
+     "month": 3,
+     "day": 9
+    },
+    "arrivalMul": 0.8
+   }
+  ],
+  "holidays": [
+   {
+    "id": "lebaran",
+    "year": 2027,
+    "month": 3,
+    "day": 10,
+    "arrivalMul": 0.35,
+    "partMul": {
+     "evening": 1.4
+    },
+    "itemMul": {
+     "kue-basah": 2,
+     "teh-botol": 1.6
+    }
+   },
+   {
+    "id": "lebaran",
+    "year": 2027,
+    "month": 3,
+    "day": 11,
+    "arrivalMul": 0.5,
+    "partMul": {
+     "evening": 1.3
+    },
+    "itemMul": {
+     "kue-basah": 2,
+     "teh-botol": 1.6
+    }
+   },
+   {
+    "id": "christmas",
+    "month": 12,
+    "day": 25,
+    "arrivalMul": 0.9
+   },
+   {
+    "id": "new-year",
+    "month": 1,
+    "day": 1,
+    "arrivalMul": 0.8,
+    "partMul": {
+     "night": 1.6
+    },
+    "itemMul": {
+     "rokok": 1.4,
+     "air-mineral": 1.3
+    }
+   },
+   {
+    "id": "independence",
+    "month": 8,
+    "day": 17,
+    "arrivalMul": 1.15,
+    "partMul": {
+     "morning": 1.3
+    },
+    "itemMul": {
+     "es-teh": 1.4
+    }
+   }
+  ]
+ }
 }
