@@ -41,6 +41,6 @@ export function freezerFailedOvernight(state: GameState, content: Content): bool
   const hold = freezerHoldHours(state, content);
   const o = state.outage;
   const ice = o?.ice ? content.balance.outage.ice.holdHours : 0;
-  if (o && o.day === state.day - 1 && o.hours > hold + ice) return true;
+  if (o && o.day === state.day - 1 && Math.max(0, o.hours - (o.genHours ?? 0)) > hold + ice) return true;
   return state.tokenOffMinutes > hold * 60;
 }

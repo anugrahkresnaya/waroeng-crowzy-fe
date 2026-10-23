@@ -8,7 +8,7 @@ import { payBill, tickBills } from './bills';
 import { payNeighbor, settleTitipan, takeTitipan } from './titipan';
 import { buyData, buyPowerbank, phoneGate, phoneNight, qrisCheck, tickPhone, spendPhone } from './phone';
 import { seasonArrivalMul, seasonHeadlines, demandOn } from './season';
-import { arrivalMul, buyIce, buyLantern, buyToken, rollOutage, tickPower, tickToken, tokenNewDay, tokenOvernight } from './outage';
+import { arrivalMul, buyGenerator, buyIce, buyLantern, sellOffStock, buyToken, rollOutage, tickPower, tickToken, tokenNewDay, tokenOvernight } from './outage';
 import { dropBurners, plate, startCook, tickBurners, wasteCooked } from './cooking';
 import { clearDisplay, cookBatch, handleLeftover, sweepDisplay } from './kitchen';
 import { freshStats } from './state';
@@ -445,6 +445,14 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
     }
     case 'buyLantern': {
       const error = buyLantern(ctx);
+      return error ? fail(error) : OK;
+    }
+    case 'buyGenerator': {
+      const error = buyGenerator(ctx);
+      return error ? fail(error) : OK;
+    }
+    case 'sellOffStock': {
+      const error = sellOffStock(ctx, cmd);
       return error ? fail(error) : OK;
     }
     case 'buyGas': {

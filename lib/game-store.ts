@@ -87,6 +87,12 @@ function toastFor(event: GameEvent): Omit<Toast, "id"> | null {
       return { key: "iceBought", vars: { price: rp(event.price) }, tone: "good" };
     case "lantern_bought":
       return { key: "lanternBought", vars: { price: rp(event.price) }, tone: "good" };
+    case "generator_bought":
+      return { key: "generatorBought", vars: { price: rp(event.price) }, tone: "good" };
+    case "generator_fuel":
+      return { key: "generatorFuel", vars: { hours: event.hours, cost: rp(event.cost) }, tone: "info" };
+    case "stock_sold_off":
+      return { key: "stockSoldOff", vars: { money: rp(event.money) }, tone: "good" };
     case "token_low":
       return { key: "tokenLow", vars: { token: rp(event.token) }, tone: "bad" };
     case "token_out":

@@ -220,7 +220,9 @@
     "darkFrom": 1080,
     "errandMinutes": 10,
     "ice": { "price": 15000, "holdHours": 4 },
-    "lantern": { "price": 45000, "darkMul": 0.5, "lanternMul": 0.85 }
+    "lantern": { "price": 45000, "darkMul": 0.5, "lanternMul": 0.85 },
+    "generator": { "price": 650000, "fuelPerHour": 20000 },
+    "sellOff": { "mul": 0.5 }
   },
   "gas": {
     "nearbyMarkup": 1.3,

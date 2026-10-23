@@ -81,6 +81,7 @@ export function createInitialState(content: Content, seed: number, day = 0): Gam
     bills: Object.fromEntries(content.balance.bills.map((b) => [b.id, { dueDay: day + b.firstDue }])),
     outage: null,
     lantern: false,
+    generator: false,
     burners: Array.from({ length: content.balance.burners }, () => null),
     skill: {},
     orders: [],

@@ -367,6 +367,10 @@ export const balanceSchema = z.object({
     ice: z.object({ price: positiveInt, holdHours: positiveInt }),
     /** Arrival multipliers in the dark without and with a lantern. */
     lantern: z.object({ price: positiveInt, darkMul: z.number().min(0).max(1), lanternMul: z.number().min(0).max(1) }),
+    /** A generator keeps the shop's power on through a cut for as many hours as the bank can fuel. */
+    generator: z.object({ price: positiveInt, fuelPerHour: positiveInt }),
+    /** Selling cold stock to neighbours before it spoils: this share of what it cost. */
+    sellOff: z.object({ mul: z.number().min(0).max(1) }),
   }),
   /** Buying a tank from a neighbour when the stove runs dry: price multiplier on the market price, and the minutes it takes. */
   gas: z.object({ nearbyMarkup: z.number().min(1), nearbyMinutes: positiveInt }),

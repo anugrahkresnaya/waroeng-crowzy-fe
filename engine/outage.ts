@@ -1,5 +1,6 @@
 // Power cuts: a cut is rolled overnight, sometimes announced a day ahead, and takes the fridge, the ice and the light with it.
 // Ice and a lantern are the player's answers; what the fridge loses shows up in the morning's spoilage.
+import { addPieces, exactPieces } from './money';
 import type { Rng } from './rng';
 import type { Content, Item } from './schema';
 import type { CommandError, GameEvent, GameState, Outage } from './types';
@@ -26,7 +27,16 @@ export function plnOff(state: GameState): boolean {
 export const tokenEmpty = (state: GameState): boolean => state.token <= 0;
 
 /** True while the power is out right now, from a PLN cut or an empty token. */
-export const powerOff = (state: GameState): boolean => plnOff(state) || tokenEmpty(state);
+export const powerOff = (state: GameState): boolean => (plnOff(state) && !generatorOn(state)) || tokenEmpty(state);
+
+/** True while a PLN cut is on and the generator has fuel for it: the shop has power, the towers still do not. */
+export function generatorOn(state: GameState): boolean {
+  const o = state.outage;
+  return state.generator && !!o && o.day === state.day && state.minute >= o.from && state.minute < o.from + (o.genHours ?? 0) * 60;
+}
+
+/** Hours of a cut the shop had no power for: the generator covers its fuelled hours. */
+const unpoweredHours = (o: Outage): number => Math.max(0, o.hours - (o.genHours ?? 0));
 
 /** The cut that is today and has not ended, so ice can still help. */
 export function outageToday(state: GameState): Outage | null {
@@ -51,7 +61,7 @@ export function fridgeFailed(state: GameState, content: Content, day: number): b
   const o = state.outage;
   if (!o || o.day !== day) return false;
   const c = content.balance.outage;
-  return o.hours > c.fridgeHoldHours + (o.ice ? c.ice.holdHours : 0);
+  return unpoweredHours(o) > c.fridgeHoldHours + (o.ice ? c.ice.holdHours : 0);
 }
 
 /** True if the fridge sat without power too long today because the token was empty. */
@@ -71,11 +81,26 @@ export function rollOutage(ctx: OutageCtx): void {
 }
 
 /** Called every game minute while open: tells the player when the lights go out and come back. */
-export function tickPower(ctx: Pick<OutageCtx, 'state' | 'emit'>): void {
+export function tickPower(ctx: Pick<OutageCtx, 'state' | 'content' | 'emit'>): void {
   const o = ctx.state.outage;
   if (!o || o.day !== ctx.state.day) return;
-  if (ctx.state.minute === o.from) ctx.emit({ type: 'power_out', hours: o.hours });
+  if (ctx.state.minute === o.from) {
+    ctx.emit({ type: 'power_out', hours: o.hours });
+    startGenerator(ctx, o);
+  }
   else if (ctx.state.minute === outageEnd(o)) ctx.emit({ type: 'power_back' });
+}
+
+/** The generator starts with the cut and burns fuel from the bank for as many hours as it can pay for. */
+function startGenerator(ctx: Pick<OutageCtx, 'state' | 'content' | 'emit'>, o: Outage): void {
+  const { state, content } = ctx;
+  if (!state.generator) return;
+  const fuel = content.balance.outage.generator.fuelPerHour;
+  const hours = Math.min(o.hours, Math.floor(state.bank / fuel));
+  o.genHours = hours;
+  if (hours <= 0) return;
+  state.bank -= hours * fuel;
+  ctx.emit({ type: 'generator_fuel', hours, cost: hours * fuel });
 }
 
 /** Takes `amount` off the token and tells the player when it runs low or out. */
@@ -168,6 +193,41 @@ export function buyLantern(ctx: OutageCtx): CommandError | null {
   state.bank -= price;
   state.lantern = true;
   ctx.emit({ type: 'lantern_bought', price });
+  return null;
+}
+
+/** A generator, bought once: through a cut it keeps the lights, the fridge and the ice machine on while the bank can pay for fuel. */
+export function buyGenerator(ctx: OutageCtx): CommandError | null {
+  const { state, content } = ctx;
+  if (state.generator) return 'already_owned';
+  const price = content.balance.outage.generator.price;
+  const blocked = errandBlocked(state, content);
+  if (blocked) return blocked;
+  if (state.bank < price) return 'insufficient_funds';
+  errand(state, content);
+  state.bank -= price;
+  state.generator = true;
+  ctx.emit({ type: 'generator_bought', price });
+  return null;
+}
+
+/** Cold stock that would spoil in a cut, and what the neighbours pay for it. */
+export function sellOffLots(state: GameState, content: Content, ingredient?: string) {
+  const lots = state.pantry.filter((l) => l.stored !== 'room' && (!ingredient || l.ingredient === ingredient));
+  const money = Math.round((lots.reduce((s, l) => s + l.qty * l.unitCost, 0) * content.balance.outage.sellOff.mul) / 500) * 500;
+  return { lots, money };
+}
+
+/** During a cut, sells the cold stock cheaply to the neighbours (cash into the drawer) rather than watching it spoil. */
+export function sellOffStock(ctx: OutageCtx, cmd: { ingredient?: string }): CommandError | null {
+  const { state, content } = ctx;
+  if (!outageToday(state)) return 'no_outage';
+  const { lots, money } = sellOffLots(state, content, cmd.ingredient);
+  if (lots.length === 0 || money <= 0) return 'nothing_to_sell';
+  const qty = lots.reduce((s, l) => s + l.qty / content.ingredientById[l.ingredient].unitSize, 0);
+  state.pantry = state.pantry.filter((l) => !lots.includes(l));
+  addPieces(state.drawer, exactPieces(money) ?? {});
+  ctx.emit({ type: 'stock_sold_off', qty, money });
   return null;
 }
 

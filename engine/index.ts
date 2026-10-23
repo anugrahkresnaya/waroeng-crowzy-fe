@@ -13,7 +13,7 @@ export { autoMinutes, justRight, practiceBonus, qualityAt, stillToCook } from '.
 export { billTotal, daysLate, isOverdue, payable } from './bills';
 export { tokenEmpty, plnOff } from './outage';
 export { phoneAlive, phoneGate, qrisCheck, signalOf } from './phone';
-export { arrivalMul, fridgeFailed, iceMissing, outageEnd, outageToday, powerOff } from './outage';
+export { arrivalMul, generatorOn, sellOffLots, fridgeFailed, iceMissing, outageEnd, outageToday, powerOff } from './outage';
 export { gasFlames, gasPrice, gasShort, gasTanks } from './gas';
 export { freezerHoldHours, freezerRoom, freezerUsed, frozenSlotsNeeded, slotsPerPiece } from './freezer';
 export { titipanBlocked, titipanCost, titipanLevel, titipanRoom, titipanUnlocked } from './titipan';

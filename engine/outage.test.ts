@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { content } from './content';
 import { Game } from './game';
-import { arrivalMul, fridgeFailed, outageEnd, powerOff } from './outage';
+import { arrivalMul, fridgeFailed, outageEnd, plnOff, powerOff, tickPower } from './outage';
 import { replay } from './replay';
 import { addCustomer, kitchenContent, passDay, stockUp } from './testing/fixtures';
 import type { Outage } from './types';
@@ -188,5 +188,58 @@ describe('the roll', () => {
     expect(again.state.outage).toEqual(g.state.outage);
     expect(again.state.lantern).toBe(true);
     expect(JSON.stringify(again.state)).toBe(JSON.stringify(g.state));
+  });
+});
+
+describe('generator and selling off cold stock', () => {
+  const cutToday = (g: Game, hours = 5) => {
+    g.state.outage = { day: g.state.day, from: 480, hours, known: true, ice: false };
+  };
+  const open = () => {
+    const g = new Game(kitchenContent(), { seed: 1 });
+    g.state.token = 1e9;
+    g.state.bank = 5e6;
+    return g;
+  };
+
+  it('keeps the shop powered through the cut for as many hours as it can fuel', () => {
+    const g = open();
+    expect(g.dispatch({ type: 'buyGenerator' }).ok).toBe(true);
+    cutToday(g, 5);
+    g.state.bank = content.balance.outage.generator.fuelPerHour * 3 + 5;
+    g.state.phase = 'open';
+    g.state.minute = 480;
+    tickPower({ state: g.state, content: g.content, emit: () => {} });
+    expect(g.state.outage?.genHours).toBe(3);
+    expect(powerOff(g.state)).toBe(false);
+    expect(plnOff(g.state)).toBe(true);
+    g.state.minute = 480 + 3 * 60;
+    expect(powerOff(g.state)).toBe(true);
+  });
+
+  it('a cut that the generator covers spares the fridge', () => {
+    const g = open();
+    g.state.generator = true;
+    cutToday(g, 8);
+    g.state.outage!.genHours = 8;
+    expect(fridgeFailed(g.state, g.content, g.state.day)).toBe(false);
+  });
+
+  it('sells the cold stock for cash, and only in a cut', () => {
+    const g = open();
+    const ing = content.ingredients.find((i) => i.life.fridge !== null)!;
+    g.state.pantry = [
+      { ingredient: ing.id, qty: ing.unitSize * 4, bought: 0, unitCost: 1000, stored: 'fridge' },
+      { ingredient: ing.id, qty: ing.unitSize, bought: 0, unitCost: 1000, stored: 'room' },
+    ];
+    expect(g.dispatch({ type: 'sellOffStock' })).toEqual({ ok: false, error: 'no_outage' });
+    cutToday(g);
+    const before = Object.entries(g.state.drawer).reduce((s, [d, n]) => s + Number(d) * n, 0);
+    const r = g.dispatch({ type: 'sellOffStock' });
+    expect(r.ok).toBe(true);
+    const after = Object.entries(g.state.drawer).reduce((s, [d, n]) => s + Number(d) * n, 0);
+    expect(after).toBeGreaterThan(before);
+    expect(g.state.pantry.map((l) => l.stored)).toEqual(['room']);
+    expect(g.dispatch({ type: 'sellOffStock' })).toEqual({ ok: false, error: 'nothing_to_sell' });
   });
 });

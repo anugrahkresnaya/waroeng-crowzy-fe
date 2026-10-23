@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
-import { content, formatClock, freezerHoldHours, freezerUsed, outageEnd, plnOff, powerOff, tokenEmpty, type CommandError } from "@/engine";
+import { content, formatClock, freezerHoldHours, freezerUsed, generatorOn, outageEnd, plnOff, sellOffLots, powerOff, tokenEmpty, type CommandError } from "@/engine";
 import { rp } from "@/lib/format";
 import { useGame } from "@/lib/game-store";
 
@@ -31,11 +31,12 @@ export function OutageBanner() {
     return ["ended", "night", "bed"].includes(state.phase) ? null : "wrong_phase";
   };
   const why = (price: number): CommandError | null => errandWhy() ?? (state.bank < price ? "insufficient_funds" : null);
+  const sellOff = today ? sellOffLots(state, content) : null;
   const pack = tk.packs[Math.min(1, tk.packs.length - 1)];
   const tokenWhy: CommandError | null = state.bank < pack + tk.fee ? "insufficient_funds" : null;
 
   return (
-    <div className="shrink-0 border-b-2 border-bad/60 bg-bad/10 px-3 py-1.5 text-xs" role="status" data-testid="outage-banner" data-power={plnOff(state) || tokenEmpty(state) ? "off" : "on"}>
+    <div className="shrink-0 border-b-2 border-bad/60 bg-bad/10 px-3 py-1.5 text-xs" role="status" data-testid="outage-banner" data-power={powerOff(state) ? "off" : "on"}>
       {tokenLow && (
         <div data-testid="token-alert">
           <b className="text-bad">{tokenEmpty(state) ? t("outage.tokenEmpty") : t("outage.tokenLow", { token: rp(state.token) })}</b>
@@ -77,10 +78,21 @@ export function OutageBanner() {
           )}
           {today && o.ice && <p className="mt-0.5 text-[11px] text-good">{t("outage.icy")}</p>}
           {state.lantern && <p className="mt-0.5 text-[11px] text-good">{t("outage.lantern")}</p>}
+          {state.generator && (today && generatorOn(state) ? <p className="mt-0.5 text-[11px] text-good" data-testid="generator-on">{t("outage.generatorOn")}</p> : <p className="mt-0.5 text-[11px] text-good">{t("outage.generator", { fuel: rp(c.generator.fuelPerHour) })}</p>)}
           <div className="mt-1 flex flex-wrap items-center gap-1.5">
             {today && !o.ice && (
               <button className={BTN} disabled={why(c.ice.price) !== null} data-testid="buy-ice" title={why(c.ice.price) ? t(`outage.why.${why(c.ice.price)}`) : undefined} onClick={() => send({ type: "buyIce" })}>
                 {t("outage.buyIce", { price: rp(c.ice.price) })}
+              </button>
+            )}
+            {!state.generator && (
+              <button className={BTN} disabled={why(c.generator.price) !== null} data-testid="buy-generator" title={why(c.generator.price) ? t(`outage.why.${why(c.generator.price)}`) : undefined} onClick={() => send({ type: "buyGenerator" })}>
+                {t("outage.buyGenerator", { price: rp(c.generator.price) })}
+              </button>
+            )}
+            {sellOff && sellOff.money > 0 && (
+              <button className={BTN} data-testid="sell-off" onClick={() => send({ type: "sellOffStock" })}>
+                {t("outage.sellOff", { money: rp(sellOff.money) })}
               </button>
             )}
             {!state.lantern && (

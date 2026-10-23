@@ -204,6 +204,8 @@ export interface Outage {
   hours: number;
   known: boolean;
   ice: boolean;
+  /** Hours the generator ran for this cut, set when the cut starts; missing means none. */
+  genHours?: number;
 }
 
 /** A recurring bill the player owes: the day it is due. */
@@ -285,6 +287,8 @@ export interface GameState {
   bills: Record<string, Bill>;
   /** The power cut that is coming or happening, if any. */
   outage: Outage | null;
+  /** Whether the player owns a generator. */
+  generator: boolean;
   /** Whether the player owns a lantern. */
   lantern: boolean;
   /** What is on the stove, one slot per burner (null when free). */
@@ -318,6 +322,8 @@ export type Command =
   | { type: 'buyGas' }
   | { type: 'buyIce' }
   | { type: 'buyLantern' }
+  | { type: 'buyGenerator' }
+  | { type: 'sellOffStock'; ingredient?: string }
   | { type: 'takeTitipan'; item: string; qty: number }
   | { type: 'payNeighbor' }
   | { type: 'buyFreezer' }
@@ -368,6 +374,7 @@ export type CommandError =
   | 'out_of_gas'
   | 'no_ice'
   | 'no_outage'
+  | 'nothing_to_sell'
   | 'already_owned'
   | 'unknown_bill'
   | 'not_unlocked'
@@ -462,6 +469,9 @@ export type GameEvent =
   | { type: 'bill_overdue'; id: string }
   | { type: 'ice_bought'; price: number }
   | { type: 'lantern_bought'; price: number }
+  | { type: 'generator_bought'; price: number }
+  | { type: 'generator_fuel'; hours: number; cost: number }
+  | { type: 'stock_sold_off'; qty: number; money: number }
   | { type: 'went_stale'; item: string; portions: number }
   | { type: 'leftover_handled'; item: string; choice: LeftoverChoice; portions: number }
   | { type: 'news'; event: string }

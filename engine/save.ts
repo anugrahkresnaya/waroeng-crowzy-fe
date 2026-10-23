@@ -7,7 +7,7 @@ import { Game } from './game';
 import { isValidBlockPlan, type Content } from './schema';
 import type { GameState } from './types';
 
-export const SAVE_FORMAT = 10;
+export const SAVE_FORMAT = 11;
 
 const num = z.number();
 const pieces = z.record(z.string(), z.number().int().min(0));
@@ -112,8 +112,9 @@ const state = z.object({
   token: num,
   tokenOffMinutes: num,
   bills: z.record(z.string(), z.object({ dueDay: num })),
-  outage: z.object({ day: num, from: num, hours: num, known: z.boolean(), ice: z.boolean() }).nullable(),
+  outage: z.object({ day: num, from: num, hours: num, known: z.boolean(), ice: z.boolean(), genHours: num.optional() }).nullable(),
   lantern: z.boolean(),
+  generator: z.boolean(),
   burners: z.array(z.object({ item: z.string(), customerId: num, startedAt: num, auto: z.boolean(), cost: num }).nullable()),
   skill: z.record(z.string(), num),
   orders: z.array(order),
@@ -203,6 +204,12 @@ const MIGRATIONS: Record<number, (raw: Record<string, unknown>) => Record<string
     const state = raw.state as Record<string, unknown> | undefined;
     if (!state || typeof state !== 'object') return null;
     return { ...raw, state: { ...state, bigFridge: false } };
+  },
+  // Format 10 had no generator.
+  10: (raw) => {
+    const state = raw.state as Record<string, unknown> | undefined;
+    if (!state || typeof state !== 'object') return null;
+    return { ...raw, state: { ...state, generator: false } };
   },
 };
 
