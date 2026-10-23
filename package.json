@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p sw/tsconfig.json",
     "preview": "node scripts/serve-out.mjs",
     "test:pwa": "playwright test -c playwright.pwa.config.ts",
-    "icons": "node scripts/build-icons.mjs"
+    "icons": "node scripts/build-icons.mjs",
+    "balance": "BALANCE=1 vitest run engine/balance.test.ts"
   },
   "dependencies": {
     "dexie": "^4.4.6",

@@ -12,6 +12,12 @@ export interface BotOptions {
   /** Commands the bot can issue per game minute; fractions work (0.25 = one every 4 minutes). */
   actionsPerTick: number;
   prepared?: boolean;
+  /** Cook the batch dishes before opening (default). Without it everything the display sells runs out and is not replaced. */
+  cookAhead?: boolean;
+  /** How many batches of each batch dish to cook before opening: 1 is the old behaviour, `fill` keeps cooking round-robin until the pre-open time or the ingredients run out. */
+  batches?: number | 'fill';
+  /** Restock up to this many times the starting levels (default 1). */
+  restockMul?: number;
 }
 
 /** Issues the next sensible command for the customer at the counter, or returns false if none. */
@@ -57,8 +63,9 @@ export function botAct(game: Game): boolean {
 
 /** Plays one whole open day. */
 export function playDay(game: Game, options: BotOptions = { actionsPerTick: 4 }): Game {
-  if (game.state.phase === 'idle') cookAhead(game, options.prepared ?? true);
-  game.dispatch({ type: 'open', prepared: options.prepared ?? true });
+  if (game.state.phase === 'idle' && (options.cookAhead ?? true)) cookAhead(game, options.prepared ?? true, options.batches ?? 1);
+  // With no time left to prepare the shelves, open anyway and restock while serving, as a player would.
+  if (!game.dispatch({ type: 'open', prepared: options.prepared ?? true }).ok) game.dispatch({ type: 'open', prepared: false });
   let budget = 0;
   while (game.state.phase === 'open') {
     budget = Math.min(budget + options.actionsPerTick, Math.max(1, options.actionsPerTick));
@@ -69,13 +76,18 @@ export function playDay(game: Game, options: BotOptions = { actionsPerTick: 4 })
 }
 
 /** Cooks one batch of each batch dish that still fits in the pre-open time, keeping the time that preparing the shelves needs. */
-export function cookAhead(game: Game, prepared = true): void {
+export function cookAhead(game: Game, prepared = true, batches: number | 'fill' = 1): void {
   const { content } = game;
   const reserve = prepared ? content.balance.prepareMinutes : 0;
-  for (const item of content.items) {
-    if (!item.batch) continue;
-    if (game.state.preOpenUsed + item.batch.minutes + reserve > content.balance.preOpenMinutes) continue;
-    game.dispatch({ type: 'cookBatch', item: item.id, batches: 1 });
+  const rounds = batches === 'fill' ? 50 : batches;
+  for (let round = 0; round < rounds; round++) {
+    let cooked = false;
+    for (const item of content.items) {
+      if (!item.batch) continue;
+      if (game.state.preOpenUsed + item.batch.minutes + reserve > content.balance.preOpenMinutes) continue;
+      if (game.dispatch({ type: 'cookBatch', item: item.id, batches: 1 }).ok) cooked = true;
+    }
+    if (!cooked) break;
   }
 }
 
@@ -92,6 +104,7 @@ export function playAnyDay(game: Game, options: BotOptions = { actionsPerTick: 4
   bankTheBigNotes(game);
   restock(game);
   payUp(game);
+  manageChange(game);
   if (game.state.phase === 'dayoff') {
     while (game.state.phase === 'dayoff') game.dispatch({ type: 'runBlock' });
     return;
@@ -111,6 +124,15 @@ export function payUp(game: Game): void {
   }
 }
 
+/** Before opening: when small notes and coins are running low, take money out of the bank and exchange it for small change (tukar uang). */
+export function manageChange(game: Game, floor = 60000): void {
+  const { state } = game;
+  if (state.phase !== 'idle') return;
+  const small = Object.entries(state.drawer).reduce((sum, [d, n]) => (Number(d) <= 20000 ? sum + Number(d) * n : sum), 0);
+  if (small >= floor || state.bank < 100000) return;
+  if (game.dispatch({ type: 'withdrawCash', amount: 100000 }).ok) game.dispatch({ type: 'exchangeCash', amount: 100000 });
+}
+
 /** Banks the big notes the till does not need, keeping a float of 20.000 notes for change. */
 export function bankTheBigNotes(game: Game): void {
   const { drawer } = game.state;
@@ -124,7 +146,7 @@ export function bankTheBigNotes(game: Game): void {
  * Orders enough from the main supplier to bring every ingredient and good back up to its starting level,
  * counting what is already on the way. Skips what the bank cannot cover.
  */
-export function restock(game: Game, supplier = 'pak-slamet'): void {
+export function restock(game: Game, supplier = 'pak-slamet', mul = 1): void {
   const { state, content } = game;
   const incoming: Record<string, number> = {};
   for (const o of state.orders) if (o.status === 'transit') for (const l of o.lines) incoming[l.key] = (incoming[l.key] ?? 0) + l.qty;
@@ -132,13 +154,13 @@ export function restock(game: Game, supplier = 'pak-slamet'): void {
   for (const [id, target] of Object.entries(content.balance.start.pantry)) {
     const ing = content.ingredientById[id];
     const have = state.pantry.filter((l) => l.ingredient === id).reduce((s, l) => s + l.qty, 0) / ing.unitSize + (incoming[id] ?? 0);
-    const need = Math.ceil(target - have - 1e-9);
+    const need = Math.ceil(target * mul - have - 1e-9);
     if (need > 0) lines.push({ key: id, qty: need });
   }
   for (const [id, target] of Object.entries(content.balance.start.goods)) {
     const item = content.itemById[id];
     const have = (state.stock[id] ?? 0) + (incoming[`g-${id}`] ?? 0) * (item.pack ?? 1);
-    const need = Math.ceil((target - have) / (item.pack ?? 1));
+    const need = Math.ceil((target * mul - have) / (item.pack ?? 1));
     if (need > 0) lines.push({ key: `g-${id}`, qty: need });
   }
   while (lines.length > 0) {
