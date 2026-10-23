@@ -710,6 +710,7 @@
       "no_ice": "Listrik padam, tidak ada es batu"
     },
     "needs": "Bahan per adonan",
+    "pieces": "bks",
     "orderDishes": "Dimasak saat dipesan",
     "orderDishesHelp": "Hidangan ini dibuat langsung dari gudang ketika pelanggan memesan.",
     "batchSale": "Habis di etalase = habis terjual. Jangan sampai pelanggan pulang.",

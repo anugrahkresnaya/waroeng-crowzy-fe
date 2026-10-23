@@ -6,7 +6,7 @@ import { Art } from "@/components/art";
 import { TopBar } from "@/components/top-bar";
 import { Card, Chip, Pill } from "@/components/ui";
 import { WarungNav } from "@/components/warung-nav";
-import { baseCostPerPortion, content, costPerPortion, type Phase, type Portion } from "@/engine";
+import { baseCostPerPortion, content, costPerPortion, goodKey, type Phase, type Portion } from "@/engine";
 import { rp } from "@/lib/format";
 import { useGame } from "@/lib/game-store";
 import { useGuard } from "@/lib/use-guard";
@@ -134,6 +134,19 @@ export default function MenuPage() {
                           {Math.round(used * 100) / 100} {loc(ing.baseUnit)}
                         </span>
                         <span className="w-14 text-right font-mono tabular-nums">{rp(Math.round((used / ing.unitSize) * state.market.prices[id]))}</span>
+                      </li>
+                    );
+                  })}
+                  {Object.entries(item.recipeGoods ?? {}).map(([id, per]) => {
+                    const good = content.itemById[id];
+                    return (
+                      <li key={id} className="flex items-center gap-2">
+                        <span className="w-5 shrink-0">
+                          <Art id={good.art} />
+                        </span>
+                        <span className="flex-1">{loc(good.name)}</span>
+                        <span className="font-mono text-muted tabular-nums">{per} {t("kitchen.pieces")}</span>
+                        <span className="w-14 text-right font-mono tabular-nums">{rp(Math.round(per * (state.market.prices[goodKey(id)] ?? 0) / (good.pack ?? 1)))}</span>
                       </li>
                     );
                   })}

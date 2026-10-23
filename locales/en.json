@@ -710,6 +710,7 @@
       "no_ice": "No ice while the power is out"
     },
     "needs": "Ingredients per batch",
+    "pieces": "pcs",
     "orderDishes": "Cooked to order",
     "orderDishesHelp": "These are made from the storeroom when a customer orders.",
     "batchSale": "An empty display means lost sales. Do not send customers home.",

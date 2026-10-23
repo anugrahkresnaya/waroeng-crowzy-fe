@@ -2,9 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { content } from './content';
 import { freezerHoldHours, freezerRoom, freezerUsed } from './freezer';
 import { Game } from './game';
-import { ingredientQty, quoteOrder } from './market';
+import { baseCostPerPortion, costPerPortion, ingredientQty, quoteOrder } from './market';
+import { batchesPossible } from './kitchen';
 import { replay } from './replay';
-import { kitchenContent, passDay } from './testing/fixtures';
+import { kitchenContent, passDay, stockUp } from './testing/fixtures';
 import type { Command } from './types';
 
 const m = content.market;
@@ -227,5 +228,63 @@ describe('replay', () => {
     const again = replay(c, 2, g.log);
     expect(again.state.stock.nugget).toBe(g.state.stock.nugget);
     expect(JSON.stringify(again.state) === JSON.stringify(g.state)).toBe(true);
+  });
+});
+
+describe('nugget goreng: a frozen good as an ingredient', () => {
+  const item = content.itemById['nugget-goreng'];
+  const per = item.recipeGoods!.nugget;
+  const ready = (nuggets: number) => {
+    const g = idle(true);
+    stockUp(g, 'minyak');
+    stockUp(g, 'lpg');
+    g.state.stock.nugget = nuggets;
+    g.state.goodsCost.nugget = 30000;
+    return g;
+  };
+
+  it('needs the nuggets in stock', () => {
+    const g = ready(0);
+    expect(g.dispatch({ type: 'cookBatch', item: 'nugget-goreng', batches: 1 })).toEqual({ ok: false, error: 'missing_ingredients' });
+    expect(batchesPossible(g.state, g.content, item)).toBe(0);
+  });
+
+  it('uses whole bags for a batch and carries their cost into the portions', () => {
+    const g = ready(2);
+    expect(batchesPossible(g.state, g.content, item)).toBe(2);
+    const r = g.dispatch({ type: 'cookBatch', item: 'nugget-goreng', batches: 1 });
+    expect(r.ok).toBe(true);
+    expect(g.state.stock.nugget).toBe(2 - per * item.batch!.portions);
+    const batch = g.state.display['nugget-goreng'][0];
+    expect(batch.qty).toBe(item.batch!.portions);
+    expect(batch.unitCost).toBeGreaterThanOrEqual((30000 * per * item.batch!.portions) / item.batch!.portions);
+  });
+
+  it('is part of the plate cost shown on the menu', () => {
+    const g = ready(1);
+    const withGood = costPerPortion(g.state, g.content, item);
+    expect(withGood).toBeGreaterThan(0);
+    expect(baseCostPerPortion(g.content, item)).toBeGreaterThanOrEqual(per * (content.itemById.nugget.buyPrice ?? 0));
+  });
+
+  it('is only asked for in a warung with a freezer', () => {
+    const asked = (freezer: boolean) => {
+      const g = new Game(content, { seed: 3 });
+      g.state.token = 1e9;
+      if (freezer) {
+        g.state.bank = 1e9;
+        g.dispatch({ type: 'buyFreezer' });
+      }
+      g.dispatch({ type: 'open', prepared: false });
+      const seen = new Set<string>();
+      for (let i = 0; i < 900 && g.state.phase === 'open'; i++) {
+        g.tick();
+        g.state.line = g.state.line.slice(0, 4);
+        for (const c of g.state.line) for (const l of c.order) seen.add(l.itemId);
+      }
+      return seen;
+    };
+    expect(asked(false).has('nugget-goreng')).toBe(false);
+    expect(asked(true).has('nugget-goreng')).toBe(true);
   });
 });

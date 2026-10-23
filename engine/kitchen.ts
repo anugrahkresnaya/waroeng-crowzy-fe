@@ -1,7 +1,7 @@
 // The kitchen: batch dishes are cooked ahead onto the display, sold from there, and what is left at night is dealt with.
 import { gasShort } from './gas';
 import { iceMissing } from './outage';
-import { consume, dishNeeds, displayPortions, ingredientQty, sellPrice, takeFromDisplay } from './market';
+import { consume, consumeGoods, dishNeeds, goodsPortions, displayPortions, ingredientQty, sellPrice, takeFromDisplay } from './market';
 import { addPieces, exactPieces } from './money';
 import type { Rng } from './rng';
 import type { Content, Item } from './schema';
@@ -62,6 +62,7 @@ export function batchesPossible(state: GameState, content: Content, item: Item):
   for (const [ing, need] of Object.entries(dishNeeds(state, content, item))) {
     most = Math.min(most, Math.floor((ingredientQty(state, ing) + 1e-9) / (need * item.batch.portions)));
   }
+  most = Math.min(most, Math.floor(goodsPortions(state, item) / item.batch.portions));
   return Number.isFinite(most) ? Math.max(0, most) : 0;
 }
 
@@ -86,6 +87,7 @@ export function cookBatch(ctx: KitchenCtx, cmd: Extract<Command, { type: 'cookBa
   const portions = item.batch.portions * cmd.batches;
   let cost = 0;
   for (const [ing, need] of Object.entries(dishNeeds(state, content, item))) cost += consume(state, ing, need * portions).cost;
+  cost += consumeGoods(state, content, item, portions);
   // Food cooked before opening is ready when the doors open; food cooked while open is ready when the cook is done.
   const readyAt = state.phase === 'idle' ? state.day * 1440 + b.openMinute : absoluteMinute(state) + minutes;
   (state.display[item.id] ??= []).push({ qty: portions, cookedAt: readyAt, unitCost: cost / portions });

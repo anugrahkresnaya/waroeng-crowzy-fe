@@ -24,6 +24,8 @@ export const itemSchema = z
     reference: positiveInt.optional(),
     /** Dish only: amounts of each ingredient per normal portion, in the ingredient's base unit. */
     recipe: z.record(z.string(), z.number().positive()).optional(),
+    /** Dish only, batch dishes: pieces of a frozen good used per portion (a batch must use whole pieces). It comes out of the stock, so it needs the freezer. */
+    recipeGoods: z.record(z.string(), z.number().positive()).optional(),
     /** Dish only: cooked ahead in batches and kept on the display. Without it a dish is cooked to order from the pantry. */
     batch: z
       .object({
@@ -55,6 +57,7 @@ export const itemSchema = z
   })
   .refine((i) => !(i.batch && i.cook), { message: 'a dish is cooked either in batches or to order' })
   .refine((i) => i.kind === 'dish' || (!i.batch && !i.cook), { message: 'only a dish can be cooked in batches' })
+  .refine((i) => !i.recipeGoods || (i.kind === 'dish' && !!i.batch), { message: 'only a batch dish can use frozen goods' })
   .refine((i) => i.kind === 'good' || !i.frozen, { message: 'only a good can be frozen' })
   .refine((i) => i.kind === 'good' || !i.consign, { message: 'only a good can be consigned' })
   .refine((i) => (i.kind === 'dish' ? !!i.recipe && Object.keys(i.recipe).length > 0 : !!i.buyPrice && !!i.pack), {
@@ -415,6 +418,12 @@ export const contentSchema = z
     });
     const goodIds = new Set(c.items.filter((i) => i.kind === 'good').map((i) => i.id));
     c.items.forEach((item, i) => {
+      for (const [id, per] of Object.entries(item.recipeGoods ?? {})) {
+        const good = c.items.find((g) => g.id === id);
+        if (!good?.frozen) problem(`recipeGoods "${id}" is not a frozen good`, ['items', i, 'recipeGoods', id]);
+        const whole = per * (item.batch?.portions ?? 1);
+        if (Math.abs(whole - Math.round(whole)) > 1e-9) problem(`a batch of ${item.id} would use ${whole} of ${id}, not whole pieces`, ['items', i, 'recipeGoods', id]);
+      }
       for (const ing of Object.keys(item.recipe ?? {})) {
         if (!ingredientIds.has(ing)) problem(`recipe uses unknown ingredient "${ing}"`, ['items', i, 'recipe', ing]);
       }

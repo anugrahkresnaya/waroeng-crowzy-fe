@@ -135,6 +135,11 @@ export default function DapurPage() {
                           </li>
                         );
                       })}
+                      {Object.entries(item.recipeGoods ?? {}).map(([id, per]) => (
+                        <li key={id} data-testid={`needs-good-${id}`}>
+                          {loc(content.itemById[id].name)} {Math.round(per * batch.portions)} {t("kitchen.pieces")}
+                        </li>
+                      ))}
                     </ul>
                   </details>
                   <Button className="mt-2 w-full py-2" disabled={blocked !== null} data-testid={`cook-${item.id}`} onClick={() => send({ type: "cookBatch", item: item.id, batches: 1 })}>

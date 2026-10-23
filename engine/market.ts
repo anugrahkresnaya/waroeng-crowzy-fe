@@ -235,6 +235,27 @@ export function dishNeeds(state: GameState, content: Content, item: Item): Recor
   return Object.fromEntries(Object.entries(item.recipe ?? {}).map(([ing, amount]) => [ing, amount * mul]));
 }
 
+/** Frozen goods one portion uses, in pieces. Portion size does not change it. */
+export const goodNeeds = (item: Item): Record<string, number> => item.recipeGoods ?? {};
+
+/** What the stock of frozen goods allows: how many portions a dish can still make from them. */
+export function goodsPortions(state: GameState, item: Item): number {
+  let most = Infinity;
+  for (const [id, per] of Object.entries(goodNeeds(item))) most = Math.min(most, Math.floor(((state.stock[id] ?? 0) + 1e-9) / per));
+  return most;
+}
+
+/** Takes the frozen goods for `portions` portions out of the stock and returns what they cost. */
+export function consumeGoods(state: GameState, content: Content, item: Item, portions: number): number {
+  let cost = 0;
+  for (const [id, per] of Object.entries(goodNeeds(item))) {
+    const pieces = Math.round(per * portions);
+    state.stock[id] = Math.max(0, (state.stock[id] ?? 0) - pieces);
+    cost += pieces * (state.goodsCost[id] ?? content.itemById[id].buyPrice ?? 0);
+  }
+  return cost;
+}
+
 /** The price a customer pays for one: the menu price for a dish, the shelf price for a good. */
 export const sellPrice = (state: GameState, item: Item): number => (item.kind === 'dish' ? (state.menu[item.id]?.price ?? item.price) : item.price);
 
@@ -269,6 +290,7 @@ export function costPerPortion(state: GameState, content: Content, item: Item, p
     const ing = content.ingredientById[id];
     total += ((amount * mul) / ing.unitSize) * marketPrice(state, id);
   }
+  for (const [id, per] of Object.entries(goodNeeds(item))) total += per * (marketPrice(state, goodKey(id)) / (content.itemById[id].pack ?? 1));
   return total;
 }
 
@@ -280,6 +302,7 @@ export function baseCostPerPortion(content: Content, item: Item, portion: Portio
     const ing = content.ingredientById[id];
     total += ((amount * mul) / ing.unitSize) * ing.price;
   }
+  for (const [id, per] of Object.entries(goodNeeds(item))) total += per * (content.itemById[id].buyPrice ?? 0);
   return total;
 }
 

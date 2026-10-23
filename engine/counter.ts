@@ -88,7 +88,7 @@ function spawnCustomer(ctx: Ctx, type: CustomerType): void {
   // Nobody asks for frozen goods in a warung with no freezer.
   const itemMul = demandOn(content, state.day).itemMul;
   const pool: Array<[string, number]> = Object.entries(type.items)
-    .filter(([id]) => (state.freezer || !content.itemById[id]?.frozen) && (!content.itemById[id]?.consign || (state.stock[id] ?? 0) > 0))
+    .filter(([id]) => (state.freezer || !(content.itemById[id]?.frozen || content.itemById[id]?.recipeGoods)) && (!content.itemById[id]?.consign || (state.stock[id] ?? 0) > 0))
     .map(([id, w]) => [id, w * (itemMul[id] ?? 1)]);
   const distinct = rng.int(type.distinctItems[0], type.distinctItems[1]);
   const order: OrderLine[] = [];

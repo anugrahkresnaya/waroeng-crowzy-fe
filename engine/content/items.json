@@ -240,6 +240,30 @@
   }
  },
  {
+  "id": "nugget-goreng",
+  "art": "nugget",
+  "name": {
+   "id": "Nugget goreng",
+   "en": "Fried nuggets"
+  },
+  "category": "makanan",
+  "kind": "dish",
+  "price": 6000,
+  "reference": 7000,
+  "recipe": {
+   "minyak": 20,
+   "lpg": 4
+  },
+  "recipeGoods": {
+   "nugget": 0.1
+  },
+  "batch": {
+   "portions": 10,
+   "minutes": 15,
+   "freshMinutes": 180
+  }
+ },
+ {
   "id": "rokok",
   "art": "rokok",
   "name": {
