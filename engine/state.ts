@@ -75,6 +75,8 @@ export function createInitialState(content: Content, seed: number, day = 0): Gam
     freezer: false,
     bigFridge: false,
     shelfLevel: 0,
+    tripToday: false,
+    melt: [],
     phone: { battery: content.balance.phone.start.battery, powerbank: null, data: content.balance.phone.start.data },
     qrisPending: [],
     token: content.balance.token.start,

@@ -160,6 +160,7 @@
       "no_data": "Paket data habis",
       "needs_freezer": "Barang beku butuh freezer",
       "shelf_full": "Rak tidak muat",
+      "trip_done": "Hari ini sudah ke pasar",
       "freezer_full": "Freezer tidak muat",
       "not_unlocked": "Tetangga belum menawarkan titipan",
       "owes_neighbor": "Bayar tetangga dulu",
@@ -197,13 +198,34 @@
     "burnerWasted": "{{item}} di kompor terbuang",
     "gasBought": "Beli tabung gas: {{price}}",
     "season": {
-      "ramadan": { "now": "Ramadan mulai hari ini: siang sepi, malam ramai (takjil, es teh, gorengan)", "soon": "Ramadan mulai {{n}} hari lagi: sore ramai, siang sepi" },
-      "mudik": { "now": "Musim mudik: banyak tetangga pulang kampung", "soon": "Musim mudik {{n}} hari lagi: jalanan bakal sepi" },
-      "lebaran": { "now": "Lebaran: kebanyakan warung tutup, tamu cari kue dan minuman", "soon": "Lebaran {{n}} hari lagi" },
-      "christmas": { "now": "Hari Natal: agak sepi", "soon": "Natal {{n}} hari lagi" },
-      "new-year": { "now": "Tahun Baru: malam ramai, cari rokok dan air", "soon": "Tahun Baru {{n}} hari lagi" },
-      "independence": { "now": "17 Agustus: jalanan ramai seharian", "soon": "17 Agustus {{n}} hari lagi" },
-      "long-weekend": { "now": "Libur panjang: orang pergi, camilan sore laku", "soon": "Libur panjang {{n}} hari lagi" }
+      "ramadan": {
+        "now": "Ramadan mulai hari ini: siang sepi, malam ramai (takjil, es teh, gorengan)",
+        "soon": "Ramadan mulai {{n}} hari lagi: sore ramai, siang sepi"
+      },
+      "mudik": {
+        "now": "Musim mudik: banyak tetangga pulang kampung",
+        "soon": "Musim mudik {{n}} hari lagi: jalanan bakal sepi"
+      },
+      "lebaran": {
+        "now": "Lebaran: kebanyakan warung tutup, tamu cari kue dan minuman",
+        "soon": "Lebaran {{n}} hari lagi"
+      },
+      "christmas": {
+        "now": "Hari Natal: agak sepi",
+        "soon": "Natal {{n}} hari lagi"
+      },
+      "new-year": {
+        "now": "Tahun Baru: malam ramai, cari rokok dan air",
+        "soon": "Tahun Baru {{n}} hari lagi"
+      },
+      "independence": {
+        "now": "17 Agustus: jalanan ramai seharian",
+        "soon": "17 Agustus {{n}} hari lagi"
+      },
+      "long-weekend": {
+        "now": "Libur panjang: orang pergi, camilan sore laku",
+        "soon": "Libur panjang {{n}} hari lagi"
+      }
     },
     "outageNotice": "Kabar PLN: listrik padam {{from}} sampai {{until}}",
     "powerOut": "Listrik padam",
@@ -232,6 +254,8 @@
     "dataBought": "Paket data +{{mb}} MB (bayar tunai {{price}})",
     "powerbankBought": "Beli powerbank: {{price}}",
     "shelfBought": "Rak lebih besar, {{slots}} slot: {{price}}",
+    "tripStarted": "Berangkat ke pasar. Belanja di aplikasi pasar, lalu buka warung.",
+    "frozenMelted": "{{item}}: {{pieces}} meleleh sebelum laku",
     "fridgeBought": "Beli kulkas lebih besar: {{price}}",
     "freezerBought": "Beli freezer: {{price}}",
     "frozenLost": "{{pieces}} {{item}} tidak kebagian tempat dan mencair",
@@ -307,7 +331,15 @@
       }
     },
     "displayTitle": "Etalase",
-    "toKitchen": "Ke dapur"
+    "toKitchen": "Ke dapur",
+    "trip": {
+      "title": "Ke pasar",
+      "help": "Ke pasar sebelum buka: {{minutes}} menit, barang hari itu juga, tanpa ongkos kirim, dan barang beku yang bisa dijual sebelum meleleh. Tidak sempat menyiapkan rak.",
+      "going": "Kamu di pasar. Belanja di aplikasi pasar, lalu buka warung.",
+      "melt": "Barang beku tanpa freezer meleleh jam {{time}}.",
+      "go": "Berangkat",
+      "shop": "Belanja"
+    }
   },
   "exchange": {
     "title": "Tukar uang",

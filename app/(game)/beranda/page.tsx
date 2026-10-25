@@ -10,7 +10,7 @@ import { MorningReport } from "@/components/morning-report";
 import { TopBar } from "@/components/top-bar";
 import { WarungNav } from "@/components/warung-nav";
 import { Button, Card, Chip } from "@/components/ui";
-import { DENOMS, content, displayPortions, exchangeBreakdown } from "@/engine";
+import { DENOMS, content, displayPortions, exchangeBreakdown, formatClock } from "@/engine";
 import { rp } from "@/lib/format";
 import { useGame } from "@/lib/game-store";
 import { useGuard } from "@/lib/use-guard";
@@ -136,6 +136,23 @@ export default function BerandaPage() {
           <Link href="/dapur" className="rounded-xl border-2 border-ink px-3 py-2 text-xs font-bold" data-testid="to-kitchen">
             {t("home.toKitchen")}
           </Link>
+        </Card>
+
+        <Card className="flex items-center gap-3 p-3" data-testid="trip-card">
+          <span className="min-w-0 flex-1 leading-tight">
+            <b className="text-sm">{t("home.trip.title")}</b>
+            <span className="block text-xs text-muted">{state.tripToday ? t("home.trip.going") : t("home.trip.help", { minutes: content.market.pasar.tripMinutes })}</span>
+            {state.melt.length > 0 && <span className="block text-xs text-warn" data-testid="melt-warning">{t("home.trip.melt", { time: formatClock(state.melt[0].at - state.day * 1440) })}</span>}
+          </span>
+          {state.tripToday ? (
+            <Link href="/pasar" className="rounded-xl border-2 border-ink px-3 py-2 text-xs font-bold" data-testid="to-pasar">
+              {t("home.trip.shop")}
+            </Link>
+          ) : (
+            <Button className="py-2" disabled={left < content.market.pasar.tripMinutes} data-testid="start-trip" onClick={() => send({ type: "startPasarTrip" })}>
+              {t("home.trip.go")}
+            </Button>
+          )}
         </Card>
 
         <Card className="p-3 text-xs text-muted">{t("home.hint")}</Card>

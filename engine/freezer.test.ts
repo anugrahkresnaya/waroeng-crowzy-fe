@@ -288,3 +288,100 @@ describe('nugget goreng: a frozen good as an ingredient', () => {
     expect(asked(true).has('nugget-goreng')).toBe(true);
   });
 });
+
+describe('a pasar trip before opening on a work day', () => {
+  const m = content.market.pasar;
+  const open = () => {
+    const g = new Game(calm(), { seed: 1 });
+    g.state.token = 1e9;
+    g.state.bank = 1e8;
+    g.state.shelfLevel = 2;
+    return g;
+  };
+  const buyNuggets = (g: Game) => g.dispatch({ type: 'pasarTrip', lines: [{ key: 'g-nugget', qty: 1 }] });
+
+  it('costs pre-open time, once, and only before opening', () => {
+    const g = open();
+    expect(g.dispatch({ type: 'pasarTrip', lines: [{ key: 'beras', qty: 1 }] })).toEqual({ ok: false, error: 'no_pasar_trip' });
+    expect(g.dispatch({ type: 'startPasarTrip' }).ok).toBe(true);
+    expect(g.state.preOpenUsed).toBe(m.tripMinutes);
+    expect(g.dispatch({ type: 'startPasarTrip' })).toEqual({ ok: false, error: 'trip_done' });
+    expect(g.dispatch({ type: 'pasarTrip', lines: [{ key: 'beras', qty: 1 }] }).ok).toBe(true);
+    g.dispatch({ type: 'open', prepared: false });
+    expect(g.dispatch({ type: 'pasarTrip', lines: [{ key: 'beras', qty: 1 }] })).toEqual({ ok: false, error: 'no_pasar_trip' });
+  });
+
+  it('uses the time the shelves would need: after a trip the shop opens unprepared, or not at all prepared', () => {
+    const g = open();
+    g.dispatch({ type: 'startPasarTrip' });
+    expect(g.dispatch({ type: 'open', prepared: true }).ok).toBe(false);
+    expect(g.dispatch({ type: 'open', prepared: false }).ok).toBe(true);
+    const h = open();
+    h.state.preOpenUsed = h.content.balance.preOpenMinutes - m.tripMinutes + 1;
+    expect(h.dispatch({ type: 'startPasarTrip' })).toEqual({ ok: false, error: 'no_time' });
+  });
+
+  it('lets frozen goods in without a freezer, to be sold before they melt', () => {
+    const g = open();
+    g.dispatch({ type: 'startPasarTrip' });
+    expect(buyNuggets(g).ok).toBe(true);
+    const pieces = g.state.stock.nugget;
+    expect(pieces).toBe(content.itemById.nugget.pack);
+    expect(g.state.melt).toHaveLength(1);
+    g.dispatch({ type: 'open', prepared: false });
+    expect(g.state.stock.nugget).toBe(pieces);
+    // sell some, then the rest melts at the deadline
+    g.state.stock.nugget -= 2;
+    g.state.minute = g.state.melt[0].at - g.state.day * 1440 - 1;
+    g.tick();
+    expect(g.state.stock.nugget).toBe(0);
+    expect(g.state.melt).toHaveLength(0);
+    expect(g.state.stats.waste).toBeGreaterThan(0);
+  });
+
+  it('cooking the nuggets into nugget goreng before opening saves them', () => {
+    const g = open();
+    stockUp(g, 'minyak');
+    stockUp(g, 'lpg');
+    g.dispatch({ type: 'startPasarTrip' });
+    buyNuggets(g);
+    expect(g.dispatch({ type: 'cookBatch', item: 'nugget-goreng', batches: 1 }).ok).toBe(true);
+    expect(g.state.display['nugget-goreng'][0].qty).toBe(10);
+  });
+
+  it('a day-off trip still needs a freezer for frozen goods', () => {
+    const g = open();
+    g.state.workDays = [true, true, true, true, true, true, false];
+    g.state.phase = 'dayoff';
+    g.state.blockIndex = 0;
+    g.state.offPlan = { [content.balance.offBlocks[0].id]: ['ke-pasar'] };
+    expect(buyNuggets(g)).toEqual({ ok: false, error: 'needs_freezer' });
+  });
+
+  it('a new day clears the trip and anything left to melt', () => {
+    const g = open();
+    g.dispatch({ type: 'startPasarTrip' });
+    buyNuggets(g);
+    passDay(g);
+    expect(g.state.tripToday).toBe(false);
+    expect(g.state.melt).toEqual([]);
+    expect(g.state.stock.nugget).toBe(0);
+  });
+
+  it('is asked for in the shop while the nuggets are there, even without a freezer', () => {
+    const g = new Game(content, { seed: 3 });
+    g.state.token = 1e9;
+    g.state.bank = 1e8;
+    g.state.shelfLevel = 2;
+    g.dispatch({ type: 'startPasarTrip' });
+    g.dispatch({ type: 'pasarTrip', lines: [{ key: 'g-nugget', qty: 1 }, { key: 'g-dimsum', qty: 1 }] });
+    g.dispatch({ type: 'open', prepared: false });
+    const seen = new Set<string>();
+    for (let i = 0; i < 280 && g.state.phase === 'open'; i++) {
+      g.tick();
+      g.state.line = g.state.line.slice(0, 4);
+      for (const c of g.state.line) for (const l of c.order) seen.add(l.itemId);
+    }
+    expect([...seen].some((id) => id === 'nugget' || id === 'dimsum')).toBe(true);
+  });
+});

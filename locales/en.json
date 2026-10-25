@@ -160,6 +160,7 @@
       "no_data": "No mobile data",
       "needs_freezer": "You need a freezer for frozen goods",
       "shelf_full": "The shelf does not have room",
+      "trip_done": "You already went to the pasar today",
       "freezer_full": "The freezer does not have room",
       "not_unlocked": "The neighbour has not offered titipan yet",
       "owes_neighbor": "Pay the neighbour first",
@@ -197,13 +198,34 @@
     "burnerWasted": "{{item}} on the stove was wasted",
     "gasBought": "Bought a tank of gas: {{price}}",
     "season": {
-      "ramadan": { "now": "Ramadan starts today: few come by day, the evening rush is big (takjil, es teh, gorengan)", "soon": "Ramadan starts in {{n}} days: expect an evening rush and quiet days" },
-      "mudik": { "now": "Mudik season: many neighbours have left town", "soon": "Mudik season in {{n}} days: the street will thin out" },
-      "lebaran": { "now": "Lebaran: most shops are shut and visitors want kue and drinks", "soon": "Lebaran in {{n}} days" },
-      "christmas": { "now": "Christmas Day: a little quieter", "soon": "Christmas in {{n}} days" },
-      "new-year": { "now": "New Year: late-night crowd wants smokes and water", "soon": "New Year in {{n}} days" },
-      "independence": { "now": "17 Agustus: the street is busy all day", "soon": "17 Agustus in {{n}} days" },
-      "long-weekend": { "now": "Long weekend: fewer people around, more evening snackers", "soon": "Long weekend in {{n}} days" }
+      "ramadan": {
+        "now": "Ramadan starts today: few come by day, the evening rush is big (takjil, es teh, gorengan)",
+        "soon": "Ramadan starts in {{n}} days: expect an evening rush and quiet days"
+      },
+      "mudik": {
+        "now": "Mudik season: many neighbours have left town",
+        "soon": "Mudik season in {{n}} days: the street will thin out"
+      },
+      "lebaran": {
+        "now": "Lebaran: most shops are shut and visitors want kue and drinks",
+        "soon": "Lebaran in {{n}} days"
+      },
+      "christmas": {
+        "now": "Christmas Day: a little quieter",
+        "soon": "Christmas in {{n}} days"
+      },
+      "new-year": {
+        "now": "New Year: late-night crowd wants smokes and water",
+        "soon": "New Year in {{n}} days"
+      },
+      "independence": {
+        "now": "17 Agustus: the street is busy all day",
+        "soon": "17 Agustus in {{n}} days"
+      },
+      "long-weekend": {
+        "now": "Long weekend: fewer people around, more evening snackers",
+        "soon": "Long weekend in {{n}} days"
+      }
     },
     "outageNotice": "PLN notice: power will be out {{from}} to {{until}}",
     "powerOut": "The power is out",
@@ -232,6 +254,8 @@
     "dataBought": "Mobile data +{{mb}} MB (paid {{price}} cash)",
     "powerbankBought": "Bought a powerbank: {{price}}",
     "shelfBought": "Bigger shelf, {{slots}} slots: {{price}}",
+    "tripStarted": "Off to the pasar. Shop in the market app, then open.",
+    "frozenMelted": "{{item}}: {{pieces}} melted before they sold",
     "fridgeBought": "Bought a bigger fridge: {{price}}",
     "freezerBought": "Bought a freezer: {{price}}",
     "frozenLost": "{{pieces}} {{item}} had nowhere to go and melted",
@@ -307,7 +331,15 @@
       }
     },
     "displayTitle": "Display case",
-    "toKitchen": "To the kitchen"
+    "toKitchen": "To the kitchen",
+    "trip": {
+      "title": "Pasar trip",
+      "help": "Go to the pasar before opening: {{minutes}} minutes, same-day stock, no delivery fee, and frozen goods you can sell before they melt. There is no time left to prepare the shelves.",
+      "going": "You are at the pasar. Shop in the market app, then open.",
+      "melt": "Frozen goods without a freezer melt at {{time}}.",
+      "go": "Go",
+      "shop": "Shop"
+    }
   },
   "exchange": {
     "title": "Exchange cash",

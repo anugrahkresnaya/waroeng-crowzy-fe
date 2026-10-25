@@ -2,7 +2,7 @@
 // so a run is fully decided by the seed and these rules.
 import { changeFor } from '../counter';
 import { stillToCook } from '../cooking';
-import { portionsLeft, quoteOrder } from '../market';
+import { pasarQuote, portionsLeft, quoteOrder } from '../market';
 import { Game } from '../game';
 import { payOutBestEffort, addPieces } from '../money';
 import { qrisCheck } from '../phone';
@@ -147,7 +147,7 @@ export function bankTheBigNotes(game: Game): void {
  * Orders enough from the main supplier to bring every ingredient and good back up to its starting level,
  * counting what is already on the way. Skips what the bank cannot cover.
  */
-export function restock(game: Game, supplier = 'pak-slamet', mul = 1): void {
+export function restock(game: Game, supplier = 'pak-slamet', mul = 1, atPasar = false): void {
   const { state, content } = game;
   const incoming: Record<string, number> = {};
   for (const o of state.orders) if (o.status === 'transit') for (const l of o.lines) incoming[l.key] = (incoming[l.key] ?? 0) + l.qty;
@@ -173,6 +173,17 @@ export function restock(game: Game, supplier = 'pak-slamet', mul = 1): void {
       lines.push({ key: `g-${id}`, qty: need });
       room -= need * perPack;
     }
+  }
+  if (atPasar) {
+    // On the trip: buy on the spot, as much as the bank covers.
+    while (lines.length > 0) {
+      if (state.bank >= pasarQuote(state, content, lines).total * 1.05) {
+        const r = game.dispatch({ type: 'pasarTrip', lines });
+        if (r.ok) return;
+      }
+      lines.pop();
+    }
+    return;
   }
   while (lines.length > 0) {
     const q = quoteOrder(state, content, supplier, lines, false);

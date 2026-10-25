@@ -7,7 +7,7 @@ import { Game } from './game';
 import { isValidBlockPlan, type Content } from './schema';
 import type { GameState } from './types';
 
-export const SAVE_FORMAT = 12;
+export const SAVE_FORMAT = 13;
 
 const num = z.number();
 const pieces = z.record(z.string(), z.number().int().min(0));
@@ -108,6 +108,8 @@ const state = z.object({
   freezer: z.boolean(),
   bigFridge: z.boolean(),
   shelfLevel: z.number().int().min(0),
+  tripToday: z.boolean(),
+  melt: z.array(z.object({ item: z.string(), qty: z.number(), at: z.number() })),
   phone: z.object({ battery: num, powerbank: num.nullable(), data: num }),
   qrisPending: z.array(z.object({ amount: num, fake: z.boolean() })),
   token: num,
@@ -218,6 +220,12 @@ const MIGRATIONS: Record<number, (raw: Record<string, unknown>) => Record<string
     if (!state || typeof state !== 'object') return null;
     return { ...raw, state: { ...state, shelfLevel: 0 } };
   },
+  // Format 12 had no work-day trips: none made, nothing melting.
+  12: (raw) => {
+    const state = raw.state as Record<string, unknown> | undefined;
+    if (!state || typeof state !== 'object') return null;
+    return { ...raw, state: { ...state, tripToday: false, melt: [] } };
+  },
 };
 
 export type SaveParse =
@@ -269,7 +277,8 @@ export function reconcile(saved: GameState, content: Content): GameState {
     goodsCost[item.id] = Number.isFinite(s.goodsCost[item.id]) ? s.goodsCost[item.id] : (item.buyPrice ?? 0);
   }
   // Frozen goods cannot be in stock without a freezer, and frozen stock never sits on a shelf.
-  if (!s.freezer) for (const item of goods) if (item.frozen) stock[item.id] = 0;
+  if (!s.freezer) for (const item of goods) if (item.frozen && !s.melt.some((m) => m.item === item.id)) stock[item.id] = 0;
+  s.melt = s.melt.filter((m) => m.item in content.itemById && content.itemById[m.item].frozen);
   s.stock = stock;
   s.goodsCost = goodsCost;
 

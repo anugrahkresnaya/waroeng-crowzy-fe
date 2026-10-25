@@ -161,6 +161,10 @@ export const marketSchema = z.object({
   pasar: z.object({
     /** Haggling moves the price by up to this fraction either way. */
     haggle: z.number().min(0).max(0.5),
+    /** Pre-open minutes a trip to the pasar takes on a work day. */
+    tripMinutes: positiveInt,
+    /** Frozen goods bought without a freezer last this many minutes after opening time before they melt. */
+    meltMinutes: positiveInt,
     grosir: z.array(z.object({ min: positiveInt, off: z.number().min(0).max(0.5) })),
   }),
   /** Who comes when: fasting, holidays and long weekends move the crowd. Dates repeat yearly unless a holiday names its year. */

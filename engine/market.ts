@@ -321,7 +321,7 @@ export function sellOut(state: GameState, content: Content, item: Item, qty: num
 
 // ---------------------------------------------------------------- buying
 
-function addPurchased(ctx: MarketCtx, lines: PurchaseLine[]): void {
+function addPurchased(ctx: MarketCtx, lines: PurchaseLine[], melting = false): void {
   const { state, content } = ctx;
   for (const line of lines) {
     const product = content.productByKey[line.key];
@@ -332,7 +332,10 @@ function addPurchased(ctx: MarketCtx, lines: PurchaseLine[]): void {
       const item = content.itemById[product.id];
       let pieces = line.qty * (item.pack ?? 1);
       const unitCost = line.unitPrice / (item.pack ?? 1);
-      if (item.frozen) {
+      if (item.frozen && melting && !state.freezer) {
+        // Bought on a trip with no freezer: sold within a few hours of opening, or it melts.
+        state.melt.push({ item: item.id, qty: pieces, at: state.day * 1440 + content.balance.openMinute + content.market.pasar.meltMinutes });
+      } else if (item.frozen) {
         // Frozen goods go straight into the freezer: what does not fit (or has no freezer) is lost.
         const fit = Math.min(pieces, Math.floor((freezerRoom(state, content) + 1e-9) / item.frozen.slots));
         if (fit < pieces) {
@@ -455,8 +458,41 @@ export function deliverDue(ctx: MarketCtx): void {
   }
 }
 
-/** The day-off block the player is on, if it is a pasar trip. */
+/** Going to the pasar before opening on a work day: it takes pre-open time, and then the pasar app buys on the spot. */
+export function startPasarTrip(ctx: MarketCtx): Err {
+  const { state, content } = ctx;
+  if (state.phase !== 'idle') return 'wrong_phase';
+  if (state.tripToday) return 'trip_done';
+  const minutes = content.market.pasar.tripMinutes;
+  if (state.preOpenUsed + minutes > content.balance.preOpenMinutes) return 'no_time';
+  state.preOpenUsed += minutes;
+  state.tripToday = true;
+  ctx.emit({ type: 'trip_started' });
+  return null;
+}
+
+/** Frozen goods bought without a freezer melt at their deadline. Called every game minute while open, and overnight. */
+export function meltSweep(ctx: MarketCtx, now: number): void {
+  const { state, content } = ctx;
+  if (state.melt.length === 0) return;
+  const keep: GameState['melt'] = [];
+  for (const m of state.melt) {
+    if (m.at > now) {
+      keep.push(m);
+      continue;
+    }
+    const pieces = Math.min(state.stock[m.item] ?? 0, m.qty);
+    if (pieces <= 0) continue;
+    state.stock[m.item] -= pieces;
+    state.stats.waste += pieces * (state.goodsCost[m.item] ?? 0);
+    ctx.emit({ type: 'frozen_melted', item: m.item, pieces });
+  }
+  state.melt = keep;
+}
+
+/** The pasar trip the player is on right now: a day-off block, or the pre-open hours of a work day after going. */
 export function onPasarTrip(state: GameState, content: Content): boolean {
+  if (state.phase === 'idle') return state.tripToday;
   if (state.phase !== 'dayoff') return false;
   const block = content.balance.offBlocks[state.blockIndex];
   return !!block && (state.offPlan[block.id] ?? []).includes('ke-pasar');
@@ -469,8 +505,10 @@ export function pasarTrip(ctx: MarketCtx, cmd: { lines: Array<{ key: string; qty
   const checked = checkLines(content, cmd.lines);
   if (checked.error) return checked.error;
   const slots = frozenSlotsNeeded(content, checked.merged);
-  if (slots > 0 && !state.freezer) return 'needs_freezer';
-  if (slots > freezerRoom(state, content) + 1e-9) return 'freezer_full';
+  // Without a freezer, frozen goods can only be bought on a work-day trip, to be sold before they melt.
+  const selling = state.phase === 'idle';
+  if (slots > 0 && !state.freezer && !selling) return 'needs_freezer';
+  if (state.freezer && slots > freezerRoom(state, content) + 1e-9) return 'freezer_full';
   if (shelfNeeded(content, checked.merged) > shelfRoom(state, content) + 1e-9) return 'shelf_full';
   const haggle = content.market.pasar.haggle;
   const rngBefore = state.rng;
@@ -489,7 +527,7 @@ export function pasarTrip(ctx: MarketCtx, cmd: { lines: Array<{ key: string; qty
   state.bank -= total;
   // the discount lowers what each unit cost you
   const factor = subtotal > 0 ? total / subtotal : 1;
-  addPurchased(ctx, priced.map((l) => ({ ...l, unitPrice: l.unitPrice * factor })));
+  addPurchased(ctx, priced.map((l) => ({ ...l, unitPrice: l.unitPrice * factor })), selling);
   ctx.emit({ type: 'pasar_bought', total });
   return null;
 }

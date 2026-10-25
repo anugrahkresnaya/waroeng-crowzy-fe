@@ -78,3 +78,29 @@ test("the shelf is limited: an order that does not fit is blocked until the shel
   await expect(page.getByTestId("shelf-full")).toHaveCount(0);
   await expect(page.getByTestId("pay-order")).toBeEnabled();
 });
+
+test("a work-day pasar trip sells frozen goods without a freezer, and warns when they melt", async ({ page }) => {
+  await startGame(page);
+  await mutateGame(page, "state.bank = 3000000;");
+  await expect(page.getByTestId("start-trip")).toBeEnabled();
+  await page.getByTestId("start-trip").click();
+  await expect(page.getByTestId("to-pasar")).toBeVisible();
+  await expect(page.getByTestId("start-trip")).toHaveCount(0);
+
+  await page.getByTestId("to-pasar").click();
+  await page.waitForURL(/\/pasar$/);
+  await expect(page.getByTestId("trip-banner")).toBeVisible();
+  await page.getByTestId("tab-barang").click();
+  await page.getByTestId("product-g-nugget").click();
+  await page.getByTestId("detail-plus").click();
+  await page.getByTestId("to-cart").click();
+  await expect(page.getByTestId("needs-freezer")).toHaveCount(0);
+  await page.getByTestId("trip-buy").click();
+
+  const s = await stateOf(page);
+  expect(s.stock.nugget).toBe(5);
+  expect((s as unknown as { melt: unknown[] }).melt).toHaveLength(1);
+  await page.getByRole("navigation", { name: "Menu utama" }).getByRole("link").first().click();
+  await page.waitForURL(/\/beranda$/);
+  await expect(page.getByTestId("melt-warning")).toContainText("meleleh");
+});

@@ -1,7 +1,7 @@
 // The cashier counter: customer arrivals, patience, and every command the player can issue.
 import { dayPart, weekday } from './clock';
 import {
-  advanceMarketDay, assignStorage, deliverDue, pasarTrip, placeOrder, portionOf, portionsLeft, sellPrice, spoilOvernight, sellOut,
+  advanceMarketDay, assignStorage, displayPortions, meltSweep, startPasarTrip, deliverDue, pasarTrip, placeOrder, portionOf, portionsLeft, sellPrice, spoilOvernight, sellOut,
 } from './market';
 import { buyGas } from './gas';
 import { payBill, tickBills } from './bills';
@@ -11,7 +11,7 @@ import { buyShelf } from './shelf';
 import { seasonArrivalMul, seasonHeadlines, demandOn } from './season';
 import { arrivalMul, buyGenerator, buyIce, buyLantern, sellOffStock, buyToken, rollOutage, tickPower, tickToken, tokenNewDay, tokenOvernight } from './outage';
 import { dropBurners, plate, startCook, tickBurners, wasteCooked } from './cooking';
-import { clearDisplay, cookBatch, handleLeftover, sweepDisplay } from './kitchen';
+import { absoluteMinute, clearDisplay, cookBatch, handleLeftover, sweepDisplay } from './kitchen';
 import { freshStats } from './state';
 import {
   addPieces, bigNotes, exactPieces, exchangeBreakdown, hasPieces, isValidPieces, makeChange, payOutBestEffort,
@@ -89,7 +89,7 @@ function spawnCustomer(ctx: Ctx, type: CustomerType): void {
   // Nobody asks for frozen goods in a warung with no freezer.
   const itemMul = demandOn(content, state.day).itemMul;
   const pool: Array<[string, number]> = Object.entries(type.items)
-    .filter(([id]) => (state.freezer || !(content.itemById[id]?.frozen || content.itemById[id]?.recipeGoods)) && (!content.itemById[id]?.consign || (state.stock[id] ?? 0) > 0))
+    .filter(([id]) => (state.freezer || (content.itemById[id]?.frozen ? (state.stock[id] ?? 0) > 0 : content.itemById[id]?.recipeGoods ? displayPortions(state, id) > 0 : true)) && (!content.itemById[id]?.consign || (state.stock[id] ?? 0) > 0))
     .map(([id, w]) => [id, w * (itemMul[id] ?? 1)]);
   const distinct = rng.int(type.distinctItems[0], type.distinctItems[1]);
   const order: OrderLine[] = [];
@@ -357,6 +357,8 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
       state.tomorrowOpen = null;
       if (tomorrow === 6) state.planConfirmed = false;
       state.hunger = clamp100(state.hunger + b.sleepHunger);
+      meltSweep(ctx, Infinity);
+      state.tripToday = false;
       state.shelfReady = false;
       state.busyUntil = 0;
       state.preOpenUsed = 0;
@@ -411,9 +413,14 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
       if (state.bank < content.market.freezerPrice) return fail('insufficient_funds');
       state.bank -= content.market.freezerPrice;
       state.freezer = true;
+      state.melt = []; // what was bought for a quick sale can go straight into the freezer
       assignStorage(state, content);
       ctx.emit({ type: 'freezer_bought', price: content.market.freezerPrice });
       return OK;
+    }
+    case 'startPasarTrip': {
+      const error = startPasarTrip(ctx);
+      return error ? fail(error) : OK;
     }
     case 'buyShelf': {
       const error = buyShelf(ctx);
@@ -670,6 +677,7 @@ export function advance(ctx: Ctx): void {
   tickPhone(ctx);
   deliverDue(ctx);
   sweepDisplay(ctx);
+  meltSweep(ctx, absoluteMinute(state));
   tickBurners(ctx);
   if (state.busyUntil > 0 && state.tick >= state.busyUntil) {
     state.busyUntil = 0;

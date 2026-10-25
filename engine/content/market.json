@@ -226,7 +226,9 @@
     "min": 500000,
     "off": 0.1
    }
-  ]
+  ],
+  "tripMinutes": 60,
+  "meltMinutes": 300
  },
  "fridgeCapacity": 12,
  "portion": {

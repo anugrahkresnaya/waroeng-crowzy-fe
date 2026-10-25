@@ -279,6 +279,10 @@ export interface GameState {
   freezer: boolean;
   /** Whether the small fridge was replaced with the big one. */
   bigFridge: boolean;
+  /** Whether the player went to the pasar this morning, before opening. */
+  tripToday: boolean;
+  /** Frozen goods bought on a trip with no freezer: how many pieces are left to sell and the absolute minute they melt. */
+  melt: Array<{ item: string; qty: number; at: number }>;
   /** How many shelf upgrades are bought. */
   shelfLevel: number;
   /** Prepaid electricity credit in rupiah. At zero the power is out until it is topped up. */
@@ -331,6 +335,7 @@ export type Command =
   | { type: 'buyFreezer' }
   | { type: 'buyBigFridge' }
   | { type: 'buyShelf' }
+  | { type: 'startPasarTrip' }
   | { type: 'buyToken'; amount: number }
   | { type: 'trustQris' }
   | { type: 'refuseQris' }
@@ -388,6 +393,7 @@ export type CommandError =
   | 'needs_freezer'
   | 'freezer_full'
   | 'shelf_full'
+  | 'trip_done'
   | 'cannot_verify'
   | 'can_verify'
   | 'phone_dead'
@@ -465,6 +471,8 @@ export type GameEvent =
   | { type: 'freezer_bought'; price: number }
   | { type: 'fridge_bought'; price: number }
   | { type: 'shelf_bought'; price: number; slots: number }
+  | { type: 'trip_started' }
+  | { type: 'frozen_melted'; item: string; pieces: number }
   | { type: 'frozen_lost'; item: string; pieces: number }
   | { type: 'token_low'; token: number }
   | { type: 'token_out' }

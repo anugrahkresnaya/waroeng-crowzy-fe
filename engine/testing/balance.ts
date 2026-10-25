@@ -20,6 +20,8 @@ export interface Strategy {
   options?: Partial<BotOptions>;
   /** Top up the token and data and pay the rent (default). */
   upkeep?: boolean;
+  /** Go to the pasar every morning and restock there instead of ordering from the supplier. */
+  dailyPasar?: boolean;
   /** Move every dish price with its ingredient cost, as a player does after a price spike (default). */
   followCosts?: boolean;
 }
@@ -184,6 +186,7 @@ export const STRATEGIES: Strategy[] = [
       takeAllTitipan(g);
     },
   },
+  { name: 'daily pasar', note: 'go to the pasar every morning, restock there, open unprepared', dailyPasar: true, options: { prepared: false } },
   { name: 'big fridge', note: 'buy the bigger fridge when affordable', beforeDay: bigFridgePlan },
   { name: 'bigger shelf', note: 'buy the shelf upgrades when affordable and carry more', beforeDay: shelfPlan },
   { name: 'generator', note: 'buy a generator when affordable', beforeDay: generatorPlan },
@@ -207,7 +210,8 @@ export function runStrategy(content: Content, strategy: Strategy, seed: number, 
     if (g.state.phase === 'idle' && (strategy.followCosts ?? true)) followCosts(g, costMemory);
     if (g.state.phase === 'idle') strategy.beforeDay?.(g);
     bankTheBigNotes(g);
-    restock(g, 'pak-slamet', opts.restockMul ?? 1);
+    if (strategy.dailyPasar && g.state.phase === 'idle' && g.dispatch({ type: 'startPasarTrip' }).ok) restock(g, 'pak-slamet', opts.restockMul ?? 1, true);
+    else restock(g, 'pak-slamet', opts.restockMul ?? 1);
     if (strategy.upkeep ?? true) payUp(g);
     manageChange(g);
     if (g.state.phase === 'dayoff') {
