@@ -96,6 +96,18 @@ function freezerPlan(game: Game): void {
   }
 }
 
+/** Buys the bigger fridge once there is money to spare. */
+function bigFridgePlan(game: Game): void {
+  const { state, content } = game;
+  if (!state.bigFridge && state.bank >= content.market.bigFridge.price + 300000) game.dispatch({ type: 'buyBigFridge' });
+}
+
+/** Buys a generator once there is money to spare. */
+function generatorPlan(game: Game): void {
+  const { state, content } = game;
+  if (!state.generator && state.phase === 'idle' && state.bank >= content.balance.outage.generator.price + 300000) game.dispatch({ type: 'buyGenerator' });
+}
+
 /** Takes the most the neighbour allows of every consigned item. */
 function takeAllTitipan(game: Game): void {
   const { state, content } = game;
@@ -164,6 +176,8 @@ export const STRATEGIES: Strategy[] = [
       takeAllTitipan(g);
     },
   },
+  { name: 'big fridge', note: 'buy the bigger fridge when affordable', beforeDay: bigFridgePlan },
+  { name: 'generator', note: 'buy a generator when affordable', beforeDay: generatorPlan },
   { name: 'fixed prices', note: 'never move a price, even when ingredients get dearer', followCosts: false },
   { name: 'neglect upkeep', note: 'never top up the token or data, never pay the rent', upkeep: false },
 ];
