@@ -4,6 +4,7 @@ import { freezerRoom, slotsPerPiece } from '../freezer';
 import { Game } from '../game';
 import { costPerPortion, quoteOrder } from '../market';
 import { total } from '../money';
+import { nextShelf } from '../shelf';
 import type { Content } from '../schema';
 import { titipanRoom, titipanUnlocked } from '../titipan';
 import { bankTheBigNotes, manageChange, payUp, playDay, restock, sleepThrough, type BotOptions } from './bot';
@@ -102,6 +103,13 @@ function bigFridgePlan(game: Game): void {
   if (!state.bigFridge && state.bank >= content.market.bigFridge.price + 300000) game.dispatch({ type: 'buyBigFridge' });
 }
 
+/** Buys the next shelf upgrade once there is money to spare. */
+function shelfPlan(game: Game): void {
+  const { state, content } = game;
+  const next = nextShelf(state, content);
+  if (next && state.bank >= next.price + 300000) game.dispatch({ type: 'buyShelf' });
+}
+
 /** Buys a generator once there is money to spare. */
 function generatorPlan(game: Game): void {
   const { state, content } = game;
@@ -177,6 +185,7 @@ export const STRATEGIES: Strategy[] = [
     },
   },
   { name: 'big fridge', note: 'buy the bigger fridge when affordable', beforeDay: bigFridgePlan },
+  { name: 'bigger shelf', note: 'buy the shelf upgrades when affordable and carry more', beforeDay: shelfPlan },
   { name: 'generator', note: 'buy a generator when affordable', beforeDay: generatorPlan },
   { name: 'fixed prices', note: 'never move a price, even when ingredients get dearer', followCosts: false },
   { name: 'neglect upkeep', note: 'never top up the token or data, never pay the rent', upkeep: false },

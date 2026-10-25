@@ -3,6 +3,7 @@
 import { addDays, inRange } from './calendar';
 import { freezerFailedOvernight, freezerRoom, frozenSlotsNeeded } from './freezer';
 import { fridgeSpoilsAsRoom } from './outage';
+import { shelfNeeded, shelfRoom } from './shelf';
 import type { Rng } from './rng';
 import { goodKey, type Content, type Item, type Portion, type Product } from './schema';
 import type { CommandError, GameEvent, GameState, Lot, MarketState, Order, PurchaseLine, Spoiled } from './types';
@@ -384,6 +385,7 @@ export function placeOrder(ctx: MarketCtx, cmd: { supplier: string; lines: Array
   const checked = checkLines(content, cmd.lines);
   if (checked.error) return checked.error;
   if (!state.freezer && frozenSlotsNeeded(content, checked.merged) > 0) return 'needs_freezer';
+  if (shelfNeeded(content, checked.merged) > shelfRoom(state, content) + 1e-9) return 'shelf_full';
   const q = quoteOrder(state, content, cmd.supplier, checked.merged, cmd.express);
   if (q.subtotal < supplier.minOrder) return 'below_minimum';
   if (state.bank < q.total) return 'insufficient_funds';
@@ -469,6 +471,7 @@ export function pasarTrip(ctx: MarketCtx, cmd: { lines: Array<{ key: string; qty
   const slots = frozenSlotsNeeded(content, checked.merged);
   if (slots > 0 && !state.freezer) return 'needs_freezer';
   if (slots > freezerRoom(state, content) + 1e-9) return 'freezer_full';
+  if (shelfNeeded(content, checked.merged) > shelfRoom(state, content) + 1e-9) return 'shelf_full';
   const haggle = content.market.pasar.haggle;
   const rngBefore = state.rng;
   const priced: PurchaseLine[] = checked.merged.map((l) => ({

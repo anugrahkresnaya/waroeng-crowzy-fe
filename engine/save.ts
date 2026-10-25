@@ -7,7 +7,7 @@ import { Game } from './game';
 import { isValidBlockPlan, type Content } from './schema';
 import type { GameState } from './types';
 
-export const SAVE_FORMAT = 11;
+export const SAVE_FORMAT = 12;
 
 const num = z.number();
 const pieces = z.record(z.string(), z.number().int().min(0));
@@ -107,6 +107,7 @@ const state = z.object({
   titipan: z.object({ taken: z.record(z.string(), z.number().int().min(0)), owed: num, relation: num }),
   freezer: z.boolean(),
   bigFridge: z.boolean(),
+  shelfLevel: z.number().int().min(0),
   phone: z.object({ battery: num, powerbank: num.nullable(), data: num }),
   qrisPending: z.array(z.object({ amount: num, fake: z.boolean() })),
   token: num,
@@ -210,6 +211,12 @@ const MIGRATIONS: Record<number, (raw: Record<string, unknown>) => Record<string
     const state = raw.state as Record<string, unknown> | undefined;
     if (!state || typeof state !== 'object') return null;
     return { ...raw, state: { ...state, generator: false } };
+  },
+  // Format 11 had a shelf with no limit.
+  11: (raw) => {
+    const state = raw.state as Record<string, unknown> | undefined;
+    if (!state || typeof state !== 'object') return null;
+    return { ...raw, state: { ...state, shelfLevel: 0 } };
   },
 };
 

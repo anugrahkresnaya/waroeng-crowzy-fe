@@ -53,7 +53,8 @@
   "kind": "good",
   "price": 2000,
   "buyPrice": 1400,
-  "pack": 20
+  "pack": 20,
+  "perSlot": 15
  },
  {
   "id": "es-teh",
@@ -109,7 +110,8 @@
   "kind": "good",
   "price": 1500,
   "buyPrice": 1100,
-  "pack": 30
+  "pack": 30,
+  "perSlot": 30
  },
  {
   "id": "teh-botol",
@@ -122,7 +124,8 @@
   "kind": "good",
   "price": 6000,
   "buyPrice": 4500,
-  "pack": 12
+  "pack": 12,
+  "perSlot": 24
  },
  {
   "id": "air-mineral",
@@ -135,7 +138,8 @@
   "kind": "good",
   "price": 3500,
   "buyPrice": 2200,
-  "pack": 24
+  "pack": 24,
+  "perSlot": 24
  },
  {
   "id": "kerupuk",
@@ -148,7 +152,8 @@
   "kind": "good",
   "price": 1500,
   "buyPrice": 1000,
-  "pack": 50
+  "pack": 50,
+  "perSlot": 30
  },
  {
   "id": "nasi-bungkus",
@@ -188,7 +193,8 @@
   "kind": "good",
   "price": 3000,
   "buyPrice": 2200,
-  "pack": 10
+  "pack": 10,
+  "perSlot": 10
  },
  {
   "id": "permen",
@@ -201,7 +207,8 @@
   "kind": "good",
   "price": 300,
   "buyPrice": 150,
-  "pack": 100
+  "pack": 100,
+  "perSlot": 100
  },
  {
   "id": "sampo-sachet",
@@ -214,7 +221,8 @@
   "kind": "good",
   "price": 1000,
   "buyPrice": 600,
-  "pack": 24
+  "pack": 24,
+  "perSlot": 30
  },
  {
   "id": "gorengan",
@@ -275,7 +283,8 @@
   "price": 20000,
   "buyPrice": 18000,
   "pack": 10,
-  "ageRestricted": true
+  "ageRestricted": true,
+  "perSlot": 12
  },
  {
   "id": "telur",

@@ -6,6 +6,7 @@ import { portionsLeft, quoteOrder } from '../market';
 import { Game } from '../game';
 import { payOutBestEffort, addPieces } from '../money';
 import { qrisCheck } from '../phone';
+import { shelfCap, shelfRoom, slotsOf } from '../shelf';
 import type { Command } from '../types';
 
 export interface BotOptions {
@@ -157,16 +158,31 @@ export function restock(game: Game, supplier = 'pak-slamet', mul = 1): void {
     const need = Math.ceil(target * mul - have - 1e-9);
     if (need > 0) lines.push({ key: id, qty: need });
   }
+  let room = shelfRoom(state, content);
+  // A bigger shelf carries proportionally more of everything.
+  const shelfScale = shelfCap(state, content) / content.market.shelf.slots;
   for (const [id, target] of Object.entries(content.balance.start.goods)) {
     const item = content.itemById[id];
     const have = (state.stock[id] ?? 0) + (incoming[`g-${id}`] ?? 0) * (item.pack ?? 1);
-    const need = Math.ceil((target * mul - have) / (item.pack ?? 1));
-    if (need > 0) lines.push({ key: `g-${id}`, qty: need });
+    const wanted = Math.ceil((target * mul * shelfScale - have) / (item.pack ?? 1));
+    // Only as many packs as the shelf has room for, counting what is already on the way.
+    const perPack = (item.pack ?? 1) * slotsOf(item);
+    const fits = perPack > 0 ? Math.floor((room + 1e-9) / perPack) : wanted;
+    const need = Math.min(wanted, fits);
+    if (need > 0) {
+      lines.push({ key: `g-${id}`, qty: need });
+      room -= need * perPack;
+    }
   }
   while (lines.length > 0) {
     const q = quoteOrder(state, content, supplier, lines, false);
     if (state.bank >= q.total && q.subtotal >= content.supplierById[supplier].minOrder) {
-      game.dispatch({ type: 'placeOrder', supplier, lines, express: false });
+      const r = game.dispatch({ type: 'placeOrder', supplier, lines, express: false });
+      // A full shelf takes fewer goods: drop the last line and try again.
+      if (!r.ok && r.error === 'shelf_full') {
+        lines.pop();
+        continue;
+      }
       return;
     }
     lines.pop(); // drop the last line and try again

@@ -99,6 +99,12 @@ Framework-free, deterministic cashier-counter simulation. ESLint (`eslint.config
 - **Generator and sell-off:** `state.generator` (`buyGenerator`, an errand like the lantern, `outage.generator`). When a cut starts (`tickPower`) it burns `fuelPerHour` from the bank for as many hours as the bank covers (`outage.genHours`, `generator_fuel`); `powerOff` is false while `generatorOn`, so lights, ice and the fridge are fine, but `plnOff` stays true so the QRIS signal still goes (the towers are not yours). `fridgeFailed` and `freezerFailedOvernight` count only the hours without generator. `sellOffStock` (during a cut, `outage.sellOff.mul` of cost, cash into the drawer) sells the fridge and freezer lots; the outage banner has both buttons. Save format 11.
 - Not built yet (PRD): helping a neighbour, the chapter 2 scripted first cut, family chat and ojol (they would also use battery and data), and the other v0.1 consequences (repossession, eviction, pinjol).
 
+## Shelf (`engine/shelf.ts`)
+
+- Goods on sale take shelf slots: `item.perSlot` pieces to a slot (frozen goods live in the freezer, consigned goods sit on the counter, so neither has one; ingredients are not limited). `market.shelf` has the starting `slots` (14; the starting stock uses 11) and `upgrades` (new total and price, bought in order with `buyShelf`, `state.shelfLevel`). Slots are fractional, like the freezer's.
+- `placeOrder` and `pasarTrip` refuse with `shelf_full` when the order would not fit, counting stock plus the goods in orders still on their way (`shelfRoom`, `shelfPending`), and a refusal changes nothing. UI: a shelf card with the upgrade button on the storeroom's goods tab, and a warning that blocks paying in the cart. Save format 12.
+- The bot orders only as many packs as fit and scales its goods targets with `shelfCap / market.shelf.slots`, so a `bigger shelf` strategy carries more. The upgrade prices (Rp300k, Rp700k) are tuned so it roughly breaks even in 45 days (a little behind on plain days, a little ahead in Ramadan) and pays off after that.
+
 ## Seasons on the demand side (`engine/season.ts`)
 
 - `market.demand` in `market.json`: `periods` (Ramadan, mudik; yearly dates), `holidays` (Lebaran 2027 names its year; Christmas, New Year, 17 Agustus repeat) and `longWeekend`. Each has `arrivalMul`, `partMul` (by day part) and `itemMul` (how often an item is asked for). Nothing is saved: `demandOn(content, day)` derives it from the day number, and `maybeSpawn` / `spawnCustomer` multiply by it.

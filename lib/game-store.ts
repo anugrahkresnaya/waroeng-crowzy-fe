@@ -132,6 +132,8 @@ function toastFor(event: GameEvent): Omit<Toast, "id"> | null {
       return { key: "freezerBought", vars: { price: rp(event.price) }, tone: "good" };
     case "fridge_bought":
       return { key: "fridgeBought", vars: { price: rp(event.price) }, tone: "good" };
+    case "shelf_bought":
+      return { key: "shelfBought", vars: { slots: event.slots, price: rp(event.price) }, tone: "good" };
     case "frozen_lost":
       return { key: "frozenLost", vars: { item: itemName(event.item), pieces: event.pieces }, tone: "bad" };
     case "gas_bought":

@@ -51,6 +51,8 @@ export const itemSchema = z
     pack: positiveInt.optional(),
     /** Good only: it must be kept in the freezer, and each piece takes this many freezer slots. */
     frozen: z.object({ slots: z.number().positive() }).optional(),
+    /** Shelf goods only: how many pieces fit in one shelf slot. Frozen goods live in the freezer and consigned goods sit on the counter, so neither has one. */
+    perSlot: positiveInt.optional(),
     /** Good only: taken on consignment (titipan). Never bought on the market; `buyPrice` is what the neighbour is owed for each one sold. */
     consign: z.boolean().optional(),
     ageRestricted: z.boolean().default(false),
@@ -58,6 +60,8 @@ export const itemSchema = z
   .refine((i) => !(i.batch && i.cook), { message: 'a dish is cooked either in batches or to order' })
   .refine((i) => i.kind === 'dish' || (!i.batch && !i.cook), { message: 'only a dish can be cooked in batches' })
   .refine((i) => !i.recipeGoods || (i.kind === 'dish' && !!i.batch), { message: 'only a batch dish can use frozen goods' })
+  .refine((i) => i.kind !== 'good' || i.frozen || i.consign || !!i.perSlot, { message: 'a shelf good needs perSlot' })
+  .refine((i) => i.kind === 'good' && !i.frozen && !i.consign ? true : !i.perSlot, { message: 'only a shelf good has perSlot' })
   .refine((i) => i.kind === 'good' || !i.frozen, { message: 'only a good can be frozen' })
   .refine((i) => i.kind === 'good' || !i.consign, { message: 'only a good can be consigned' })
   .refine((i) => (i.kind === 'dish' ? !!i.recipe && Object.keys(i.recipe).length > 0 : !!i.buyPrice && !!i.pack), {
@@ -186,6 +190,8 @@ export const marketSchema = z.object({
   /** Freezer slots: a sold unit of an ingredient is one slot, and frozen goods take their own slots per piece. */
   freezerCapacity: z.number().positive(),
   freezerPrice: positiveInt,
+  /** The shelf for goods on sale: slots to start with, and each upgrade's new total and price (bought in order). */
+  shelf: z.object({ slots: positiveInt, upgrades: z.array(z.object({ slots: positiveInt, price: positiveInt })) }),
   /** A bigger fridge to replace the small one: more cold space for the sold units of fridge-friendly stock. */
   bigFridge: z.object({ capacity: z.number().positive(), price: positiveInt }),
   portion: z.object({

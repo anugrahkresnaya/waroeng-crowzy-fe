@@ -18,6 +18,7 @@ export { gasFlames, gasPrice, gasShort, gasTanks } from './gas';
 export { freezerHoldHours, freezerRoom, freezerUsed, frozenSlotsNeeded, slotsPerPiece } from './freezer';
 export { titipanBlocked, titipanCost, titipanLevel, titipanRoom, titipanUnlocked } from './titipan';
 export { absoluteMinute, batchesPossible } from './kitchen';
+export { nextShelf, shelfCap, shelfNeeded, shelfPending, shelfRoom, shelfUsed, slotsOf } from './shelf';
 export { goodKey } from './schema';
 export { demandOn, seasonArrivalMul, seasonHeadlines } from './season';
 export { addDays } from './calendar';

@@ -7,6 +7,7 @@ import { buyGas } from './gas';
 import { payBill, tickBills } from './bills';
 import { payNeighbor, settleTitipan, takeTitipan } from './titipan';
 import { buyData, buyPowerbank, phoneGate, phoneNight, qrisCheck, tickPhone, spendPhone } from './phone';
+import { buyShelf } from './shelf';
 import { seasonArrivalMul, seasonHeadlines, demandOn } from './season';
 import { arrivalMul, buyGenerator, buyIce, buyLantern, sellOffStock, buyToken, rollOutage, tickPower, tickToken, tokenNewDay, tokenOvernight } from './outage';
 import { dropBurners, plate, startCook, tickBurners, wasteCooked } from './cooking';
@@ -413,6 +414,10 @@ export function handleCommand(ctx: Ctx, cmd: Command): Result {
       assignStorage(state, content);
       ctx.emit({ type: 'freezer_bought', price: content.market.freezerPrice });
       return OK;
+    }
+    case 'buyShelf': {
+      const error = buyShelf(ctx);
+      return error ? fail(error) : OK;
     }
     case 'buyBigFridge': {
       if (state.bigFridge) return fail('already_owned');

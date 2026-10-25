@@ -74,6 +74,7 @@ export function createInitialState(content: Content, seed: number, day = 0): Gam
     titipan: { taken: {}, owed: 0, relation: 0 },
     freezer: false,
     bigFridge: false,
+    shelfLevel: 0,
     phone: { battery: content.balance.phone.start.battery, powerbank: null, data: content.balance.phone.start.data },
     qrisPending: [],
     token: content.balance.token.start,

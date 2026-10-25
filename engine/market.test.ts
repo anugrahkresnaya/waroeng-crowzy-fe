@@ -307,6 +307,7 @@ describe('delivery', () => {
 
   it('resale goods arrive by the pack and average their cost into what is on the shelf', () => {
     const g = gameWith(noEvents);
+    g.state.shelfLevel = 2; // room for 150 kerupuk
     g.state.stock.kerupuk = 50;
     g.state.goodsCost.kerupuk = 800;
     g.dispatch({ type: 'placeOrder', supplier: 'pak-slamet', lines: [{ key: 'g-kerupuk', qty: 2 }], express: false });
@@ -404,6 +405,7 @@ describe('the pasar trip', () => {
   it('gives same-day stock without an order and without a delivery fee', () => {
     const g = toSiang(trip());
     emptyPantry(g);
+    g.state.shelfLevel = 1;
     const bank = g.state.bank;
     const res = g.dispatch({ type: 'pasarTrip', lines: [{ key: 'beras', qty: 5 }, { key: 'g-keripik', qty: 1 }] });
     expect(res.ok && res.events.map((e) => e.type)).toEqual(['pasar_bought']);

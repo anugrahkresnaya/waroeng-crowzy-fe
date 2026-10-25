@@ -363,5 +363,18 @@
  "bigFridge": {
   "capacity": 30,
   "price": 2400000
+ },
+ "shelf": {
+  "slots": 14,
+  "upgrades": [
+   {
+    "slots": 20,
+    "price": 300000
+   },
+   {
+    "slots": 28,
+    "price": 700000
+   }
+  ]
  }
 }

@@ -47,7 +47,7 @@ describe("translations", () => {
       ...[
         "wrong_phase", "busy", "shelves_not_ready", "shelves_ready", "no_customer", "wrong_stage", "wrong_method",
         "unknown_item", "out_of_stock", "not_in_tray", "not_in_order", "already_checked", "invalid_pieces",
-        "not_in_drawer", "no_time", "invalid_amount", "out_of_gas", "no_ice", "no_outage", "already_owned", "unknown_bill", "not_due_yet", "cannot_verify", "can_verify", "phone_dead", "no_data", "needs_freezer", "freezer_full", "not_unlocked", "owes_neighbor", "not_consigned", "titipan_full", "nothing_owed", "nothing_to_sell",
+        "not_in_drawer", "no_time", "invalid_amount", "out_of_gas", "no_ice", "no_outage", "already_owned", "unknown_bill", "not_due_yet", "cannot_verify", "can_verify", "phone_dead", "no_data", "needs_freezer", "freezer_full", "not_unlocked", "owes_neighbor", "not_consigned", "titipan_full", "nothing_owed", "nothing_to_sell", "shelf_full",
       ].map((e) => `toast.error.${e}`),
       ...[0, 1, 2, 3, 4, 5, 6].map((n) => `weekdayShort.${n}`),
       ...["pagi", "siang", "sore", "malam"].flatMap((b) => [`block.${b}`, `toast.blockDone.${b}`]),

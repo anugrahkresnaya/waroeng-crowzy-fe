@@ -54,3 +54,27 @@ test("nugget goreng lists the frozen nuggets and cooks a batch from them", async
   expect(s.stock.nugget).toBe(1);
   expect((s as unknown as { display: Record<string, Array<{ qty: number }>> }).display["nugget-goreng"][0].qty).toBe(10);
 });
+
+test("the shelf is limited: an order that does not fit is blocked until the shelf is upgraded", async ({ page }) => {
+  await startGame(page);
+  await mutateGame(page, "state.bank = 5000000; state.stock.kerupuk = 60 + 30 * 3;");
+  await page.getByRole("link", { name: "Gudang" }).first().click();
+  await page.waitForURL(/\/gudang$/);
+  await page.getByTestId("storage-barang").click();
+  await expect(page.getByTestId("shelf-card")).toContainText("slot");
+  await expect(page.getByTestId("buy-shelf")).toBeEnabled();
+
+  await page.getByRole("link", { name: "Ponsel" }).click();
+  await page.getByTestId("app-pasar").click();
+  await page.getByTestId("tab-barang").click();
+  await page.getByTestId("product-g-kerupuk").click();
+  await page.getByTestId("detail-plus").click();
+  await page.getByTestId("detail-plus").click();
+  await page.getByTestId("to-cart").click();
+  await expect(page.getByTestId("shelf-full")).toBeVisible();
+  await expect(page.getByTestId("pay-order")).toBeDisabled();
+
+  await mutateGame(page, "state.shelfLevel = 2;");
+  await expect(page.getByTestId("shelf-full")).toHaveCount(0);
+  await expect(page.getByTestId("pay-order")).toBeEnabled();
+});

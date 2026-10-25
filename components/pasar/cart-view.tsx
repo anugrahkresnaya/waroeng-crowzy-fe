@@ -3,7 +3,7 @@
 import { useTranslation } from "react-i18next";
 import { Art } from "@/components/art";
 import { Button, Card, Chip } from "@/components/ui";
-import { content, freezerRoom, frozenSlotsNeeded, onPasarTrip, pasarQuote, phoneGate, quoteOrder } from "@/engine";
+import { content, freezerRoom, frozenSlotsNeeded, onPasarTrip, pasarQuote, phoneGate, quoteOrder, shelfNeeded, shelfRoom } from "@/engine";
 import { arrivalIfPlacedNow, type Arrival } from "@/lib/arrival";
 import { cartLines, useCart } from "@/lib/cart-store";
 import { rp } from "@/lib/format";
@@ -98,6 +98,7 @@ export function CartView({ onDone }: { onDone: () => void }) {
   const gate = phoneGate(state, content, content.balance.phone.dataCosts.order);
   const frozenNeed = frozenSlotsNeeded(content, lines);
   const needsFreezer = frozenNeed > 0 && !state.freezer;
+  const shelfFull = shelfNeeded(content, lines) > shelfRoom(state, content) + 1e-9;
   const tightFreezer = frozenNeed > 0 && state.freezer && frozenNeed > freezerRoom(state, content) + 1e-9;
 
   return (
@@ -157,11 +158,12 @@ export function CartView({ onDone }: { onDone: () => void }) {
       {belowMin && <p className="text-xs text-bad" role="alert">{t("pasar.belowMin", { min: rp(supplier.minOrder) })}</p>}
       {!belowMin && !enough && <p className="text-xs text-bad" role="alert">{t("pasar.noFunds")}</p>}
       {needsFreezer && <p className="text-xs text-bad" role="alert" data-testid="needs-freezer">{t("pasar.needsFreezer")}</p>}
+      {shelfFull && <p className="text-xs text-bad" role="alert" data-testid="shelf-full">{t("pasar.shelfFull")}</p>}
       {tightFreezer && <p className="text-xs text-warn" role="alert" data-testid="freezer-tight">{t("pasar.freezerTight")}</p>}
       {gate && <p className="text-xs text-bad" role="alert" data-testid="phone-gate">{t(gate === "phone_dead" ? "pasar.noPhone" : "pasar.noData")}</p>}
       <Button
         data-testid="pay-order"
-        disabled={belowMin || !enough || gate !== null || needsFreezer}
+        disabled={belowMin || !enough || gate !== null || needsFreezer || shelfFull}
         onClick={() => {
           const r = send({ type: "placeOrder", supplier: cart.supplier, lines, express: cart.express });
           if (r.ok) {

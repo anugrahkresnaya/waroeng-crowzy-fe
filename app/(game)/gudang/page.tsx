@@ -8,7 +8,7 @@ import { OrdersView } from "@/components/pasar/orders-view";
 import { TopBar } from "@/components/top-bar";
 import { Button, Card, Chip, Meter, Pill } from "@/components/ui";
 import { WarungNav } from "@/components/warung-nav";
-import { batchesPossible, content, displayPortions, freezerHoldHours, freezerUsed, fridgeCap, fridgeUsed, portionsLeft, type Phase } from "@/engine";
+import { batchesPossible, content, displayPortions, freezerHoldHours, freezerUsed, fridgeCap, nextShelf, shelfCap, shelfPending, shelfUsed, fridgeUsed, portionsLeft, type Phase } from "@/engine";
 import { rp } from "@/lib/format";
 import { useGame } from "@/lib/game-store";
 import { useGuard } from "@/lib/use-guard";
@@ -156,6 +156,25 @@ export default function GudangPage() {
                   </li>
                 ))}
               </ul>
+            )}
+          </Card>
+        )}
+
+        {tab === "barang" && (
+          <Card className="p-3" data-testid="shelf-card">
+            <Meter
+              label={t("storage.shelf", { used: shelfUsed(state, content).toFixed(1), cap: shelfCap(state, content) })}
+              pct={(shelfUsed(state, content) / shelfCap(state, content)) * 100}
+              tone={shelfUsed(state, content) / shelfCap(state, content) > 0.9 ? "bg-warn" : "bg-accent"}
+            />
+            <p className="mt-1.5 text-[11px] leading-tight text-muted">{t("storage.shelfHelp", { onWay: shelfPending(state, content).toFixed(1) })}</p>
+            {nextShelf(state, content) && (
+              <div className="mt-2 flex flex-col gap-1">
+                <Button className="py-2" disabled={state.bank < nextShelf(state, content)!.price} data-testid="buy-shelf" onClick={() => send({ type: "buyShelf" })}>
+                  {t("storage.buyShelf", { slots: nextShelf(state, content)!.slots, price: rp(nextShelf(state, content)!.price) })}
+                </Button>
+                {state.bank < nextShelf(state, content)!.price && <p className="text-[11px] text-muted">{t("pasar.noFunds")}</p>}
+              </div>
             )}
           </Card>
         )}
